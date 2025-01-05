@@ -73,6 +73,7 @@ const getAllOutcomeCtrl = async (req, res) => {
             success: true,
             properties,
         });
+        console.log(properties)
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -103,8 +104,10 @@ const getOutcomeCtrl = async (req, res) => {
 
 const updateMonthsOutcome = async (req, res) => {
     const { id } = req.params;
-    const { month, amount } = req.body;
+    const { month, amount ,operation} = req.body;
     console.log(req.body);
+
+    
     // Validate input
     if (!month || typeof amount !== 'number') {
         return res.status(400).json({ message: "Month and amount are required and amount should be a number" });
@@ -132,6 +135,13 @@ const updateMonthsOutcome = async (req, res) => {
         }
 
         updatedIncome.totalAmount = Object.values(updatedIncome.months).reduce((acc, curr) => acc + curr, 0);
+        updatedIncome.updateLog.push({
+            date: new Date(),
+            updatedFields: { [month]: amount },
+            operation:operation
+
+
+        });
         await updatedIncome.save();
 
         res.status(200).json({ message: "Month updated successfully", data: updatedIncome });

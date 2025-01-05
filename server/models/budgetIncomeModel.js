@@ -17,6 +17,14 @@ const budgetIncomeSchema = new Schema({
         ref: "Budget",
         required: true,
     },
+    updateLog: [
+        {
+            date: { type: Date, default: Date.now },
+        ammount:{type:Number},
+
+            operation:{type:String}
+        },
+    ],
 }, { timestamps: true });
 
 const budgetincome = mongoose.model(

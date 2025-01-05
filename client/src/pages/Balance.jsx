@@ -4,6 +4,7 @@ import {
   getAllOutcomeApi,
 } from "../services/operation/function";
 import { useNavigate, useParams } from "react-router-dom";
+import BalanceStatement from "../components/common/BalanceStatement";
 
 const Balance = () => {
   const [incomeData, setIncomeData] = useState([]);
@@ -18,6 +19,11 @@ const Balance = () => {
   const [balance, setBalance] = useState(0);
   const { id } = useParams();
 
+
+  // /BalanceStatement
+const[outComeState,setOutComeState] = useState([])
+const[incomeState,setIncomeState] = useState([])
+
   // Fetch income data
   const fetchIncome = async () => {
     if (!id) return;
@@ -25,6 +31,9 @@ const Balance = () => {
     try {
       setLoading(true);
       const data = await getAllIncomeApi(id);
+      console.log(data[0]?.updateLog)
+      setIncomeState(data[0]?.updateLog || [])
+      console.log(incomeState)
       setIncomeData(data);
     } catch (error) {
       console.error("Error fetching income data:", error);
@@ -40,6 +49,9 @@ const Balance = () => {
     try {
       setLoading(true);
       const data = await getAllOutcomeApi(id);
+      console.log(data)
+      setOutComeState(data[0]?.updateLog || [])
+
       setOutcomeData(data);
     } catch (error) {
       console.error("Error fetching outcome data:", error);
@@ -74,10 +86,11 @@ const Balance = () => {
       0
     );
     const outcomeTotal = filteredOutcome.reduce(
-      (acc, item) => acc + parseFloat(item.amount),
+      (acc, item) => acc + (parseFloat(item.totalAmount) || 0),
       0
-    );
+    )
     setTotalIncome(incomeTotal);
+    console.log(outcomeData)
     setTotalOutcome(outcomeTotal);
     setBalance(incomeTotal - outcomeTotal);
   }, [filteredIncome, filteredOutcome]);
@@ -91,6 +104,9 @@ const Balance = () => {
   if (loading) {
     return <p>Loading...</p>;
   }
+
+
+
 
   return (
     <div className="p-6  min-h-screen">
@@ -150,7 +166,7 @@ const Balance = () => {
           <tbody className="text-center">
             <tr>
               <td className="py-4 px-4">{totalIncome.toFixed(2)}</td>
-              <td className="py-4 px-4">{totalOutcome.toFixed(2)}</td>
+              <td className="py-4 px-4">{totalOutcome}</td>
               <td className="py-4 px-4 font-semibold text-lg">
                 {balance.toFixed(2)}
               </td>
@@ -158,6 +174,7 @@ const Balance = () => {
           </tbody>
         </table>
       </div>
+      <BalanceStatement outCome={outComeState} income={incomeState} />
     </div>
   );
 };

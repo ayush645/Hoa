@@ -28,6 +28,13 @@ const PropertyInformationsSchema = new Schema({
         type: String,
         required: true,
     },
+    logo: {
+        type: Object,
+        default: {
+          publicId: "",
+          url: "",
+        },
+      },
     categoryId: {
         type: Schema.Types.ObjectId,
         ref: "Category",

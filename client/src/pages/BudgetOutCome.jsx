@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import {
   createBudgetOutcomeAPi,
   deleteBudgetOutComeApi,
+  getAllBudgetIncomeApi,
   getAllBudgetOutcomeApi,
 } from "../services/operation/function";
 import GetBudgetOutCome from "../components/GetBudgetOutCome";
@@ -14,6 +15,8 @@ const BudgetOutCome = () => {
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalAmountOut, setTotalAmountOut] = useState(0);
+  const [totalAmountincome, setTotalAmountIncome] = useState(0);
 
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
@@ -24,6 +27,20 @@ const BudgetOutCome = () => {
       amount,
       categoryId: id, // Using categoryId directly from the URL
     };
+    const availableBalance = totalAmountincome - totalAmountOut;
+
+    if (amount > totalAmountincome - totalAmountOut) {
+      Swal.fire({
+        title: "Error!",
+        text: `The amount exceeds the available balance of ₹${availableBalance.toFixed(
+          2
+        )}.`,
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+
+      return false; // Don't allow the amount
+    }
 
     const success = await createBudgetOutcomeAPi(propertyData);
 
@@ -41,7 +58,15 @@ const BudgetOutCome = () => {
     try {
       setLoading(true);
       const data = await getAllBudgetOutcomeApi(id);
-      setPropertyData(data);
+      if (data) {
+        const total = data.reduce(
+          (sum, property) => sum + (parseInt(property.amount) || 0), // Convert amount to an integer
+          0
+        );
+        setTotalAmountOut(total);
+
+        setPropertyData(data);
+      }
     } catch (error) {
       console.error("Error fetching property information:", error);
     } finally {
@@ -49,6 +74,27 @@ const BudgetOutCome = () => {
     }
   };
 
+  const fetchBudgetIncome = async () => {
+    if (!id) return;
+
+    try {
+      setLoading(true);
+      const data = await getAllBudgetIncomeApi(id);
+      if (data) {
+        const total = data.reduce(
+          (sum, property) => sum + (parseInt(property.amount) || 0), // Convert amount to an integer
+          0
+        );
+        setTotalAmountIncome(total);
+
+        console.log(total);
+      }
+    } catch (error) {
+      console.error("Error fetching property information:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleDelete = async (propertyId) => {
     const confirmed = await Swal.fire({
       title: "Are you sure?",
@@ -70,6 +116,7 @@ const BudgetOutCome = () => {
 
   useEffect(() => {
     fetchOutCome();
+    fetchBudgetIncome();
   }, [id]); // Re-fetch outcomes whenever the category ID changes
 
   return (

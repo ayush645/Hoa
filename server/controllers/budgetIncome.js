@@ -1,4 +1,5 @@
 const budgetIncomeModel = require("../models/budgetIncomeModel");
+const Outcome = require("../models/budgetOutcomeModel");
 
 const createBudgetIncomeCtrl = async (req, res) => {
     const {
@@ -16,7 +17,14 @@ const createBudgetIncomeCtrl = async (req, res) => {
 
 
         const property = await budgetIncomeModel.create({
-            name, amount, categoryId
+            name, amount, categoryId,
+            updateLog: [
+                {
+                    date: Date.now(),
+                    amount:amount,
+                    operation: `${name} Budget Income`,
+                },
+            ],
         });
 
         return res.status(201).json({
@@ -86,6 +94,35 @@ const getBudgetIncomeCtrl = async (req, res) => {
 };
 
 
+const getBudgetDataCtrl = async (req, res) => {
+    try {
+      // Fetch data from both models
+      const budgetIncomeData = await budgetIncomeModel.find();
+      const budgetOutcomeData = await Outcome.find();
+  
+      // Return both data in a single response
+      return res.status(200).json({
+        success: true,
+        message: "Budget data fetched successfully",
+        data: {
+          income: budgetIncomeData,
+          outcome: budgetOutcomeData
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching budget data",
+      });
+    }
+  };
+
+
+
+
+
+
 
 
 
@@ -107,5 +144,6 @@ module.exports = {
     createBudgetIncomeCtrl,
     deleteBudgetIncomeCtrl,
     getAllBudgetIncomeCtrl,
-    getBudgetIncomeCtrl
+    getBudgetIncomeCtrl,
+    getBudgetDataCtrl
 };

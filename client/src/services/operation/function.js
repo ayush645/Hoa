@@ -790,11 +790,11 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount) => {
+export const updateMonthIncomeApi = async (id, month, amount,operation) => {
     try {
         console.log("Updating income with:", { id, month, amount }); // Debugging
 
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount });
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation });
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);
@@ -802,11 +802,11 @@ export const updateMonthIncomeApi = async (id, month, amount) => {
     }
 };
 
-export const updateMonthOutComeApi = async (id, month, amount) => {
+export const updateMonthOutComeApi = async (id, month, amount,operation) => {
     try {
         console.log("Updating outcome with:", { id, month, amount }); // Debugging
 
-        const response = await apiConnector("PUT", `${UPDATE_OUTCOME}/${id}`, { month, amount });
+        const response = await apiConnector("PUT", `${UPDATE_OUTCOME}/${id}`, { month, amount,operation });
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);

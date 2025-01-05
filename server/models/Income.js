@@ -32,6 +32,14 @@ const incomeSchema = new mongoose.Schema({
         ref: "Category",
         required: true,
     },
+    updateLog: [
+        {
+            date: { type: Date, default: Date.now },
+            updatedFields: { type: Map, of: String }, // Logs changed fields and their values
+            operation:{type:String}
+
+        },
+    ],
 }, { timestamps: true });
 
 incomeSchema.pre('save', function (next) {
@@ -40,6 +48,20 @@ incomeSchema.pre('save', function (next) {
     next();
 });
 
+incomeSchema.pre("updateOne", function (next) {
+    const update = this.getUpdate();
+
+    if (update.$set || update.$inc) {
+        const logEntry = {
+            date: new Date(),
+            updatedFields: new Map(Object.entries(update.$set || {})),
+        };
+
+        // Push the log entry into updateLog
+        this.update({}, { $push: { updateLog: logEntry } });
+    }
+    next();
+});
 const Income = mongoose.model('Income', incomeSchema);
 
 module.exports = Income;

@@ -1,4 +1,5 @@
 const incomeModel = require('../models/Income'); // Adjust the path as per your project structure
+const Outcome  = require("../models/outcomeModel")
 
 const createIncomeCtrl = async (req, res) => {
     const {
@@ -105,9 +106,10 @@ const getIncomeCtrl = async (req, res) => {
 
 const updateMonthsIncome = async (req, res) => {
     const { id } = req.params;
-    const { month, amount } = req.body;
+    const { month, amount,operation } = req.body;
     console.log(req.body);
     // Validate input
+     
     if (!month || typeof amount !== 'number') {
         return res.status(400).json({ message: "Month and amount are required and amount should be a number" });
     }
@@ -134,8 +136,19 @@ const updateMonthsIncome = async (req, res) => {
         }
 
         updatedIncome.totalAmount = Object.values(updatedIncome.months).reduce((acc, curr) => acc + curr, 0);
+       
+        updatedIncome.updateLog.push({
+            date: new Date(),
+            updatedFields: { [month]: amount },
+
+            operation:operation
+        });
         await updatedIncome.save();
 
+
+
+
+        
         res.status(200).json({ message: "Month updated successfully", data: updatedIncome });
     } catch (error) {
         console.error(error);
@@ -143,4 +156,41 @@ const updateMonthsIncome = async (req, res) => {
     }
 }
 
-module.exports = { createIncomeCtrl, deleteIncomeCtrl, getAllIncomeCtrl, getIncomeCtrl, updateMonthsIncome };
+
+const findAllLogs = async (req, res) => {
+    try {
+      // Find all Outcome documents
+      const outcomes = await Outcome.find();
+      const income = await incomeModel.find();  // Ensure `incomeModel` is correctly imported
+  
+      // Initialize empty arrays to store all logs
+      let outComeLogs = [];
+      let InComeLogs = [];
+  
+      // Loop through each outcome document and merge their updateLogs
+      outcomes.forEach(outcome => {
+        if (outcome.updateLog && outcome.updateLog.length > 0) {
+          // Push the updateLog entries into the outComeLogs array
+          outComeLogs = outComeLogs.concat(outcome.updateLog);
+        }
+      });
+  
+      // Loop through each income document and merge their updateLogs
+      income.forEach(incomeDoc => {
+        if (incomeDoc.updateLog && incomeDoc.updateLog.length > 0) {
+          // Push the updateLog entries into the InComeLogs array
+          InComeLogs = InComeLogs.concat(incomeDoc.updateLog);
+        }
+      });
+  
+      // Return the combined updateLog as a response
+      return res.status(200).json({ success: true, outComeLogs, InComeLogs });
+    } catch (err) {
+      console.error("Error fetching update logs:", err);
+      return res.status(500).json({ success: false, message: "Error fetching update logs" });
+    }
+  };
+  
+
+  
+module.exports = { createIncomeCtrl, deleteIncomeCtrl, getAllIncomeCtrl, getIncomeCtrl, updateMonthsIncome , findAllLogs};

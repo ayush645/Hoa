@@ -28,6 +28,10 @@ import PrintBalance from "./pages/PrintBalance";
 import ExpectesnalBudget from "./pages/ExpectesnalBudget";
 import PrintBudgetIncome from "./pages/PrintBudgetIncome";
 import PrintBudgetOutcome from "./pages/PrintBudgetOutcome";
+import ExcepationalBalance from "./pages/ExcepationalBalance";
+import BothExcepational from "./components/common/BothExcepational";
+import RegularStatement from "./components/common/RegularStatement";
+import DownloadPDFButton from "./components/common/TestPrint";
 
 const App = () => {
   return (
@@ -48,6 +52,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hello"
+            element={
+              <PrivateRoute>
+                <DownloadPDFButton />
               </PrivateRoute>
             }
           />
@@ -124,6 +136,14 @@ const App = () => {
             }
           />
           <Route
+            path="/exceptionalbudget/balance/:id"
+            element={
+              <PrivateRoute>
+                <ExcepationalBalance />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/exceptionalbudget/income/:id"
             element={
               <PrivateRoute>
@@ -180,6 +200,14 @@ const App = () => {
             }
           />
           <Route
+            path="/print/regular-budget/both"
+            element={
+              <PrivateRoute>
+                <RegularStatement />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/print/regular-budget/income"
             element={
               <PrivateRoute>
@@ -208,6 +236,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <ExpectesnalBudget />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/print/exceptional/both"
+            element={
+              <PrivateRoute>
+                <BothExcepational />
               </PrivateRoute>
             }
           />

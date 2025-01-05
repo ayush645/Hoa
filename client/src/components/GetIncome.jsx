@@ -16,6 +16,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [selectedIncomeData, setSelectedIncomeData] = useState(null); // Store selected income data for the modal
   const [paymentType, setPaymentType] = useState("");
+
+    const [SelectownerName, setSelectOwnerName] = useState("");
+  
   useEffect(() => {
     setIncomeData(propertyData);
   }, [propertyData]);
@@ -58,6 +61,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
+      setSelectOwnerName(selectedIncomeData.ownerName)
       setSelectedIncomeData(selectedIncome); // Set selected income data for modal
       setIsModalOpen(true); // Open the modal
     }
@@ -110,7 +114,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       const result = await updateMonthIncomeApi(
         selectedIncomeId, // Send the specific incomeId
         selectedMonth,
-        amountToUpdate
+        amountToUpdate,
+        SelectownerName
       );
 
       if (result) {
@@ -171,6 +176,21 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
     return selectedDate > currentDate;
   };
 
+
+  const handleChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+
+    if (value > totalContribution) {
+      toast.error(`Value cannot exceed ${totalContribution}`);
+      return;
+    }
+
+    if (isNaN(value) || value < 0) {
+      setPartialAmount("");
+    } else {
+      setPartialAmount(value);
+    }
+  };
   return (
     <div className="income-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -374,7 +394,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                     type="number"
                     id="partialAmount"
                     value={partialAmount}
-                    onChange={(e) => setPartialAmount(e.target.value)}
+                    onChange={handleChange}
                     className="w-full px-4 py-2 border bg-yellow-500 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>

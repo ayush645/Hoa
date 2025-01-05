@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const PrintRegularBudget = () => {
   return (
     <div>
-      <div className="max-w-7xl mx-auto p-5 grid lg:grid-cols-3 gap-5">
+      <div className="max-w-7xl mx-auto p-5 grid lg:grid-cols-4 gap-5">
         <Link
           to="/print/regular-budget/income"
           className="button-85 text-center"
@@ -16,6 +16,12 @@ const PrintRegularBudget = () => {
           className="button-85 text-center"
         >
           OutComes
+        </Link>
+        <Link
+          to="/print/regular-budget/both"
+          className="button-85 text-center"
+        >
+          Both
         </Link>
         <Link
           to="/print/regular-budget/balance"

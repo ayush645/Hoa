@@ -7,6 +7,7 @@ const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const bodyParser = require("body-parser");
+const { getBudgetDataCtrl } = require("./controllers/budgetIncome");
 
 
 dotenv.config();
@@ -50,8 +51,9 @@ app.use("/api/v1/budget", require("./routes/budgetRoute"));
 app.use("/api/v1/budgetincome", require("./routes/budgetIncomeRoute"));
 app.use("/api/v1/budgetoutcome", require("./routes/budgetoutcomeRoute"));
 
+app.get('/get-budget-data', getBudgetDataCtrl);
 
-
+app.use("/api/v1/print",require("./routes/printController"))
 
 
 

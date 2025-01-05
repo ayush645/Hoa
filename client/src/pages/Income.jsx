@@ -18,6 +18,8 @@ const Income = () => {
   const [incomeData, setIncomeData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+
   const { id } = useParams();
   const navigate = useNavigate();
 

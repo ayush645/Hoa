@@ -2,13 +2,17 @@ const PropertyModel = require("../models/PropertyInformationsModel");
 
 const createPropertyInformationCtrl = async (req, res) => {
     const {
-        propertyData: { pName, pAddress, pLocation, ownerTitle, images, numberOfunits, categoryId },
+        propertyData: { pName, pAddress, pLocation, ownerTitle, images, numberOfunits, categoryId,logo },
     } = req.body;
 
+
+    console.log(logo)
+
+    
     const imagesArray = typeof images === "string" ? JSON.parse(images) : images;
 
     try {
-        if (!pName || !pAddress || !pLocation || !ownerTitle || !images || !numberOfunits) {
+        if (!pName || !pAddress || !pLocation || !ownerTitle || !images || !numberOfunits || !logo) {
             return res.status(400).json({
                 success: false,
                 message: "Please Provide All Fields",
@@ -22,7 +26,8 @@ const createPropertyInformationCtrl = async (req, res) => {
             ownerTitle,
             images: imagesArray,
             numberOfunits,
-            categoryId
+            categoryId,
+            logo
         });
 
         return res.status(201).json({

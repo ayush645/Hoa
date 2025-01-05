@@ -5,6 +5,7 @@ import {
   handleCreateOutcomeAPi,
   deleteOutComeApi,
   getAllOutcomeApi,
+  getAllIncomeApi,
 } from "../services/operation/function";
 import GetOwner from "../components/GetOwner";
 import GetOutCome from "../components/GetOutCome";
@@ -14,7 +15,11 @@ const OutCome = () => {
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [incomeData, setIncomeData] = useState('');
 
+
+      const [SelectownerName, setSelectOwnerName] = useState("");
+  
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
 
@@ -22,6 +27,7 @@ const OutCome = () => {
     const propertyData = {
       expense,
       categoryId: id, // Using categoryId directly from the URL
+      
     };
 
     const success = await handleCreateOutcomeAPi(propertyData);
@@ -66,8 +72,36 @@ const OutCome = () => {
     }
   };
 
+
+    const fetchIncome = async () => {
+      if (!id) return;
+  
+      try {
+        setLoading(true);
+        const data = await getAllIncomeApi(id);
+
+        if(data){
+
+          const outcomeTotal = data.reduce(
+            (acc, item) => acc + (parseFloat(item.totalAmount) || 0),
+            0
+          )
+        
+        setIncomeData(outcomeTotal);
+        console.log(incomeData)
+
+        }
+      } catch (error) {
+        console.error("Error fetching income data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    
   useEffect(() => {
     fetchOutCome();
+    fetchIncome()
   }, [id]); // Re-fetch outcomes whenever the category ID changes
 
   return (
@@ -109,6 +143,9 @@ const OutCome = () => {
         loading={loading}
         onDelete={handleDelete}
         id={id}
+        totalIncome={incomeData}
+        fetchIncomeMain={fetchIncome}
+        fetchOutMain={fetchOutCome}
       />
     </div>
   );

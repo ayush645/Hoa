@@ -9,6 +9,7 @@ import {
   deletePropertyInformationApi, // Import the delete API function
 } from "../services/operation/function";
 import GetPropertyInformation from "../components/GetPropertyInfromation";
+import ImageUploaderWithCrop from "../components/common/ImageUpload";
 
 const PropertyInformation = () => {
   const [pName, setPName] = useState("");
@@ -20,6 +21,8 @@ const PropertyInformation = () => {
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+  const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -49,6 +52,7 @@ const PropertyInformation = () => {
       pLocation,
       ownerTitle,
       images: JSON.stringify(images),
+      logo:imageData,
       numberOfunits,
       categoryId: id,
     };
@@ -56,6 +60,7 @@ const PropertyInformation = () => {
     const success = await handleCreatePropertyInforamtionAPi(propertyData);
 
     if (success) {
+      
       setPName("");
       setPAddress("");
       setPLocation("");
@@ -203,8 +208,12 @@ const PropertyInformation = () => {
               ))}
             </div>
             <br />
-
-            <div className="flex justify-center items-center">
+            <ImageUploaderWithCrop
+                  setImageData={setImageData}
+                  setSelectedImage={setSelectedImage}
+                  selectedImage={selectedImage}
+                />
+            <div className="flex justify-center items-center mt-4">
               <button
                 onClick={handleSubmit}
                 // className="bg-green-500 text-white px-6 py-2 rounded-lg w-full hover:bg-green-600"
