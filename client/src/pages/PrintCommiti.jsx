@@ -24,7 +24,7 @@ const PrintCommiti = () => {
 
   const handlePrint = async() => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/print/commiti`, {
+      const response = await axios.get(`https://propertymanagment.onrender.com/api/v1/print/commiti`, {
         responseType: "blob", // Important for handling binary data
       });
 
