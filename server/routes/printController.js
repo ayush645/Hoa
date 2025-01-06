@@ -2,15 +2,15 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const QRCode = require("qrcode");
 const axios = require("axios"); // Import axios to handle image URL
-const express = require('express');
+const express = require("express");
 
 const router = express.Router();
 
-const  PropertyInformations = require("../models/PropertyInformationsModel");
- const PropertyCommiti = require("../models/PropertyCommitiModel");
- const Units = require("../models/unitsModel");
- const Owner = require("../models/ownerModel");
-
+const PropertyInformations = require("../models/PropertyInformationsModel");
+const PropertyCommiti = require("../models/PropertyCommitiModel");
+const Units = require("../models/unitsModel");
+const Owner = require("../models/ownerModel");
+const Income = require("../models/Income");
 
 const generatePropertyPDF = async (req, res) => {
   try {
@@ -134,7 +134,9 @@ const generatePropertyPDF = async (req, res) => {
 const generatePropertyPDFcommiti = async (req, res) => {
   try {
     // Fetch all property committee data
-    const propertyCommittees = await PropertyCommiti.find().populate("categoryId");
+    const propertyCommittees = await PropertyCommiti.find().populate(
+      "categoryId"
+    );
 
     if (propertyCommittees.length === 0) {
       return res.status(404).send("No property committees found.");
@@ -210,7 +212,6 @@ const generatePropertyPDFcommiti = async (req, res) => {
 
     // Add text before QR code and center the QR code
     let qrYPosition = yPosition + 20; // Adjust QR code placement after table
-  
 
     // Centered QR code
     const qrSize = 150; // Define the size of the QR code
@@ -218,7 +219,10 @@ const generatePropertyPDFcommiti = async (req, res) => {
 
     for (let i = 0; i < propertyCommittees.length; i++) {
       const qrCodePath = `${outputDir}qr-${i}.png`;
-      doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
+      doc.image(qrCodePath, qrX, qrYPosition, {
+        width: qrSize,
+        height: qrSize,
+      }); // Position QR code
       qrYPosition += 180; // Move down for the next QR code
     }
 
@@ -308,11 +312,11 @@ const generateUnitsPDF = async (req, res) => {
 
     // Combine data for QR Code (combine the data of all units)
     const qrData = {
-      units: units.map(unit => ({
+      units: units.map((unit) => ({
         unitCode: unit._id, // Unique identifier for each unit
         description: unit.type, // Description
         monthlyFee: unit.fee, // Monthly Fee
-      }))
+      })),
     };
 
     // Generate a single QR Code for all units combined
@@ -349,10 +353,9 @@ const generateUnitsPDF = async (req, res) => {
   }
 };
 
-
 const generateOwnersPDF = async (req, res) => {
   try {
-    const owners = await Owner.find().populate('categoryId', 'name'); // Fetch all owners and populate category name
+    const owners = await Owner.find().populate("categoryId", "name"); // Fetch all owners and populate category name
 
     if (!owners || owners.length === 0) {
       throw new Error("No owners found");
@@ -420,13 +423,13 @@ const generateOwnersPDF = async (req, res) => {
 
     // Combine data for QR Code (combine the data of all owners)
     const qrData = {
-      owners: owners.map(owner => ({
+      owners: owners.map((owner) => ({
         name: owner.name,
         address: owner.address,
         phone: owner.phone,
         email: owner.email,
         unit: owner.unit,
-      }))
+      })),
     };
 
     // Generate a single QR Code for all owners combined
@@ -463,14 +466,231 @@ const generateOwnersPDF = async (req, res) => {
   }
 };
 
+router.get("/generate-pdf", async (req, res) => {
+  const { categoryId, month } = req.query;
+  console.log(month);
+
+  if (!categoryId || !month) {
+    return res
+      .status(400)
+      .send("Missing required parameters: categoryId, month");
+  }
+
+  try {
+    // Get the current year
+    const currentYear = new Date().getFullYear(); // You can modify this if you want to fetch a specific year (e.g., 2025)
+    
+    // Query Income document for the specified category and year
+    const incomeRecords = await Income.find({
+      categoryId: categoryId,
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00Z`), // Start of the year
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00Z`), // Start of the next year
+      },
+    });
+
+    // Prepare the data for the PDF
+    let tableData = [];
+    let totalPaid = 0;
+    let totalRemaining = 0;
+
+    incomeRecords.forEach((record, index) => {
+      const monthPaid = record.months[month] || 0; // Default to 0 if the month data is missing
+      const totalAmount = record.contribution;
+      const remainingAmount = totalAmount - monthPaid;
+      totalPaid += monthPaid;
+      totalRemaining += remainingAmount;
+
+      // Prepare data for the table
+      tableData.push({
+        srNo: index + 1,
+        ownerName: record.ownerName,
+        monthPaid,
+        remainingAmount,
+      });
+    });
+
+    // Generate the PDF document
+    const doc = new PDFDocument();
+    const filename = `payment_details_${month}_${currentYear}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    doc.pipe(res); // Pipe the PDF document to the response
+
+    doc
+      .fontSize(18)
+      .text(`Payment Details for ${month} ${currentYear}`, 40, 100, { align: "center" });
+
+    // Table Headers
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text("Sr No.", 20, 150)
+      .text("Owner Name", 140, 150)
+      .text("Rent Paid", 250, 150)
+      .text("Rent Remaining", 350, 150)
+      .moveDown(1);
+
+    // Add each row of data
+    let yPosition = 170;
+    tableData.forEach((row) => {
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text(row.srNo.toString(), 20, yPosition)
+        .text(row.ownerName, 140, yPosition)
+        .text(row.monthPaid.toString(), 250, yPosition)
+        .text(row.remainingAmount.toString(), 350, yPosition);
+
+      yPosition += 20; // Move down for the next row
+
+      // If we are getting close to the end of the page, add a new page
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset y-position for the new page
+      }
+    });
+
+    doc.moveDown(2);
+    doc.fontSize(12)
+       .font("Helvetica-Bold")
+       .text(`Total Paid: ${totalPaid}`, 20, yPosition); // Left aligned
+    doc.text(`Total Remaining: ${totalRemaining}`, 20, yPosition + 20); // Left aligned
+
+    // Finalize the PDF and send it to the client
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    return res.status(500).send("Error generating PDF");
+  }
+});
+
+router.get("/generate-pdf-owner", async (req, res) => {
+  const { categoryId, ownerId } = req.query;
+
+  if (!categoryId || !ownerId) {
+    return res
+      .status(400)
+      .send("Missing required parameters: categoryId, ownerId");
+  }
+
+  try {
+    // Get the current year
+    const currentYear = new Date().getFullYear();
+
+    // Query Income document for the specified category, owner, and year
+    const incomeRecords = await Income.find({
+      categoryId: categoryId,
+      _id: ownerId, // Filter by the specified owner ID
+      createdAt: {
+        $gte: new Date(`${currentYear}-01-01T00:00:00Z`), // Start of the year
+        $lt: new Date(`${currentYear + 1}-01-01T00:00:00Z`), // Start of the next year
+      },
+    });
+
+    // Prepare the data for the PDF
+    let tableData = [];
+    let totalPaid = 0;
+    let totalRemaining = 0;
+
+    incomeRecords.forEach((record, index) => {
+      const totalAmount = record.contribution;
+
+      // Loop through each month and get the payment details for that month
+      Object.entries(record.months).forEach(([month, paidAmount]) => {
+        const remainingAmount = totalAmount - paidAmount;
+        totalPaid += paidAmount;
+        totalRemaining += remainingAmount;
+
+        // Add the month-wise data to the table
+        tableData.push({
+          srNo: index + 1,
+          month,
+          paidAmount,
+          remainingAmount,
+        });
+      });
+    });
+
+    // Generate the PDF document
+    const doc = new PDFDocument();
+    const filename = `payment_details_${currentYear}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+
+    doc.pipe(res); // Pipe the PDF document to the response
+
+    // Add Header with Owner Name
+    doc
+      .fontSize(20)
+      .font("Helvetica-Bold")
+      .text(`Payment Details for ${incomeRecords[0]?.ownerName}`, { align: "center" })
+      .moveDown(0.5); // Add space after title
+
+    // Add Year heading
+    doc
+      .fontSize(16)
+      .font("Helvetica")
+      .text(`Year: ${currentYear}`, { align: "center" })
+      .moveDown(1); // Add space after year
+
+    // Table Header
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text("Sr No.", 20, 150)
+      .text("Month", 120, 150)
+      .text("Amount Paid", 250, 150)
+      .text("Remaining Amount", 380, 150)
+      .moveDown(1);
+
+    // Table Borders
+    const tableStartY = 170;
+    const rowHeight = 20;
+    let yPosition = tableStartY;
+
+    // Add each row of data (month-wise)
+    tableData.forEach((row, index) => {
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text(row.srNo.toString(), 20, yPosition)
+        .text(row.month, 120, yPosition)
+        .text(row.paidAmount.toFixed(2), 250, yPosition)
+        .text(row.remainingAmount.toFixed(2), 380, yPosition);
+
+      yPosition += rowHeight; // Move down for the next row
+
+      // Add a new page if necessary
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset y-position for the new page
+      }
+    });
+
+    // Add Total Section
+    doc.moveDown(1);
+    doc.fontSize(12).font("Helvetica-Bold").text(`Total Paid: ${totalPaid.toFixed(2)}`, 20, yPosition);
+    doc.text(`Total Remaining: ${totalRemaining.toFixed(2)}`, 20, yPosition + 20);
+
+    // Finalize the PDF and send it to the client
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    return res.status(500).send("Error generating PDF");
+  }
+});
 
 
 
 
-router.get("/propertyinformation",generatePropertyPDF )
-router.get("/commiti",generatePropertyPDFcommiti )
+
+router.get("/propertyinformation", generatePropertyPDF);
+router.get("/commiti", generatePropertyPDFcommiti);
 router.get("/units", generateUnitsPDF);
 router.get("/owner", generateOwnersPDF);
 
 module.exports = router;
-

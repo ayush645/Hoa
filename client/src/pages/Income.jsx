@@ -92,6 +92,8 @@ const Income = () => {
     fetchOwners(); // Fetch owners on component mount
   }, [id]);
 
+
+
   return (
     <div className="p-6 min-h-screen">
       <div className="income-page flex flex-col items-center mb-6">

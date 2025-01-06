@@ -169,7 +169,12 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   });
 
   const currentDate = new Date(); // Use real current date
-
+  const totalDeficit = months.reduce((total, month) => total + (monthlyDeficits[month] || 0), 0);
+  const totalIncome = months.reduce(
+    (total, month) => total + (monthlyTotals[month] || 0),
+    0
+  );
+  
   const isFutureMonth = (month) => {
     const monthIndex = months.indexOf(month);
     if (monthIndex === -1) return false;
@@ -192,6 +197,65 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       setPartialAmount(value);
     }
   };
+
+
+  const handleDownload = async (d1month) => {
+  
+    const categoryId = id;  // Replace with actual category ID
+    const month = d1month;  // Replace with the selected month
+     // Replace with the selected year
+
+    try {
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdf?categoryId=${categoryId}&month=${month}`);
+        if (response.ok) {
+            // Create a blob from the response
+            const blob = await response.blob();
+            
+            // Create an anchor element and trigger the download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `payment_details_${month}.pdf`;
+            link.click();
+        } else {
+            alert('Failed to generate PDF');
+        }
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        alert('Error downloading PDF');
+    }
+
+  
+};
+
+
+const handleDownloadOwner = async (owId) => {
+
+
+  const categoryId = id;  // Replace with actual category ID
+  const ownerId = owId
+
+  try {
+      const response = await fetch(`http://localhost:8080/api/v1/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`);
+      if (response.ok) {
+          // Create a blob from the response
+          const blob = await response.blob();
+          
+          // Create an anchor element and trigger the download
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `payment_details.pdf`;
+          link.click();
+      } else {
+          alert('Failed to generate PDF');
+      }
+  } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Error downloading PDF');
+  }
+
+ 
+};
+
   return (
     <div className="income-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -246,6 +310,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
               <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                 Actions
               </th>
+              <th className="px-4 py-2 text-center text-gray-600 font-semibold">
+                
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -296,6 +363,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                       onClick={() => onDelete(income._id)}
                     />
                   </td>
+                  <td className="px-4 py-2 text-blue-800 underline" onClick={()=>handleDownloadOwner(income._id)}>
+                    Owner report
+                  </td>
                 </tr>
               );
             })}
@@ -310,7 +380,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 </td>
               ))}
               {/* //null */}
-              <td className="px-4 py-2 text-gray-800"></td>
+              <td className="px-4 py-2 text-gray-800">{totalIncome}</td>
               <td className="px-4 py-2 text-center"></td>
             </tr>
 
@@ -324,8 +394,23 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 </td>
               ))}
               {/* null */}
-              <td className="px-4 py-2 text-gray-800"></td>
+              <td className="px-4 py-2 text-red-800">-{totalDeficit}</td>
               <td className="px-4 py-2 text-center"></td>
+            </tr>
+
+
+            <tr>
+              <td></td>
+              <td></td>
+              {months.map((month) => (
+                <td
+                  key={month}
+                  onClick={()=>handleDownload(month)}
+                  className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
+                >
+                  {month} Report
+                </td>
+              ))}
             </tr>
           </tbody>
         </table>

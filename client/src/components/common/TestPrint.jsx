@@ -1,40 +1,42 @@
-import axios from "axios";
+import React, { useState } from 'react';
 
-const DownloadPDFButton = ({  }) => {
- 
-  const handleDownload = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/owner`, {
-        responseType: "blob", // Important for handling binary data
-      });
+const DownloadPDFButton = () => {
+    const [loading, setLoading] = useState(false);
 
-      // Create a Blob from the response data
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+    const handleDownload = async () => {
+        setLoading(true);
 
-      // Create a temporary link and simulate a click
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `units.pdf`); // Set filename
-      document.body.appendChild(link);
-      link.click();
+        const categoryId = '6778e8b7c2bc940e1d629e92';  // Replace with actual category ID
+        const month = 'January';  // Replace with the selected month
+        const ownerId = "677a39a4d8200e49b1149598"
 
-      // Cleanup
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the PDF:", error);
-      alert("Failed to download PDF.");
-    }
-  };
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`);
+            if (response.ok) {
+                // Create a blob from the response
+                const blob = await response.blob();
+                
+                // Create an anchor element and trigger the download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `payment_details_${month}.pdf`;
+                link.click();
+            } else {
+                alert('Failed to generate PDF');
+            }
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            alert('Error downloading PDF');
+        }
 
-  return (
-    <button
-      onClick={handleDownload}
-      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-    >
-      Download Property PDF
-    </button>
-  );
+        setLoading(false);
+    };
+
+    return (
+        <button onClick={handleDownload} disabled={loading}>
+            {loading ? 'Generating PDF...' : 'Download Payment Details PDF'}
+        </button>
+    );
 };
 
 export default DownloadPDFButton;
