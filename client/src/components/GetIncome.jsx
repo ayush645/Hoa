@@ -61,7 +61,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
-      setSelectOwnerName(selectedIncomeData.ownerName)
+      console.log(selectedIncome?.ownerName)
+      setSelectOwnerName(selectedIncome.ownerName)
       setSelectedIncomeData(selectedIncome); // Set selected income data for modal
       setIsModalOpen(true); // Open the modal
     }
