@@ -309,7 +309,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   {monthlyTotals[month]}
                 </td>
               ))}
-              <td className="px-4 py-2 text-gray-800">null</td>
+              {/* //null */}
+              <td className="px-4 py-2 text-gray-800"></td>
               <td className="px-4 py-2 text-center"></td>
             </tr>
 
@@ -322,7 +323,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   {monthlyDeficits[month] || 0}
                 </td>
               ))}
-              <td className="px-4 py-2 text-gray-800">null</td>
+              {/* null */}
+              <td className="px-4 py-2 text-gray-800"></td>
               <td className="px-4 py-2 text-center"></td>
             </tr>
           </tbody>
