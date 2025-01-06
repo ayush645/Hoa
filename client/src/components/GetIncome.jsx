@@ -309,7 +309,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   {monthlyTotals[month]}
                 </td>
               ))}
-              <td className="px-4 py-2 text-gray-800"></td>
+              <td className="px-4 py-2 text-gray-800">null</td>
               <td className="px-4 py-2 text-center"></td>
             </tr>
 
@@ -322,7 +322,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   {monthlyDeficits[month] || 0}
                 </td>
               ))}
-              <td className="px-4 py-2 text-gray-800"></td>
+              <td className="px-4 py-2 text-gray-800">null</td>
               <td className="px-4 py-2 text-center"></td>
             </tr>
           </tbody>
@@ -366,15 +366,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   id="paymentStatus"
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 ${
-                    paymentStatus === "Not Paid"
-                      ? "bg-red-500 text-white"
-                      : paymentStatus === "Full Paid"
-                      ? "bg-green-500 text-white"
-                      : paymentStatus === "Partially Paid"
-                      ? "bg-orange-500 text-white"
-                      : "bg-white text-gray-700"
-                  }`}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 `}
                 >
                   <option value="Not Paid">Not Paid</option>
                   <option value="Full Paid">Full Paid</option>
