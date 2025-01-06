@@ -1,9 +1,10 @@
 import axios from "axios";
 
 const DownloadPDFButton = ({  }) => {
+ 
   const handleDownload = async () => {
     try {
-      const response = await axios.get(`https://propertymanagment.onrender.com/api/v1/print/commiti`, {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/owner`, {
         responseType: "blob", // Important for handling binary data
       });
 
@@ -13,7 +14,7 @@ const DownloadPDFButton = ({  }) => {
       // Create a temporary link and simulate a click
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `property.pdf`); // Set filename
+      link.setAttribute("download", `units.pdf`); // Set filename
       document.body.appendChild(link);
       link.click();
 

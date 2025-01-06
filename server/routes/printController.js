@@ -3,12 +3,13 @@ const fs = require("fs");
 const QRCode = require("qrcode");
 const axios = require("axios"); // Import axios to handle image URL
 const express = require('express');
-const qr = require("qr-image"); // QR code generation library
 
 const router = express.Router();
 
- PropertyInformations = require("../models/PropertyInformationsModel");
+const  PropertyInformations = require("../models/PropertyInformationsModel");
  const PropertyCommiti = require("../models/PropertyCommitiModel");
+ const Units = require("../models/unitsModel");
+ const Owner = require("../models/ownerModel");
 
 
 const generatePropertyPDF = async (req, res) => {
@@ -21,7 +22,7 @@ const generatePropertyPDF = async (req, res) => {
     const doc = new PDFDocument({ margin: 40 });
 
     // Define the output file path
-    const outputDir = `V:/Hoa/server/output/`;
+    const outputDir = `/output/`;
     const filePath = `${outputDir}properties.pdf`;
 
     // Ensure the directory exists
@@ -139,7 +140,7 @@ const generatePropertyPDFcommiti = async (req, res) => {
       return res.status(404).send("No property committees found.");
     }
 
-    const outputDir = `V:/Hoa/server/output/`;
+    const outputDir = `/output/`;
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true }); // Ensure the output directory exists
     }
@@ -243,12 +244,233 @@ const generatePropertyPDFcommiti = async (req, res) => {
   }
 };
 
+const generateUnitsPDF = async (req, res) => {
+  try {
+    const units = await Units.find(); // Fetch all units
+
+    if (!units || units.length === 0) {
+      throw new Error("No units found");
+    }
+
+    const doc = new PDFDocument({ margin: 40 });
+
+    // Define the output file path
+    const outputDir = `/output/`;
+    const filePath = `${outputDir}units.pdf`;
+
+    // Ensure the directory exists
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true }); // Create the directory if it doesn't exist
+    }
+
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream); // Pipe the document to the file
+
+    // Title
+    doc
+      .fontSize(18)
+      .font("Helvetica-Bold")
+      .text("Units Details", 40, 100, { align: "center" })
+      .moveDown();
+
+    // Table Headers
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text("Unit Code", 40, 150)
+      .text("Description", 120, 150)
+      .text("Monthly Fees", 250, 150)
+      .moveDown(1);
+
+    // Add each unit data in the table
+    let yPosition = 170;
+    for (let i = 0; i < units.length; i++) {
+      const unit = units[i];
+      const unitCode = i + 1; // Unit Code
+      const description = unit.type; // Description (assuming `type` is the description)
+      const monthlyFee = unit.fee; // Monthly Fee
+
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text(unitCode, 40, yPosition)
+        .text(description, 120, yPosition)
+        .text(monthlyFee, 250, yPosition);
+
+      yPosition += 20; // Move down for the next row
+
+      // If we're getting close to the end of the page, add a new page
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset y-position for the new page
+      }
+    }
+
+    // Combine data for QR Code (combine the data of all units)
+    const qrData = {
+      units: units.map(unit => ({
+        unitCode: unit._id, // Unique identifier for each unit
+        description: unit.type, // Description
+        monthlyFee: unit.fee, // Monthly Fee
+      }))
+    };
+
+    // Generate a single QR Code for all units combined
+    const qrCodePath = `${outputDir}combined-qr.png`;
+    await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save the combined QR code to file
+
+    // Add text before QR code and center the QR code
+    let qrYPosition = yPosition + 20; // Adjust QR code placement after table
+
+    // Centered QR code
+    const qrSize = 150; // Define the size of the QR code
+    const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
+
+    doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
+
+    doc.end(); // Finalize the PDF
+
+    // Send the file for download
+    writeStream.on("finish", () => {
+      res.download(filePath, `units.pdf`, (err) => {
+        if (err) {
+          console.error("Error sending PDF:", err);
+        }
+        // Clean up the generated PDF file
+        fs.unlinkSync(filePath);
+      });
+    });
+
+    // Clean up the QR code file after use
+    fs.unlinkSync(qrCodePath);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).send("An error occurred while generating the PDF.");
+  }
+};
+
+
+const generateOwnersPDF = async (req, res) => {
+  try {
+    const owners = await Owner.find().populate('categoryId', 'name'); // Fetch all owners and populate category name
+
+    if (!owners || owners.length === 0) {
+      throw new Error("No owners found");
+    }
+
+    const doc = new PDFDocument({ margin: 40 });
+
+    // Define the output file path
+    const outputDir = `/output/`;
+    const filePath = `${outputDir}owners.pdf`;
+
+    // Ensure the directory exists
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true }); // Create the directory if it doesn't exist
+    }
+
+    const writeStream = fs.createWriteStream(filePath);
+    doc.pipe(writeStream); // Pipe the document to the file
+
+    // Title
+    doc
+      .fontSize(18)
+      .font("Helvetica-Bold")
+      .text("Owners Details", 40, 100, { align: "center" })
+      .moveDown();
+
+    // Table Headers
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text("Name", 20, 150)
+      .text("Address", 140, 150)
+      .text("Phone", 250, 150)
+      .text("Email", 350, 150)
+      .text("Unit", 470, 150)
+      .moveDown(1);
+
+    // Add each owner data in the table
+    let yPosition = 170;
+    for (let i = 0; i < owners.length; i++) {
+      const owner = owners[i];
+      const name = owner.name; // Owner's name
+      const address = owner.address; // Owner's address
+      const phone = owner.phone; // Owner's phone
+      const email = owner.email; // Owner's email
+      const unit = owner.unit; // Unit
+
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text(name, 20, yPosition)
+        .text(address, 140, yPosition)
+        .text(phone, 250, yPosition)
+        .text(email, 350, yPosition)
+        .text(unit, 470, yPosition);
+
+      yPosition += 20; // Move down for the next row
+
+      // If we're getting close to the end of the page, add a new page
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset y-position for the new page
+      }
+    }
+
+    // Combine data for QR Code (combine the data of all owners)
+    const qrData = {
+      owners: owners.map(owner => ({
+        name: owner.name,
+        address: owner.address,
+        phone: owner.phone,
+        email: owner.email,
+        unit: owner.unit,
+      }))
+    };
+
+    // Generate a single QR Code for all owners combined
+    const qrCodePath = `${outputDir}combined-qr.png`;
+    await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save the combined QR code to file
+
+    // Add text before QR code and center the QR code
+    let qrYPosition = yPosition + 20; // Adjust QR code placement after table
+
+    // Centered QR code
+    const qrSize = 150; // Define the size of the QR code
+    const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
+
+    doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
+
+    doc.end(); // Finalize the PDF
+
+    // Send the file for download
+    writeStream.on("finish", () => {
+      res.download(filePath, `owners.pdf`, (err) => {
+        if (err) {
+          console.error("Error sending PDF:", err);
+        }
+        // Clean up the generated PDF file
+        fs.unlinkSync(filePath);
+      });
+    });
+
+    // Clean up the QR code file after use
+    fs.unlinkSync(qrCodePath);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).send("An error occurred while generating the PDF.");
+  }
+};
+
 
 
 
 
 router.get("/propertyinformation",generatePropertyPDF )
 router.get("/commiti",generatePropertyPDFcommiti )
+router.get("/units", generateUnitsPDF);
+router.get("/owner", generateOwnersPDF);
 
 module.exports = router;
 

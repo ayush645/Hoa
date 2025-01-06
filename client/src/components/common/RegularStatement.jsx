@@ -12,7 +12,7 @@ function RegularStatement() {
   useEffect(() => {
     const fetchIncomeLogs = async () => {
       try {
-        const response = await fetch('https://propertymanagment.onrender.com/api/v1/income/all/get');
+        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/income/all/get`);
         if (!response.ok) {
           throw new Error('Failed to fetch income logs');
         }

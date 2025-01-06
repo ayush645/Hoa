@@ -14,7 +14,7 @@ function BothExcepational() {
         // Fetching data using axios
         const fetchData = async () => {
           try {
-            const response = await axios.get('https://propertymanagment.onrender.com/get-budget-data');
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-budget-data`);
             // Set the data to state
             console.log(response.data.data)
             setBudgetData(response.data.data);

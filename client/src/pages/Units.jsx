@@ -82,10 +82,10 @@ const Units = () => {
             Go to Home
           </button>
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "Add Property Information"}
+            {showForm ? "Cancel" : "Add units Information"}
           </button>
           <button onClick={() => window.print()} className="button-85">
-            Print Property
+            Print Units
           </button>
         </div>
 

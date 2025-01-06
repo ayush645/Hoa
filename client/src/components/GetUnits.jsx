@@ -21,7 +21,7 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
   return (
     <div className="property-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
-        Property Information
+        Units Information
       </h2>
 
       <div className="overflow-x-auto">

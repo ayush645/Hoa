@@ -55,7 +55,7 @@ const ImageUploaderWithCrop = ({ setImageData, selectedImage, setSelectedImage }
 
     try {
       const response = await axios.post(
-        "https://propertymanagment.onrender.com/api/v1/image/upload",
+        `${process.env.REACT_APP_BASE_URL}/image/upload`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

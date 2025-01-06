@@ -25,7 +25,7 @@ const PrintInformation = () => {
   const handlePrint = async () => {
     try {
       const response = await axios.get(
-        `https://propertymanagment.onrender.com/api/v1/print/propertyinformation`,
+        `${process.env.REACT_APP_BASE_URL}/print/propertyinformation`,
         {
           responseType: "blob", // Important for handling binary data
         }
