@@ -45,7 +45,7 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
   }
 
   return (
-    <div className="property-info-container p-6 min-h-screen">
+    <div className="property-info-container p-6  max-h-[80vh]   ">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         Property Information
       </h2>
@@ -105,7 +105,7 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
                   {property?.type || "N/A"}
                 </td>
                 <td className="px-4 py-2 text-gray-800">
-                  ₹{property?.amount || "N/A"}
+                  {property?.amount || "N/A"}
                 </td>
                 <td className="px-4 py-2 text-gray-800">
                   {new Date(property?.createdAt).toLocaleDateString()}{" "}
@@ -128,7 +128,7 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
 
       {/* Total Amount */}
       <div className="mt-4 text-white text-center font-semibold">
-        <p>Total Amount: ₹{totalAmount}</p>
+        <p>Total Amount: {totalAmount}</p>
       </div>
     </div>
   );

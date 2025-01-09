@@ -32,7 +32,7 @@ const Owner = () => {
       phone,
       email,
       unit,
-      ownershipTitle,
+
 
       categoryId: id,
     };
@@ -45,7 +45,7 @@ const Owner = () => {
       setPhone("");
       setEmail("");
       setUnit("");
-      setOwnershipTitle("");
+  
       setShowForm(false);
       fetchOwner();
     }
@@ -145,13 +145,7 @@ const Owner = () => {
               onChange={(e) => setName(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
-            <input
-              type="text"
-              placeholder="Ownership Title name"
-              value={ownershipTitle}
-              onChange={(e) => setOwnershipTitle(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
+         
             <input
               type="text"
               placeholder="Enter Address"

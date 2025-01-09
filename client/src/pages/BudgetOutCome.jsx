@@ -8,6 +8,8 @@ import {
   getAllBudgetOutcomeApi,
 } from "../services/operation/function";
 import GetBudgetOutCome from "../components/GetBudgetOutCome";
+import ImageUploaderWithCrop from "../components/common/ImageUpload";
+import ExpeptionalReports from "../components/Report/ExpeptionalReports";
 
 const BudgetOutCome = () => {
   const [type, setType] = useState("");
@@ -17,6 +19,8 @@ const BudgetOutCome = () => {
   const [loading, setLoading] = useState(true);
   const [totalAmountOut, setTotalAmountOut] = useState(0);
   const [totalAmountincome, setTotalAmountIncome] = useState(0);
+ const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+  const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
 
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
@@ -26,13 +30,14 @@ const BudgetOutCome = () => {
       type,
       amount,
       categoryId: id, // Using categoryId directly from the URL
+      document:imageData
     };
     const availableBalance = totalAmountincome - totalAmountOut;
 
     if (amount > totalAmountincome - totalAmountOut) {
       Swal.fire({
         title: "Error!",
-        text: `The amount exceeds the available balance of ₹${availableBalance.toFixed(
+        text: `The amount exceeds the available balance of ${availableBalance.toFixed(
           2
         )}.`,
         icon: "error",
@@ -150,6 +155,12 @@ const BudgetOutCome = () => {
               onChange={(e) => setAmount(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
+            <ImageUploaderWithCrop
+                setImageData={setImageData}
+                setSelectedImage={setSelectedImage}
+                selectedImage={selectedImage}
+                title="Upload Document"
+              />
 
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">
@@ -165,6 +176,8 @@ const BudgetOutCome = () => {
         loading={loading}
         onDelete={handleDelete}
       />
+
+      <ExpeptionalReports type={'outcome'} />
     </div>
   );
 };

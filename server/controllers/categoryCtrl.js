@@ -12,6 +12,10 @@ const mongoose = require("mongoose");
 
 const createCategory = async (req, res) => {
   const { name } = req.body;
+
+  console.log(name)
+
+  
   try {
     const newCategory = new Category({
       name,

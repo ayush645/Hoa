@@ -45,7 +45,7 @@ const createBudgetIncomeCtrl = async (req, res) => {
 const updateBudgetIncomeCtrl = async (req, res) => {
   const { id } = req.params; // Get the ID from the URL params
   const {
-    propertyData: { name, amount, categoryId, document },
+    propertyData: { name, amount,  document },
   } = req.body;
   console.log(req.body)
   
@@ -76,7 +76,7 @@ const updateBudgetIncomeCtrl = async (req, res) => {
     // Add to the update log
     property.updateLog.push({
       date: Date.now(),
-      amount: amount,
+      ammount: amount,
       operation: `${name} Budget Income updated`,
     });
 

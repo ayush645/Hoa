@@ -1,15 +1,35 @@
 const budgetModel = require("../models/budgetModel");
 const budgetIncomeModel = require("../models/budgetIncomeModel")
 const budgetOutcomeModel = require("../models/budgetOutcomeModel")
+const ownerModel = require("../models/ownerModel");
 
 const createbudget = async (req, res) => {
   const { name } = req.body;
+  const CateId = name.id
+  console.log(CateId)
+const income = await ownerModel.find({categoryId:CateId})
+
+
+  
+  
   try {
     const newCategory = new budgetModel({
-      name,
-
+        name:name.name,
+        serachUpdateId:CateId
     });
+
+    
     await newCategory.save();
+
+    const result = await Promise.all(
+      income.map(async (owner) => {
+        return await budgetIncomeModel.create({
+          name: owner.name,
+          amount: 0,
+          categoryId:newCategory._id,
+        });
+      })
+    );
     res
       .status(201)
       .json({

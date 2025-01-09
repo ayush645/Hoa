@@ -4,14 +4,15 @@ import {
   getAllBudgetApi,
 } from "../services/operation/function";
 import GetBudget from "../components/GetBudget";
+import { useParams } from "react-router-dom";
 
 const Budget = () => {
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [document, setDocument] = useState({ publicId: "", url: "" }); // State to store only public_id and url
-
+ const {id} = useParams()
   const fetchBudget = async () => {
+ 
     try {
       const categoryList = await getAllBudgetApi();
       setCategories(categoryList || []);
@@ -27,7 +28,7 @@ const Budget = () => {
     }
 
     try {
-      const response = await createBudgetApi(name);
+      const response = await createBudgetApi({name,id});
       if (response) {
         setName("");
         setShowForm(false);
@@ -50,7 +51,7 @@ const Budget = () => {
         // } text-white px-6 py-2 rounded-lg mb-6 hover:opacity-90`}
         onClick={() => setShowForm(!showForm)}
       >
-        {showForm ? "Cancel" : "Add Property "}
+        {showForm ? "Cancel" : "Add Budget "}
       </button>
 
       <br />
@@ -69,7 +70,8 @@ const Budget = () => {
               // className="bg-green-500 text-white px-6 py-2 rounded-lg w-full hover:bg-green-600"
               className="button-85"
             >
-              Create Property
+              Create Budget
+              
             </button>
           </div>
         </div>

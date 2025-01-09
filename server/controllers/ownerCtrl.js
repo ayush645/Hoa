@@ -1,16 +1,35 @@
 const ownerModel = require("../models/ownerModel");
 const Income = require("../models/Income");
+const budgetIncomeModel = require("../models/budgetIncomeModel");
+const budgetModel = require("../models/budgetModel");
+
 
 const createOwnerCtrl = async (req, res) => {
     const {
-        propertyData: { name, address, phone, email, unit, categoryId, ownershipTitle },
+        propertyData: { name, address, phone, email, unit, categoryId },
     } = req.body;
 
-    console.log(req.body);
+
+
+    const bugdetOwner = await budgetModel.find({serachUpdateId:categoryId})
+console.log(bugdetOwner)
+
+
+if(bugdetOwner){
+    const result = await Promise.all(
+        bugdetOwner.map(async (owner) => {
+          return await budgetIncomeModel.create({
+            name: name,
+            amount: 0,
+            categoryId:owner._id,
+          });
+        })
+      );
+}
 
     try {
         // Validate required fields
-        if (!name || !address || !phone || !email || !unit || !ownershipTitle) {
+        if (!name || !address || !phone || !email || !unit ) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all required fields",
@@ -25,6 +44,12 @@ const createOwnerCtrl = async (req, res) => {
             });
         }
 
+        const generateUnitCode = () => {
+            const randomNumber = Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit number
+            return randomNumber.toString();  // Convert to string
+        };
+
+        const code = generateUnitCode()
         // Create owner entry
         const owner = await ownerModel.create({
             name,
@@ -34,7 +59,7 @@ const createOwnerCtrl = async (req, res) => {
             unitDetails: unit, // Full unit object
             unit: unit.type, // Only the unit type
             categoryId,
-            ownershipTitle,
+            ownershipTitle : code,
         });
 
         // Create income entry
@@ -44,6 +69,9 @@ const createOwnerCtrl = async (req, res) => {
             contribution: unit.fee,
         });
 
+
+
+  
         console.log("Owner and income created successfully");
 
         // Respond with success

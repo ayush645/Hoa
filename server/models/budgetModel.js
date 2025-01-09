@@ -6,6 +6,10 @@ const budgetSchema = new Schema({
     type: String,
     required: true,
   },
+  serachUpdateId: {
+    type: String,
+    required: true,
+  },
 });
 
 const budget = mongoose.model('Budget', budgetSchema);

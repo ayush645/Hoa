@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash,FaEdit  } from "react-icons/fa";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import ImageUploaderWithCrop from "./common/ImageUpload";
 import { updateBudgetIncomeApi } from "../services/operation/function";
-import { MdClose } from 'react-icons/md'; // Import React Icon
+import { MdClose } from "react-icons/md"; // Import React Icon
 
-const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id }) => {
+const GetBudgetIncome = ({
+  propertyData,
+  loading,
+  onDelete,
+  fetchBudgetIncome,
+  id,
+}) => {
   const [filteredData, setFilteredData] = useState(propertyData);
   const [selectedYear, setSelectedYear] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
 
-
-    const [name, setName] = useState("");
-    const [amount, setAmount] = useState("");
-    const [showForm, setShowForm] = useState(false);
-    const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
-    const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
-  const[seletedId,setSeletedId] = useState(null)
-
+  const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+  const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
+  const [seletedId, setSeletedId] = useState(null);
 
   useEffect(() => {
     const total = filteredData.reduce(
@@ -25,8 +29,6 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
     );
     setTotalAmount(total);
   }, [filteredData]);
-
-
 
   useEffect(() => {
     // Filter data by year
@@ -44,10 +46,10 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
   const editHandle = async (id) => {
     setSeletedId(id);
     console.log(id);
-  
+
     // Filter the propertyData to find the matching item
     const selectedData = propertyData.find((item) => item._id === id);
-    console.log(selectedData)
+    console.log(selectedData);
     if (selectedData) {
       // Set the form fields with the data from the selected item
       setName(selectedData.name);
@@ -58,24 +60,23 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
       console.log("Item not found!");
     }
   };
-  
 
-    const handleSubmit = async () => {
-      const propertyData = {
-        name,
-        amount,
-        document:imageData
-      };
-  
-      const success = await updateBudgetIncomeApi(propertyData,seletedId);
-  
-      if (success) {
-        // setName("");
-        // setAmount("");
-        // setShowForm(false);
-        // fetchBudgetIncome();
-      }
+  const handleSubmit = async () => {
+    const propertyData = {
+      name,
+      amount,
+      document: imageData,
     };
+
+    const success = await updateBudgetIncomeApi(propertyData, seletedId);
+
+    if (success) {
+      // setName("");
+      // setAmount("");
+      // setShowForm(false);
+      // fetchBudgetIncome();
+    }
+  };
   if (loading) {
     return (
       <p className="text-center text-gray-500 text-lg font-semibold">
@@ -134,6 +135,9 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Contribution
               </th>
+              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                Date & Time
+              </th>
 
               <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                 Actions
@@ -153,34 +157,25 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
                 <td className="px-4 py-2 text-gray-800">
                   {property?.amount || "N/A"}
                 </td>
-
+                <td className="px-4 py-2 text-gray-800">
+                  {new Date(property?.createdAt).toLocaleDateString()}{" "}
+                  {new Date(property?.createdAt).toLocaleTimeString()}
+                </td>
                 <td className="px-4 py-2 text-center">
-                  <button
+                  {/* <button
                     onClick={() => onDelete(property._id)}
                     className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
                     title="Delete Property"
                   >
                     <FaTrash size={16} />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => editHandle(property._id)}
                     className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
                     title="Edit Budget"
                   >
-                    <FaEdit  size={16} />
+                    <FaEdit size={16} />
                   </button>
-                  {property.document?.url ? (
-                    <a
-                      href={property.document.url}
-                      download
-                      className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 focus:outline-none"
-                      title="Download Document"
-                    >
-                      Download
-                    </a>
-                  ) : (
-                    "No Document"
-                  )}
                 </td>
               </tr>
             ))}
@@ -194,46 +189,43 @@ const GetBudgetIncome = ({ propertyData, loading, onDelete,fetchBudgetIncome,id 
       </div>
 
       {showForm && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[80vh] overflow-y-auto">
-      <input
-        type="text"
-        placeholder="Enter Owner Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="border p-2 w-full mb-4 rounded-lg"
-      />
-      <input
-        type="number"
-        placeholder="Enter Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        className="border p-2 w-full mb-4 rounded-lg"
-      />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+            <input
+              type="text"
+              placeholder="Enter Owner Name"
+              value={name}
+              disabled
+              onChange={(e) => setName(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="number"
+              placeholder="Enter Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
 
-      <ImageUploaderWithCrop
-        setImageData={setImageData}
-        setSelectedImage={setSelectedImage}
-        selectedImage={selectedImage}
-        title="Upload Document"
-      />
+            <div className="flex justify-center items-center">
+              <button onClick={handleSubmit} className="button-85">
+                Update Budget Income
+              </button>
+            </div>
 
-      <div className="flex justify-center items-center">
-        <button onClick={handleSubmit} className="button-85">
-          Update Budget Income
-        </button>
-      </div>
-
-      {/* Close button using React Icon */}
-      <button 
-        onClick={() => setShowForm(false)} 
-        className="absolute top-2 right-2 text-white hover:text-red-500 bg-red-500 rounded-full">
-        <MdClose size={24} />
-      </button>
+            {/* Close button using React Icon */}
+            <button
+              onClick={() => setShowForm(false)}
+              className="absolute top-2 right-2 text-white hover:text-red-500 bg-red-500 rounded-full"
+            >
+              <MdClose size={24} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    </div>
+
+    
   );
 };
 

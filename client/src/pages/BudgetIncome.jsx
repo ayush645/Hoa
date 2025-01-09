@@ -8,6 +8,7 @@ import {
 } from "../services/operation/function";
 import GetBudgetIncome from "../components/GetBudgetIncome";
 import ImageUploaderWithCrop from "../components/common/ImageUpload";
+import ExpeptionalReports from "../components/Report/ExpeptionalReports";
 
 const BudgetIncome = () => {
   const [name, setName] = useState("");
@@ -77,15 +78,15 @@ const BudgetIncome = () => {
   }, [id]); // Re-fetch outcomes whenever the category ID changes
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="p-6 max-h-[80vh]">
       <div className="property-page flex flex-col items-center mb-6">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
           <button onClick={() => navigate("/")} className="button-85">
             Go to Home
           </button>
-          <button className="button-85" onClick={() => setShowForm(!showForm)}>
+          {/* <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Budget Income"}
-          </button>
+          </button> */}
           <button onClick={() => window.print()} className="button-85">
             Print Outcome
           </button>
@@ -131,6 +132,10 @@ const BudgetIncome = () => {
         fetchBudgetIncome={fetchBudgetIncome}
         id={id}
       />
+
+
+      <ExpeptionalReports
+      type="income" />
     </div>
   );
 };

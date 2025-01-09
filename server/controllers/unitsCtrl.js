@@ -2,9 +2,14 @@ const unitsModel = require("../models/unitsModel");
 
 const createUnitsCtrl = async (req, res) => {
     const {
-        propertyData: { type, fee, categoryId,currency },
+        propertyData: { type, fee, categoryId, currency },
     } = req.body;
 
+    // Function to generate a 6-digit unique unitCode
+    const generateUnitCode = () => {
+        const randomNumber = Math.floor(100000 + Math.random() * 900000); // Generates a 6-digit number
+        return randomNumber.toString();  // Convert to string
+    };
 
     try {
         if (!type || !fee || !currency) {
@@ -14,8 +19,14 @@ const createUnitsCtrl = async (req, res) => {
             });
         }
 
+        const unitCode = generateUnitCode();  // Generate unique 6-digit unitCode
+
         const property = await unitsModel.create({
-            type, fee, categoryId,currency
+            type,
+            fee,
+            categoryId,
+            currency,
+            unitCode,  // Store generated unitCode
         });
 
         return res.status(201).json({
@@ -31,6 +42,8 @@ const createUnitsCtrl = async (req, res) => {
         });
     }
 };
+
+
 
 
 const deleteUnitsCtrl = async (req, res) => {

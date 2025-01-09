@@ -2,9 +2,11 @@ const budgetoutcomeModle = require("../models/budgetOutcomeModel");
 
 const createbudgetOutComeCtrl = async (req, res) => {
   const {
-    propertyData: { type, amount, categoryId },
+    propertyData: { type, amount, categoryId, document },
   } = req.body;
 
+  console.log(document)
+  
   try {
     if (!type || !amount) {
       return res.status(400).json({
@@ -17,10 +19,11 @@ const createbudgetOutComeCtrl = async (req, res) => {
       type,
       amount,
       categoryId,
+      document,
       updateLog: [
         {
           date: Date.now(),
-          amount:amount,
+          ammount:amount,
           operation: `${type} - Expense`,
         },
       ],

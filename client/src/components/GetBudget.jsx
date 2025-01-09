@@ -37,7 +37,7 @@ const GetBudget = ({ categories, setCategories }) => {
   return (
     <div className="p-6 w-full ">
       <h1 className="text-2xl font-bold text-white mb-6 text-center">
-        Property Management
+      Exceptional Budget
       </h1>
 
       {editCategory && (
