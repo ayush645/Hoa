@@ -8,6 +8,7 @@
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.9",
+    "flag-icon-css": "^4.1.7",
     "iban": "^0.0.14",
     "react": "^18.3.1",
     "react-cropper": "^2.3.3",

@@ -6,6 +6,7 @@ import {
 } from "../services/operation/function";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 const GetOutCome = ({ propertyData, loading, onDelete, id,totalIncome,fetchIncomeMain ,fetchOutMain}) => {
   const [yearFilter, setYearFilter] = useState("");
@@ -61,9 +62,45 @@ const [selectownerName, setSelectOwnerName] = useState("");
   });
 
   const handleMonthClick = (incomeId, month) => {
+
+    const monthMap = {
+      January: 0,
+      February: 1,
+      March: 2,
+      April: 3,
+      May: 4,
+      June: 5,
+      July: 6,
+      August: 7,
+      September: 8,
+      October: 9,
+      November: 10,
+      December: 11,
+    };
+  
+    const numericMonth = monthMap[month];
+    if (numericMonth === undefined) {
+      alert("Invalid month selected.");
+      return;
+    }
+  
+    const currentMonth = new Date().getMonth();
+    console.log("Current Month (0-11):", currentMonth);
+    console.log("Selected Month (0-11):", numericMonth);
+  
+    if (numericMonth > currentMonth) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Selection',
+        text: 'The selected month cannot be greater than the current month.',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+    
     setSelectedIncomeId(incomeId);
     setSelectedMonth(month);
-
+console.log(month)
     const selectedIncome = filteredData.find(
       (income) => income._id === incomeId
     );

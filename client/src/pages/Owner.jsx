@@ -5,6 +5,7 @@ import {
   handleCreateOwnerAPi,
   deleteOwnerApi,
   getAllOwnerApi,
+  getAllUnitsApi,
 } from "../services/operation/function";
 import GetOwner from "../components/GetOwner";
 
@@ -13,11 +14,13 @@ const Owner = () => {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [unit, setUnit] = useState("");
+  const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
+  const [ownershipTitle, setOwnershipTitle] = useState("");
 
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [unitsData,setUnitsData] = useState([])
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -29,6 +32,7 @@ const Owner = () => {
       phone,
       email,
       unit,
+      ownershipTitle,
 
       categoryId: id,
     };
@@ -41,11 +45,27 @@ const Owner = () => {
       setPhone("");
       setEmail("");
       setUnit("");
-
+      setOwnershipTitle("");
       setShowForm(false);
       fetchOwner();
     }
   };
+
+
+    const fetchUnits = async () => {
+      if (!id) return;
+  
+      try {
+        setLoading(true);
+        const data = await getAllUnitsApi(id);
+        console.log(data)
+        setUnitsData(data);
+      } catch (error) {
+        console.error("Error fetching property information:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const fetchOwner = async () => {
     if (!id) return;
@@ -82,7 +102,24 @@ const Owner = () => {
 
   useEffect(() => {
     fetchOwner();
+    fetchUnits()
   }, [id]);
+
+  const handleUnitChange = (e) => {
+    const selectedUnit = unitsData.find(
+      (unitData) => unitData.type === e.target.value
+    );
+    if (selectedUnit) {
+      setUnit({
+        type: selectedUnit.type,
+        currency: selectedUnit.currency,
+        fee: selectedUnit.fee,
+      });
+    } else {
+      setUnit({ type: "", currency: "", fee: "" });
+    }
+  };
+
 
   return (
     <div className="p-6 min-h-screen">
@@ -110,6 +147,13 @@ const Owner = () => {
             />
             <input
               type="text"
+              placeholder="Ownership Title name"
+              value={ownershipTitle}
+              onChange={(e) => setOwnershipTitle(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="text"
               placeholder="Enter Address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
@@ -129,13 +173,22 @@ const Owner = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
-            <input
-              type="text"
-              placeholder="Enter Unit"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
+         <label htmlFor="unit" className="block mb-2">
+        Select Unit
+      </label>
+      <select
+        id="unit"
+        value={unit.type}
+        onChange={handleUnitChange}
+        className="border p-2 w-full rounded-lg"
+      >
+        <option value="">Select a unit</option>
+        {unitsData.map((unitData) => (
+          <option key={unitData._id} value={unitData.type}>
+            {unitData.type} - {unitData.currency} {unitData.fee}
+          </option>
+        ))}
+      </select>
 
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">

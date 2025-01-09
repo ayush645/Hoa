@@ -9,7 +9,7 @@ const createIncomeCtrl = async (req, res) => {
         contribution
 
     } = req.body;
-
+console.log(months)
     try {
         // Validate required fields
         if (!ownerName) {
@@ -21,7 +21,8 @@ const createIncomeCtrl = async (req, res) => {
 
         // Calculate totalAmount from months
         const totalAmount = Object.values(months).reduce((acc, curr) => acc + (curr || 0), 0);
-
+console.log(totalAmount)
+        
         // Create the income entry
         const income = await incomeModel.create({
             ownerName,
@@ -69,8 +70,9 @@ const deleteIncomeCtrl = async (req, res) => {
 const getAllIncomeCtrl = async (req, res) => {
     const { id } = req.params;
     try {
-        const properties = await incomeModel.find({ categoryId: id });
+        const properties = await incomeModel.find({ categoryId: id }).sort({ createdAt: -1 });
 
+        console.log(properties)
         res.json({
             success: true,
             properties,
@@ -84,6 +86,7 @@ const getAllIncomeCtrl = async (req, res) => {
         });
     }
 };
+
 const getIncomeCtrl = async (req, res) => {
     try {
         const properties = await incomeModel.find();

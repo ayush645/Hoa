@@ -101,9 +101,9 @@ const Income = () => {
           <button onClick={() => navigate("/")} className="button-85">
             Go to Home
           </button>
-          <button className="button-85" onClick={() => setShowForm(!showForm)}>
+          {/* <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Income"}
-          </button>
+          </button> */}
           <button onClick={() => window.print()} className="button-85">
             Print Income
           </button>

@@ -6,6 +6,10 @@ const ownerSchema = new Schema({
         type: String,
         required: true,
     },
+    ownershipTitle: {
+        type: String,
+        required: true,
+    },
     address: {
         type: String,
         required: true,
@@ -20,7 +24,21 @@ const ownerSchema = new Schema({
     },
     unit: {
         type: String,
-        required: true,
+       
+    },
+    unitDetails: {
+        type: {
+            type: String, 
+            required: true,
+        },
+        currency: {
+            type: String, 
+            required: true,
+        },
+        fee: {
+            type: Number, 
+            required: true,
+        },
     },
 
     categoryId: {

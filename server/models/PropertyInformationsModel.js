@@ -8,15 +8,15 @@ const PropertyInformationsSchema = new Schema({
     },
     pAddress: {
         type: String,
-        required: true,
+       
     },
     pLocation: {
         type: String,
-        required: true,
+  
     },
     ownerTitle: {
         type: String,
-        required: true,
+      
     },
     images: [
         {
@@ -26,7 +26,7 @@ const PropertyInformationsSchema = new Schema({
     ],
     numberOfunits: {
         type: String,
-        required: true,
+       
     },
     logo: {
         type: Object,

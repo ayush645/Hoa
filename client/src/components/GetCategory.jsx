@@ -3,22 +3,40 @@ import { FaEdit, FaTrash, FaTools } from "react-icons/fa";
 import EditCategoryModal from "./EditCategoryModal";
 import { deleteCategoryApi } from "../services/operation/function";
 import { useNavigate } from "react-router-dom"; // Import for navigation
+import Swal from 'sweetalert2';
 
-const GetCategory = ({ categories, setCategories }) => {
+const GetCategory = ({ categories, setCategories ,fetchCategories}) => {
   const [editCategory, setEditCategory] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const navigate = useNavigate();
 
+
   const handleDelete = async (id) => {
     try {
-      const response = await deleteCategoryApi(id);
-      if (response) {
-        setCategories(categories.filter((item) => item._id !== id));
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      });
+  
+      if (result.isConfirmed) {
+        const response = await deleteCategoryApi(id);
+        if (response) {
+          fetchCategories()
+          setCategories(categories.filter((item) => item._id !== id));
+          Swal.fire('Deleted!', 'Your Property has been deleted.', 'success');
+        }
       }
     } catch (error) {
-      console.error("Error deleting category:", error.message);
+      console.error('Error deleting Property:', error.message);
+      Swal.fire('Error!', 'Failed to delete the Property.', 'error');
     }
   };
+  
 
   const handleEdit = (category) => {
     setEditCategory(category);
@@ -80,12 +98,12 @@ const GetCategory = ({ categories, setCategories }) => {
                   <td className="px-6 py-3">{index + 1}</td>
                   <td className="px-6 py-3">{category.name}</td>
                   <td className="px-6 py-3 text-center flex justify-center space-x-4">
-                    <button
+                    {/* <button
                       onClick={() => handleEdit(category)}
                       className="text-blue-500 hover:text-blue-600 text-lg"
                     >
                       <FaEdit />
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleDelete(category._id)}
                       className="text-red-500 hover:text-red-600 text-lg"

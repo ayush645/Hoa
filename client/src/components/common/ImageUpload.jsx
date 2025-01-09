@@ -4,7 +4,7 @@ import "cropperjs/dist/cropper.css";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const ImageUploaderWithCrop = ({ setImageData, selectedImage, setSelectedImage }) => {
+const ImageUploaderWithCrop = ({ setImageData, selectedImage, setSelectedImage,title="Upload Your Company Logo" ,id="dropzone-file" }) => {
   const [cropper, setCropper] = useState(null);
 
   const handlePhotoFileSelect = (event) => {
@@ -109,7 +109,7 @@ const ImageUploaderWithCrop = ({ setImageData, selectedImage, setSelectedImage }
             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
           />
         </svg>
-        <span className="mt-2 text-sm text-gray-500">Upload Your Company Logo</span>
+        <span className="mt-2 text-sm text-gray-500">{title}</span>
       </label>
 
       {selectedImage && (

@@ -6,6 +6,7 @@ const ownerModel = require("../models/ownerModel")
 const outcomeModel = require("../models/outcomeModel")
 const incomeModel = require("../models/Income");
 const budgetModel = require("../models/budgetModel");
+const PropertyModel = require("../models/PropertyInformationsModel");
 
 const mongoose = require("mongoose");
 
@@ -16,6 +17,13 @@ const createCategory = async (req, res) => {
       name,
 
     });
+    const property = new PropertyModel({
+      pName: name,
+      categoryId:newCategory._id
+
+    });
+
+    await property.save();
     await newCategory.save();
     res
       .status(201)

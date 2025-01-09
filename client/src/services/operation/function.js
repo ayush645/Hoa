@@ -31,7 +31,7 @@ const {
     GET_ALL_BUDGET,
     UPDATE_BUDGET,
 
-
+    UPDATE_BUDGET_INCOME,
     CREATE_BUDGET_INCOME,
     DELETE_BUDGET_INCOME,
     GET_ALL_BUDGET_INCOME,
@@ -217,7 +217,7 @@ export const imageUpload = async (data) => {
 };
 
 
-export async function handleCreatePropertyInforamtionAPi(propertyData) {
+export async function handleUpdatePropertyInforamtionAPi(propertyData,id) {
     // Show loading alert
     Swal.fire({
         title: "Creating Property Information...",
@@ -232,7 +232,7 @@ export async function handleCreatePropertyInforamtionAPi(propertyData) {
 
     try {
         // Send POST request with propertyData
-        const response = await apiConnector("POST", CREATE_PROPERTY_INFORMATION, { propertyData });
+        const response = await apiConnector("PUT", `${CREATE_PROPERTY_INFORMATION}/${id}`, { propertyData });
 
         // Close the loading alert
         Swal.close();
@@ -1150,6 +1150,53 @@ export async function CreateBudgetIncomeAPi(propertyData) {
         console.error("CREATE PROPERTY ERROR:", error);
         Swal.fire({
             title: "Failed to Create Property Information",
+            text: error.response?.data?.message || "Something went wrong, please try again later.",
+            icon: "error",
+        });
+        throw error; // Re-throw the error for further handling if necessary
+    }
+}
+export async function updateBudgetIncomeApi(propertyData,id) {
+    // Show loading alert
+    Swal.fire({
+        title: "Update Budget Income Information...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        const response = await apiConnector("PUT", `${UPDATE_BUDGET_INCOME}/${id}`, { propertyData });
+
+        Swal.close();
+
+        if (!response?.data?.success) {
+            await Swal.fire({
+                title: "Budget Income Update Failed",
+                text: response.data.message || "Failed to Update property outcome.",
+                icon: "error",
+            });
+            throw new Error(response.data.message);
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Success!",
+            text: response.data.message || "Property outcome has been Updated.",
+            icon: "success",
+        });
+
+        // Return the created property data (optional)
+        return response.data.property;
+    } catch (error) {
+        // Handle errors and show error message
+        console.error("Update PROPERTY ERROR:", error);
+        Swal.fire({
+            title: "Failed to Update Property Information",
             text: error.response?.data?.message || "Something went wrong, please try again later.",
             icon: "error",
         });

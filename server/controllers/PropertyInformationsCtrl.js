@@ -1,4 +1,5 @@
 const PropertyModel = require("../models/PropertyInformationsModel");
+const Category = require("../models/categoryModel");
 
 const createPropertyInformationCtrl = async (req, res) => {
     const {
@@ -45,6 +46,83 @@ const createPropertyInformationCtrl = async (req, res) => {
 };
 
 
+const updatePropertyInformationCtrl = async (req, res) => {
+    try {
+        const { propertyId } = req.params; // Get the property ID from the request parameters
+       
+        const {
+            pName,
+            pAddress,
+            pLocation,
+            ownerTitle,
+            images,
+            numberOfunits,
+            categoryId,
+            logo,
+        } = req.body.propertyData; // Fields to update
+
+   
+        // Check if propertyId is provided
+        if (!propertyId) {
+            return res.status(400).json({
+                success: false,
+                message: "Property ID is required.",
+            });
+        }
+
+        // Find the property to update
+        const property = await PropertyModel.findById(propertyId);
+
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: "Property not found.",
+            });
+        }
+
+        // Parse images if it's a string and it's not empty
+        let imagesArray = [];
+        if (images && images !== '[]') {
+            imagesArray = typeof images === "string" ? JSON.parse(images) : images;
+        }
+
+        // Update the property fields (only the ones provided)
+        if (pName) property.pName = pName;
+        if (pAddress) property.pAddress = pAddress;
+        if (pLocation) property.pLocation = pLocation;
+        if (ownerTitle) property.ownerTitle = ownerTitle;
+        if (imagesArray.length > 0) property.images = imagesArray;
+        if (numberOfunits) property.numberOfunits = numberOfunits;
+        if (categoryId) property.categoryId = categoryId;
+        if (logo) property.logo = logo;
+
+        // Save the updated property
+       const propertyDetails = await property.save();
+        const catId = propertyDetails.categoryId
+
+        const category = await Category.findByIdAndUpdate(
+            catId,
+            { name: pName }, // Correctly pass the update data as an object
+            { new: true } // Optionally, add `{ new: true }` to return the updated document
+        );
+        
+
+        // Success response
+        return res.status(200).json({
+            success: true,
+            message: "Property information updated successfully!",
+            property,
+        });
+    } catch (error) {
+        console.error("Error updating property information:", error); // Improved error log
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while updating property information.",
+        });
+    }
+};
+
+
 const deletePropertyCtrl = async (req, res) => {
     const { id } = req.params;
     try {
@@ -62,6 +140,20 @@ const deletePropertyCtrl = async (req, res) => {
     }
 };
 
+const getPropertyById = async(req,res)=>{
+    try {
+        const {id} = req.params
+        const property = await PropertyModel.findById(id)
+        return res.status(200).json({
+            success: true,
+            message: "Property information get successfully!",
+            property,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        
+    }
+}
 
 
 const getAllPropertyInformationCtrl = async (req, res) => {
@@ -122,5 +214,7 @@ module.exports = {
     createPropertyInformationCtrl,
     getAllPropertyInformationCtrl,
     deletePropertyCtrl,
-    getPropertyInformationCtrl
+    getPropertyInformationCtrl,
+    updatePropertyInformationCtrl,
+    getPropertyById
 };

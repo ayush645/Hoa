@@ -3,7 +3,7 @@ import Dropzone from "react-dropzone";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
-  handleCreatePropertyInforamtionAPi,
+  handleUpdatePropertyInforamtionAPi,
   imageUpload,
   getAllPropertyInformationApi,
   deletePropertyInformationApi, // Import the delete API function
@@ -52,15 +52,14 @@ const PropertyInformation = () => {
       pLocation,
       ownerTitle,
       images: JSON.stringify(images),
-      logo:imageData,
+      logo: imageData,
       numberOfunits,
       categoryId: id,
     };
 
-    const success = await handleCreatePropertyInforamtionAPi(propertyData);
+    const success = await handleUpdatePropertyInforamtionAPi(propertyData);
 
     if (success) {
-      
       setPName("");
       setPAddress("");
       setPLocation("");
@@ -107,6 +106,8 @@ const PropertyInformation = () => {
     }
   };
 
+
+ 
   useEffect(() => {
     fetchPropertyInformation();
   }, [id]);
@@ -122,15 +123,7 @@ const PropertyInformation = () => {
           >
             Go to Home
           </button>
-          <button
-            // className={`${
-            //   showForm ? "bg-red-500" : "bg-blue-500"
-            // } text-white px-6 py-2 rounded-lg hover:opacity-90`}
-            className="button-85"
-            onClick={() => setShowForm(!showForm)}
-          >
-            {showForm ? "Cancel" : "Add Property Information"}
-          </button>
+       
           <button
             onClick={() => window.print()}
             // className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
@@ -141,89 +134,113 @@ const PropertyInformation = () => {
         </div>
 
         {showForm && (
-          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl">
-            <input
-              type="text"
-              placeholder="Enter property name"
-              value={pName}
-              onChange={(e) => setPName(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Enter property address"
-              value={pAddress}
-              onChange={(e) => setPAddress(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Enter property location"
-              value={pLocation}
-              onChange={(e) => setPLocation(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Enter ownership title"
-              value={ownerTitle}
-              onChange={(e) => setOwnerTitle(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-            <input
-              type="number"
-              placeholder="Enter number of units"
-              value={numberOfunits}
-              onChange={(e) => setNumberOfUnits(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-
-            <Dropzone onDrop={uploadImage}>
-              {({ getRootProps, getInputProps }) => (
-                <div
-                  {...getRootProps()}
-                  className="border-2 border-dashed p-4 text-center cursor-pointer mb-4"
-                >
-                  <input {...getInputProps()} />
-                  <p>Drag 'n' drop some files here, or click to select files</p>
-                </div>
-              )}
-            </Dropzone>
-
-            <div className="grid grid-cols-4 gap-2 mb-4">
-              {images.map((image) => (
-                <div key={image.public_id} className="relative">
-                  <img
-                    src={image.url}
-                    alt="Uploaded"
-                    className="h-24 w-full object-cover"
-                  />
-                  <button
-                    onClick={() => removeImage(image.public_id)}
-                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
-            <br />
-            <ImageUploaderWithCrop
-                  setImageData={setImageData}
-                  setSelectedImage={setSelectedImage}
-                  selectedImage={selectedImage}
-                />
-            <div className="flex justify-center items-center mt-4">
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+            <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
+              {/* Close Button */}
               <button
-                onClick={handleSubmit}
-                // className="bg-green-500 text-white px-6 py-2 rounded-lg w-full hover:bg-green-600"
-                className="button-85"
+                onClick={() => setShowForm(false)}
+                aria-label="Close Form"
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
               >
-                Create Property Information
+                ✖
               </button>
+
+              {/* Form Title */}
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Create Property Information
+              </h2>
+
+              {/* Form Fields */}
+              <input
+                type="text"
+                placeholder="Enter property name"
+                value={pName}
+                onChange={(e) => setPName(e.target.value)}
+                className="border p-2 w-full mb-4 rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="Enter property address"
+                value={pAddress}
+                onChange={(e) => setPAddress(e.target.value)}
+                className="border p-2 w-full mb-4 rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="Enter property location"
+                value={pLocation}
+                onChange={(e) => setPLocation(e.target.value)}
+                className="border p-2 w-full mb-4 rounded-lg"
+              />
+              <input
+                type="text"
+                placeholder="Enter ownership title"
+                value={ownerTitle}
+                onChange={(e) => setOwnerTitle(e.target.value)}
+                className="border p-2 w-full mb-4 rounded-lg"
+              />
+              <input
+                type="number"
+                placeholder="Enter number of units"
+                value={numberOfunits}
+                onChange={(e) => setNumberOfUnits(e.target.value)}
+                className="border p-2 w-full mb-4 rounded-lg"
+              />
+
+              {/* Dropzone for File Upload */}
+              <Dropzone onDrop={uploadImage}>
+                {({ getRootProps, getInputProps }) => (
+                  <div
+                    {...getRootProps()}
+                    className="border-2 border-dashed p-4 text-center cursor-pointer mb-4"
+                  >
+                    <input {...getInputProps()} />
+                    <p>
+                      Drag 'n' drop some files here, or click to select files
+                    </p>
+                  </div>
+                )}
+              </Dropzone>
+
+              {/* Display Uploaded Images */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {images.map((image) => (
+                  <div key={image.public_id} className="relative">
+                    <img
+                      src={image.url}
+                      alt="Uploaded"
+                      className="h-24 w-full object-cover rounded-md"
+                    />
+                    <button
+                      onClick={() => removeImage(image.public_id)}
+                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Image Uploader with Crop */}
+              <ImageUploaderWithCrop
+                setImageData={setImageData}
+                setSelectedImage={setSelectedImage}
+                selectedImage={selectedImage}
+              />
+
+              {/* Submit Button */}
+              <div className="flex justify-center items-center mt-4">
+                <button
+                  onClick={handleSubmit}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full hover:bg-blue-700"
+                >
+                  Create Property Information
+                </button>
+              </div>
             </div>
           </div>
         )}
+
       </div>
 
       <GetPropertyInformation

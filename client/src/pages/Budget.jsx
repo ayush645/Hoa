@@ -9,6 +9,7 @@ const Budget = () => {
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [document, setDocument] = useState({ publicId: "", url: "" }); // State to store only public_id and url
 
   const fetchBudget = async () => {
     try {

@@ -14,7 +14,7 @@ export const admin = {
     UPDATE_CATEGORY: BASE_URL + "/category/update",
     IMAGE_UPLOAD: BASE_URL + "/image/multi",
 
-    CREATE_PROPERTY_INFORMATION: BASE_URL + "/propertyinformation/create",
+    CREATE_PROPERTY_INFORMATION: BASE_URL + "/propertyinformation/update",
     GET_ALL_PROPERTY_INFORMATION: BASE_URL + "/propertyinformation/getAll",
     GET_PROPERTY_INFORMATION: BASE_URL + "/propertyinformation/getAll",
     DELETE_PROPERTY: BASE_URL + "/propertyinformation/delete",
@@ -59,6 +59,7 @@ export const admin = {
 
 
     CREATE_BUDGET_INCOME: BASE_URL + "/budgetincome/create",
+    UPDATE_BUDGET_INCOME: BASE_URL + "/budgetincome/update",
     GET_ALL_BUDGET_INCOME: BASE_URL + "/budgetincome/getAll",
     GET_BUDGET_INCOME: BASE_URL + "/budgetincome/getAll",
     DELETE_BUDGET_INCOME: BASE_URL + "/budgetincome/delete",

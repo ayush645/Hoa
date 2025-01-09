@@ -29,7 +29,7 @@ const GetOwner = ({ propertyData, loading, onDelete }) => {
           <thead>
             <tr className="bg-gray-100">
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Code
+                Ownership Title
               </th>
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Name
@@ -57,7 +57,7 @@ const GetOwner = ({ propertyData, loading, onDelete }) => {
                 key={property._id}
                 className="border-b border-gray-200 hover:bg-gray-50"
               >
-                <td className="px-4 py-2 text-gray-800">{index + 1}</td>
+                <td className="px-4 py-2 text-gray-800">{property?.ownershipTitle}</td>
                 <td className="px-4 py-2 text-gray-800">
                   {property?.name || "N/A"}
                 </td>

@@ -74,7 +74,7 @@ const Home = () => {
         </div>
       )}
 
-      <GetCategory categories={categories} setCategories={setCategories} />
+      <GetCategory categories={categories} setCategories={setCategories} fetchCategories={fetchCategories} />
     </div>
   );
 };

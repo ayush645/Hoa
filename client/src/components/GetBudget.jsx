@@ -57,7 +57,7 @@ const GetBudget = ({ categories, setCategories }) => {
                 #
               </th>
               <th className="px-6 py-3 text-left text-gray-600 font-semibold">
-                Property Name
+                Budget Name
               </th>
               <th className="px-6 py-3 text-center text-gray-600 font-semibold">
                 Actions

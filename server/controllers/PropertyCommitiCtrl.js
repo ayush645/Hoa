@@ -33,6 +33,58 @@ const createPropertyCommitiCtrl = async (req, res) => {
 };
 
 
+const updatePropertyCommitiCtrl = async (req, res) => {
+    const {
+        id, name, position, phone, email, account, currency, 
+    } = req.body;
+
+
+    console.log(req.body)
+
+    
+    try {
+        if (!id || !name || !position || !phone || !email || !account || !currency) {
+            return res.status(400).json({
+                success: false,
+                message: "Please Provide All Fields",
+            });
+        }
+
+        const property = await PropertyCommitiModel.findById(id);
+
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: "Property Committi not found!",
+            });
+        }
+
+        // Update the property with new data
+        property.name = name;
+        property.position = position;
+        property.phone = phone;
+        property.email = email;
+        property.account = account;
+        property.currency = currency;
+      
+
+        await property.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Property Committi updated successfully!",
+            property,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Error in update category API",
+        });
+    }
+};
+
+
 const deletePropertyCommitiCtrl = async (req, res) => {
     const { id } = req.params;
     try {
@@ -101,6 +153,31 @@ const getPropertyCommitiCtrl = async (req, res) => {
 
 
 
+const getPropertyCommitiByIdCtrl = async (req, res) => {
+    const { id } = req.params; // Getting the ID from the request params
+
+    try {
+        const property = await PropertyCommitiModel.findById(id);
+
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: "Property Committi not found!",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            property,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Error in fetching property!",
+        });
+    }
+};
 
 
 
@@ -112,5 +189,7 @@ module.exports = {
     createPropertyCommitiCtrl,
     getAllPropertyCommitiCtrl,
     deletePropertyCommitiCtrl,
-    getPropertyCommitiCtrl
+    getPropertyCommitiCtrl,
+    updatePropertyCommitiCtrl,
+    getPropertyCommitiByIdCtrl
 };

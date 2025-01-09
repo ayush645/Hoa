@@ -14,6 +14,8 @@ const Units = () => {
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrency] = useState("USD"); // Currency state
+
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ const Units = () => {
       type,
       fee,
       categoryId: id,
+      currency
     };
 
     const success = await handleCreateUnitsAPi(propertyData);
@@ -105,6 +108,22 @@ const Units = () => {
               onChange={(e) => setFee(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
+
+<div className="mb-4">
+              <label htmlFor="currency" className="block mb-2">Currency</label>
+              <select
+                id="currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="border p-2 w-full rounded-lg"
+              >
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="INR">INR</option>
+                <option value="GBP">GBP</option>
+                {/* Add more currencies as needed */}
+              </select>
+            </div>
 
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">

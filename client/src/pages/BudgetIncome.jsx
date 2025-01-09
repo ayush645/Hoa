@@ -7,6 +7,7 @@ import {
   deleteBudgetIncomeApi,
 } from "../services/operation/function";
 import GetBudgetIncome from "../components/GetBudgetIncome";
+import ImageUploaderWithCrop from "../components/common/ImageUpload";
 
 const BudgetIncome = () => {
   const [name, setName] = useState("");
@@ -14,6 +15,8 @@ const BudgetIncome = () => {
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+  const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
 
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
@@ -23,6 +26,7 @@ const BudgetIncome = () => {
       name,
       amount,
       categoryId: id, // Using categoryId directly from the URL
+      document:imageData
     };
 
     const success = await CreateBudgetIncomeAPi(propertyData);
@@ -104,6 +108,13 @@ const BudgetIncome = () => {
               className="border p-2 w-full mb-4 rounded-lg"
             />
 
+<ImageUploaderWithCrop
+                setImageData={setImageData}
+                setSelectedImage={setSelectedImage}
+                selectedImage={selectedImage}
+                title="Upload Document"
+              />
+
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">
                 Create Budget Income
@@ -117,6 +128,8 @@ const BudgetIncome = () => {
         propertyData={propertyData}
         loading={loading}
         onDelete={handleDelete}
+        fetchBudgetIncome={fetchBudgetIncome}
+        id={id}
       />
     </div>
   );

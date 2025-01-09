@@ -2,12 +2,12 @@ const unitsModel = require("../models/unitsModel");
 
 const createUnitsCtrl = async (req, res) => {
     const {
-        propertyData: { type, fee, categoryId },
+        propertyData: { type, fee, categoryId,currency },
     } = req.body;
 
 
     try {
-        if (!type || !fee) {
+        if (!type || !fee || !currency) {
             return res.status(400).json({
                 success: false,
                 message: "Please Provide All Fields",
@@ -15,7 +15,7 @@ const createUnitsCtrl = async (req, res) => {
         }
 
         const property = await unitsModel.create({
-            type, fee, categoryId
+            type, fee, categoryId,currency
         });
 
         return res.status(201).json({

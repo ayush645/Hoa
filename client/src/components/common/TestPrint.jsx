@@ -11,7 +11,7 @@ const DownloadPDFButton = () => {
         const ownerId = "677a39a4d8200e49b1149598"
 
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`);
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`);
             if (response.ok) {
                 // Create a blob from the response
                 const blob = await response.blob();

@@ -11,6 +11,10 @@ const budgetoutcomeSchema = new Schema(
       type: String,
       required: true,
     },
+    document: {
+      public_id: String,
+      url: String,
+    },
 
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -20,7 +24,7 @@ const budgetoutcomeSchema = new Schema(
     updateLog: [
       {
         date: { type: Date, default: Date.now },
-        ammount:{type:Number},
+        ammount: { type: Number },
         operation: { type: String },
       },
     ],

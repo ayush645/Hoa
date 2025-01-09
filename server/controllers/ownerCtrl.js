@@ -1,36 +1,66 @@
 const ownerModel = require("../models/ownerModel");
+const Income = require("../models/Income");
 
 const createOwnerCtrl = async (req, res) => {
     const {
-        propertyData: { name, address, phone, email, unit, categoryId },
+        propertyData: { name, address, phone, email, unit, categoryId, ownershipTitle },
     } = req.body;
 
+    console.log(req.body);
 
     try {
-        if (!name || !address || !phone || !email || !unit) {
+        // Validate required fields
+        if (!name || !address || !phone || !email || !unit || !ownershipTitle) {
             return res.status(400).json({
                 success: false,
-                message: "Please Provide All Fields",
+                message: "Please provide all required fields",
             });
         }
 
-        const property = await ownerModel.create({
-            name, address, phone, email, unit, categoryId
+        // Validate unit details
+        if (!unit.type || !unit.currency || !unit.fee) {
+            return res.status(400).json({
+                success: false,
+                message: "Unit details (type, currency, fee) are required",
+            });
+        }
+
+        // Create owner entry
+        const owner = await ownerModel.create({
+            name,
+            address,
+            phone,
+            email,
+            unitDetails: unit, // Full unit object
+            unit: unit.type, // Only the unit type
+            categoryId,
+            ownershipTitle,
         });
 
+        // Create income entry
+        const incomeCreate = await Income.create({
+            ownerName: name,
+            categoryId,
+            contribution: unit.fee,
+        });
+
+        console.log("Owner and income created successfully");
+
+        // Respond with success
         return res.status(201).json({
             success: true,
             message: "Owner created successfully!",
-            property,
+            data: { owner, incomeCreate },
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error in createOwnerCtrl:", error);
         res.status(500).json({
             success: false,
             message: "Error in create owner API",
         });
     }
 };
+
 
 const deleteOwnerCtrl = async (req, res) => {
     const { id } = req.params;
