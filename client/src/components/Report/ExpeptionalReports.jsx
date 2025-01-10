@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'; 
 import React, { useEffect, useState } from 'react';
 
 function ExpeptionalReports({ type }) {
@@ -15,7 +15,7 @@ function ExpeptionalReports({ type }) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-budget-data`);
         // Set the data to state
-        console.log(response.data.data)
+        console.log(response.data)
         setBudgetData(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -45,50 +45,50 @@ function ExpeptionalReports({ type }) {
                 <th className="border border-gray-200 p-2">Time</th>
                 <th className="border border-gray-200 p-2">Operation</th>
                 <th className="border border-gray-200 p-2">Amount</th>
-              
               </tr>
             </thead>
             <tbody className="text-white">
-  {filteredData.map((entry, index) => {
-    const color = entry.type === 'income' ? 'text-green-500' : 'text-red-500';
-    const sign = entry.type === 'income' ? '+' : '-';
+              {filteredData.map((entry, index) => {
+                const color = type === 'income' ? 'text-green-500' : 'text-red-500';
+                const sign = type === 'income' ? '+' : '-';
 
-    return (
-      // Render the row for each entry
-      <React.Fragment key={index}>
-        {entry.updateLog ? (
-          entry.updateLog.map((logItem, logIndex) => (
-            <tr key={logIndex}>
-              <td className="border border-gray-200 p-2">
-                {new Date(entry.createdAt).toLocaleString()} {/* Use createdAt */}
-              </td>
-              <td className="border border-gray-200 p-2">{logItem.operation}</td> {/* Assuming 'operation' is the entry name */}
-              <td className={`border border-gray-200 p-2 ${color}`}>
-                {sign} ₹{logItem.ammount}
-              </td>
-              
-            </tr>
-          ))
-        ) : (
-          // Render a single row if there's no `updateLog`
-          <tr>
-            <td className="border border-gray-200 p-2">
-              {new Date(entry.createdAt).toLocaleString()} {/* Use createdAt */}
-            </td>
-            <td className="border border-gray-200 p-2">{entry.operation}</td> {/* Assuming 'operation' is the entry name */}
-            <td className={`border border-gray-200 p-2 ${color}`}>
-              {sign} ₹{entry.amount}
-            </td>
-            <td className="border border-gray-200 p-2">
-              {entry.type === 'income' ? 'Income' : 'Outcome'}
-            </td>
-          </tr>
-        )}
-      </React.Fragment>
-    );
-  })}
-</tbody>
+                // Sort the updateLog by date (if it exists)
+                const sortedUpdateLog = entry.updateLog?.sort((a, b) => {
+                  return new Date(b.date) - new Date(a.date); // Sort by date (ascending order)
+                }) || [];
 
+                return (
+                  <React.Fragment key={index}>
+                    {sortedUpdateLog.length > 0 ? (
+                      sortedUpdateLog.map((logItem, logIndex) => (
+                        logItem.ammount !==0 && (
+                          <tr key={logIndex}>
+                            <td className="border border-gray-200 p-2">
+                              {new Date(entry.createdAt).toLocaleString()} {/* Use createdAt */}
+                            </td>
+                            <td className="border border-gray-200 p-2">{logItem.operation}</td>
+                            <td className={`border border-gray-200 p-2 ${color}`}>
+                              {sign} ₹{logItem.ammount}
+                            </td>
+                          </tr>
+                        )
+                      ))
+                    ) : (
+                      // If there's no updateLog, render a single row
+                      <tr>
+                        <td className="border border-gray-200 p-2">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </td>
+                        <td className="border border-gray-200 p-2">{entry.operation}</td>
+                        <td className={`border border-gray-200 p-2 ${color}`}>
+                          {sign} ₹{entry.amount}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
           </table>
         </div>
       )}

@@ -25,7 +25,7 @@ const budgetIncomeSchema = new Schema(
     updateLog: [
       {
         date: { type: Date, default: Date.now },
-        ammount: { type: Number },
+        ammount: { type: Number,default:0 },
 
         operation: { type: String },
       },

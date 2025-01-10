@@ -305,6 +305,34 @@ const handleDownloadOwner = async (owId) => {
       XLSX.writeFile(wb, "income-information.xlsx");
     };
 
+
+    const handleDownloadYearl = async () => {
+   
+      
+
+      const categoryId = id;  // Replace with actual category ID
+      
+      try {
+          const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdfYear?categoryId=${categoryId}`);
+          if (response.ok) {
+              // Create a blob from the response
+              const blob = await response.blob();
+              
+              // Create an anchor element and trigger the download
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = `YearlReport.pdf`;
+              link.click();
+          } else {
+              alert('Failed to generate PDF');
+          }
+      } catch (error) {
+          console.error('Error downloading PDF:', error);
+          alert('Error downloading PDF');
+      }
+
+      
+  };
   return (
     <div className="income-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -473,6 +501,10 @@ const handleDownloadOwner = async (owId) => {
                   {month} Report
                 </td>
               ))}
+              <td 
+                  className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
+              
+              onClick={handleDownloadYearl}> Yearl Report</td>
             </tr>
           </tbody>
         </table>

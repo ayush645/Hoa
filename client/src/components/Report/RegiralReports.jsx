@@ -22,7 +22,13 @@ const ReguralReport = ({ type }) => {
       const data = await getAllIncomeApi(id);
       const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
 
-  setIncomeState(allUpdateLogs);
+      console.log(allUpdateLogs)
+      // Sort the concatenated array by 'createdAt' (ascending order)
+      const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date); // Ascending order
+      });
+    
+      setIncomeState(sortedUpdateLogs);
     } catch (error) {
       console.error("Error fetching income data:", error);
     } finally {
@@ -38,7 +44,18 @@ const ReguralReport = ({ type }) => {
       setLoading(true);
       const data = await getAllOutcomeApi(id);
       console.log(data);
-      setOutComeState(data[0]?.updateLog || []);
+
+      const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
+
+      console.log(allUpdateLogs)
+      // Sort the concatenated array by 'createdAt' (ascending order)
+      const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date); // Ascending order
+      });
+    
+      setOutComeState(sortedUpdateLogs);
+     
+      
     } catch (error) {
       console.error("Error fetching outcome data:", error);
     } finally {
