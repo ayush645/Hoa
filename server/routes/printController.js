@@ -1245,6 +1245,7 @@ router.get("/generate-pdfYear", async (req, res) => {
         srNo: index + 1,
         ownerName: record.ownerName,
         amountPaid: totalPaidForMonths,
+       
         remainingAmount,
       });
     });
@@ -1293,7 +1294,7 @@ router.get("/generate-pdfYear", async (req, res) => {
         .text(`${index + 1}`, 20, yPosition)
         .text(row.ownerName, 140, yPosition)
         .text(row.amountPaid.toString(), 250, yPosition)
-        .text(row.remainingAmount.toString(), 350, yPosition)
+        .text(row.amountPaid.toString(), 350, yPosition)
         .text(row.remainingAmount.toString(), 450, yPosition);
 
       yPosition += 20; // Move down for the next row
