@@ -187,9 +187,7 @@ const handleEdit = async(id)=>{
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Bank Account
               </th>
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Used Currency
-              </th>
+           
               <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                 Actions
               </th>
@@ -209,9 +207,7 @@ const handleEdit = async(id)=>{
                 <td className="px-4 py-2 text-gray-800">{property?.phone}</td>
                 <td className="px-4 py-2 text-gray-800">{property?.email}</td>
                 <td className="px-4 py-2 text-gray-800">{property?.account}</td>
-                <td className="px-4 py-2 text-gray-800">
-                  {property?.currency}
-                </td>
+            
                 <td className="px-4 py-2 text-center">
                   <button
                     onClick={() => onDelete(property?._id)}
@@ -356,7 +352,7 @@ const handleEdit = async(id)=>{
       {/* Display error message if IBAN is invalid */}
       {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
 
-      <select
+      {/* <select
         value={currency}
         onChange={(e) => setCurrency(e.target.value)}
         className="border p-2 w-full mb-4 rounded-lg"
@@ -366,7 +362,7 @@ const handleEdit = async(id)=>{
         <option value="INR">INR</option>
         <option value="GBP">GBP</option>
         <option value="JPY">JPY</option>
-      </select>
+      </select> */}
 
       <div className="flex justify-center items-center">
         <button onClick={handleSubmit} className="button-85">

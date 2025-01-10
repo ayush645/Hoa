@@ -315,7 +315,7 @@ const PropertyCommiti = () => {
             {/* Display error message if IBAN is invalid */}
             {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
 
-            <select
+            {/* <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
@@ -325,7 +325,7 @@ const PropertyCommiti = () => {
               <option value="INR">INR</option>
               <option value="GBP">GBP</option>
               <option value="JPY">JPY</option>
-            </select>
+            </select> */}
 
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">

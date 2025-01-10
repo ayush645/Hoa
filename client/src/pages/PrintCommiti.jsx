@@ -84,9 +84,7 @@ const PrintCommiti = () => {
                 <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                   Bank Account
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                  Used Currency
-                </th>
+            
               </tr>
             </thead>
             <tbody>
@@ -105,9 +103,7 @@ const PrintCommiti = () => {
                   <td className="px-4 py-2 text-gray-800">
                     {property?.account}
                   </td>
-                  <td className="px-4 py-2 text-gray-800">
-                    {property?.currency}
-                  </td>
+             
                 </tr>
               ))}
             </tbody>
