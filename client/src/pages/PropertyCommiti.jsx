@@ -10,6 +10,7 @@ import {
 import GetPropertyCommiti from "../components/GetPropertyCommiti";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import axios from "axios";
 
 const PropertyCommiti = () => {
   const [name, setName] = useState("Select Owner");
@@ -123,6 +124,31 @@ const PropertyCommiti = () => {
     fetchOwners();
   }, [id]);
 
+
+  const handlePrint = async() => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/commiti/${id}`, {
+        responseType: "blob", // Important for handling binary data
+      });
+
+      // Create a Blob from the response data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link and simulate a click
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `property.pdf`); // Set filename
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading the PDF:", error);
+      alert("Failed to download PDF.");
+    }
+  };
   return (
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
@@ -131,10 +157,10 @@ const PropertyCommiti = () => {
             Go to Home
           </button>
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "Add Property Information"}
+            {showForm ? "Cancel" : "Add Property Comitte"}
           </button>
-          <button onClick={() => window.print()} className="button-85">
-            Print Property
+          <button onClick={handlePrint} className="button-85">
+            Print Comitte
           </button>
         </div>
 

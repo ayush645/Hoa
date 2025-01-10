@@ -8,6 +8,7 @@ import {
   getAllUnitsApi,
 } from "../services/operation/function";
 import GetOwner from "../components/GetOwner";
+import axios from "axios";
 
 const Owner = () => {
   const [name, setName] = useState("");
@@ -120,7 +121,30 @@ const Owner = () => {
     }
   };
 
-
+  const handlePrint = async() => {
+    try {
+         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/owner/${id}`, {
+           responseType: "blob", // Important for handling binary data
+         });
+   
+         // Create a Blob from the response data
+         const url = window.URL.createObjectURL(new Blob([response.data]));
+   
+         // Create a temporary link and simulate a click
+         const link = document.createElement("a");
+         link.href = url;
+         link.setAttribute("download", `Ownersreport.pdf`); // Set filename
+         document.body.appendChild(link);
+         link.click();
+   
+         // Cleanup
+         link.parentNode.removeChild(link);
+         window.URL.revokeObjectURL(url);
+       } catch (error) {
+         console.error("Error downloading the PDF:", error);
+         alert("Failed to download PDF.");
+       }
+  };
   return (
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
@@ -131,8 +155,8 @@ const Owner = () => {
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Property Owner"}
           </button>
-          <button onClick={() => window.print()} className="button-85">
-            Print Property
+          <button onClick={handlePrint} className="button-85">
+            Print Owners Report
           </button>
         </div>
 

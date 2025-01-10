@@ -8,6 +8,7 @@ import {
   getAllOwnerApi, // Import the API for fetching owner data
 } from "../services/operation/function";
 import GetIncome from "../components/GetIncome";
+import ReguralReport from "../components/Report/RegiralReports";
 
 
 const Income = () => {
@@ -149,6 +150,8 @@ const Income = () => {
         onDelete={handleDelete}
         id={id}
       />
+
+      <ReguralReport type='income' />
     </div>
   );
 };

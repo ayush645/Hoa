@@ -5,34 +5,43 @@ import {
   updateMonthOutComeApi,
 } from "../services/operation/function";
 import { toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import Swal from 'sweetalert2';
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
-const GetOutCome = ({ propertyData, loading, onDelete, id,totalIncome,fetchIncomeMain ,fetchOutMain}) => {
+const GetOutCome = ({
+  propertyData,
+  loading,
+  onDelete,
+  id,
+  totalIncome,
+  fetchIncomeMain,
+  fetchOutMain,
+}) => {
   const [yearFilter, setYearFilter] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedIncomeId, setSelectedIncomeId] = useState(null);
   const [amount, setAmount] = useState("");
   const [incomeData, setIncomeData] = useState(propertyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
-const [prev,setPre] = useState(0)
+  const [prev, setPre] = useState(0);
 
-const [selectownerName, setSelectOwnerName] = useState("");
+  const [selectownerName, setSelectOwnerName] = useState("");
 
-  const [totalContribution, setTotalContribution] = useState(  incomeData.reduce(
-    (sum, income) => sum + (parseFloat(income.totalAmount) || 0),
-    0
-  ));
-
+  const [totalContribution, setTotalContribution] = useState(
+    incomeData.reduce(
+      (sum, income) => sum + (parseFloat(income.totalAmount) || 0),
+      0
+    )
+  );
 
   useEffect(() => {
     setIncomeData(propertyData);
-    const ammm =  incomeData.reduce(
+    const ammm = incomeData.reduce(
       (sum, income) => sum + (parseFloat(income.totalAmount) || 0),
       0
     );
-    setTotalContribution(ammm)
-    console.log(totalIncome)
+    setTotalContribution(ammm);
+    console.log(totalIncome);
   }, [propertyData]);
 
   if (loading) {
@@ -62,7 +71,6 @@ const [selectownerName, setSelectOwnerName] = useState("");
   });
 
   const handleMonthClick = (incomeId, month) => {
-
     const monthMap = {
       January: 0,
       February: 1,
@@ -77,40 +85,40 @@ const [selectownerName, setSelectOwnerName] = useState("");
       November: 10,
       December: 11,
     };
-  
+
     const numericMonth = monthMap[month];
     if (numericMonth === undefined) {
       alert("Invalid month selected.");
       return;
     }
-  
+
     const currentMonth = new Date().getMonth();
     console.log("Current Month (0-11):", currentMonth);
     console.log("Selected Month (0-11):", numericMonth);
-  
+
     if (numericMonth > currentMonth) {
       Swal.fire({
-        icon: 'error',
-        title: 'Invalid Selection',
-        text: 'The selected month cannot be greater than the current month.',
-        confirmButtonText: 'OK',
+        icon: "error",
+        title: "Invalid Selection",
+        text: "The selected month cannot be greater than the current month.",
+        confirmButtonText: "OK",
       });
       return;
     }
-    
+
     setSelectedIncomeId(incomeId);
     setSelectedMonth(month);
-console.log(month)
+    console.log(month);
     const selectedIncome = filteredData.find(
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
-      setSelectOwnerName(selectedIncome.expense)
-      console.log(selectedIncome.expense)
+      setSelectOwnerName(selectedIncome.expense);
+      console.log(selectedIncome.expense);
       setAmount(selectedIncome.months[month] || 0);
-      console.log(selectedIncome.months[month])
-      if(selectedIncome.months[month] > 0){
-        setPre(selectedIncome.months[month])
+      console.log(selectedIncome.months[month]);
+      if (selectedIncome.months[month] > 0) {
+        setPre(selectedIncome.months[month]);
       }
       setIsModalOpen(true);
     }
@@ -120,28 +128,24 @@ console.log(month)
     try {
       const data = await getAllOutcomeApi(id);
       setIncomeData(data);
-      calculateTotalContribution()
+      calculateTotalContribution();
     } catch (error) {
       console.error("Error fetching income data:", error);
     }
   };
 
-
-
   const calculateTotalContribution = () => {
-    const ammm =  incomeData.reduce(
+    const ammm = incomeData.reduce(
       (sum, income) => sum + (parseFloat(income.totalAmount) || 0),
       0
     );
-    setTotalContribution(ammm)
+    setTotalContribution(ammm);
   };
   const handleSubmit = async () => {
     if (!selectedIncomeId || !selectedMonth) {
       toast.error("No income or month selected.");
       return;
     }
-
-
 
     try {
       const result = await updateMonthOutComeApi(
@@ -156,11 +160,11 @@ console.log(month)
         setSelectedMonth(null);
         setSelectedIncomeId(null);
         fetchIncome();
-        fetchOutMain()
-        calculateTotalContribution()
+        fetchOutMain();
+        calculateTotalContribution();
         setIsModalOpen(false);
-        fetchIncomeMain()
-        window.location.reload()
+        fetchIncomeMain();
+        window.location.reload();
       }
     } catch (error) {
       toast.error("Error updating the month. Please try again.");
@@ -189,50 +193,47 @@ console.log(month)
     );
   });
 
-
   const handleChange = (e) => {
     const value = e.target.value;
-    console.log(prev < 0)
-    
-    if(prev != 0){
-   
-      console.log(selectedIncomeId)
-      const setAmmout2 = (totalIncome + prev)  - totalContribution 
-      console.log( value < 0)
-      if (value < 0) {
-        toast.error("Amount cannot be negative.", );
-        setAmount("");
-        return
-      } else if (value > setAmmout2) {
+    console.log(prev < 0);
 
-        console.log(totalIncome)
-        toast.error(`Amount cannot exceed total income (${setAmmout2}).`, );
-        setAmount('');
-        return
+    if (prev != 0) {
+      console.log(selectedIncomeId);
+      const setAmmout2 = totalIncome + prev - totalContribution;
+      console.log(value < 0);
+      if (value < 0) {
+        toast.error("Amount cannot be negative.");
+        setAmount("");
+        return;
+      } else if (value > setAmmout2) {
+        console.log(totalIncome);
+        toast.error(`Amount cannot exceed total income (${setAmmout2}).`);
+        setAmount("");
+        return;
       } else {
         setAmount(value);
-        return
+        return;
+      }
+    } else if (prev == 0) {
+      if (value < 0) {
+        toast.error("Amount cannot be negative.");
+        setAmount("");
+      } else if (value > totalIncome - totalContribution) {
+        console.log(totalIncome - totalContribution);
+        toast.error(
+          `Amount cannot exceed total income (${
+            totalIncome - totalContribution
+          }).`
+        );
+        setAmount("");
+      } else {
+        setAmount(value);
       }
     }
-
-
-else if(prev == 0){
-  if (value < 0) {
-    toast.error("Amount cannot be negative.", );
-    setAmount("");
-  } else if (value > (totalIncome - totalContribution)) {
-    console.log(totalIncome - totalContribution)
-    toast.error(`Amount cannot exceed total income (${totalIncome - totalContribution}).`, );
-    setAmount('');
-  } else {
-    setAmount(value);
-  }
-}
   };
 
-
   return (
-    <div className="income-info-container p-6 min-h-screen">
+    <div className="income-info-container p-6 max-h-[80vh]">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         OutCome Information
       </h2>
@@ -284,32 +285,36 @@ else if(prev == 0){
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((income) => (
-              <tr
-                key={income._id}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-2 text-gray-800">{income.expense}</td>
-                {months.map((month) => (
-                  <td
-                    key={month}
-                    className="px-4 py-2 text-gray-800 cursor-pointer"
-                    onClick={() => handleMonthClick(income._id, month)}
-                  >
-                    {income.months[month] || 0}
+            {filteredData.map((income) => {
+              const totalAmount = Object.values(income.months).reduce(
+                (sum, value) => sum + value,
+                0
+              );
+              return (
+                <tr
+                  key={income._id}
+                  className="border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-2 text-gray-800">{income.expense}</td>
+                  {months.map((month) => (
+                    <td
+                      key={month}
+                      className="px-4 py-2 text-gray-800 cursor-pointer"
+                      onClick={() => handleMonthClick(income._id, month)}
+                    >
+                      {income.months[month] || 0}
+                    </td>
+                  ))}
+                  <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
+                  <td className="px-4 py-2 text-center">
+                    <FaTrash
+                      className="text-red-500 cursor-pointer"
+                      onClick={() => onDelete(income._id)}
+                    />
                   </td>
-                ))}
-                <td className="px-4 py-2 text-gray-800">
-                  {income.contribution}
-                </td>
-                <td className="px-4 py-2 text-center">
-                  <FaTrash
-                    className="text-red-500 cursor-pointer"
-                    onClick={() => onDelete(income._id)}
-                  />
-                </td>
-              </tr>
-            ))}
+                </tr>
+              );
+            })}
             <tr className="bg-gray-100 font-bold">
               <td className="px-4 py-2 text-gray-800">Total</td>
               {months.map((month) => (
@@ -332,14 +337,14 @@ else if(prev == 0){
               Update Payment for {selectedMonth}
             </h3>
             <div className="space-y-4">
-            <input
-        type="number"
-        max={totalIncome}
-        placeholder="Enter Amount"
-        value={amount}
-        onChange={handleChange}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
-      />
+              <input
+                type="number"
+                max={totalIncome}
+                placeholder="Enter Amount"
+                value={amount}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              />
             </div>
             <div className="flex justify-end space-x-4 mt-6">
               <button
@@ -360,20 +365,6 @@ else if(prev == 0){
       )}
 
       {/* Total Calculation */}
-      <div className="mt-8 p-6 bg-gray-900 text-white rounded-lg shadow-lg">
-  <h3 className="text-xl font-semibold mb-4">Total Contributions:</h3>
-  <ul className="space-y-2">
-    {Object.entries(monthlyTotals).map(([month, total]) => (
-      <li key={month} className="text-gray-300">
-        <span className="font-medium">{month}:</span> {total}
-      </li>
-    ))}
-  </ul>
-  <p className="text-lg font-bold text-white mt-4">
-    Grand Total: <span className="text-yellow-400">{totalContribution}</span>
-  </p>
-</div>
-
     </div>
   );
 };

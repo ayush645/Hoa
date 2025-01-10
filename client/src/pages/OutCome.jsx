@@ -9,6 +9,7 @@ import {
 } from "../services/operation/function";
 import GetOwner from "../components/GetOwner";
 import GetOutCome from "../components/GetOutCome";
+import ReguralReport from "../components/Report/RegiralReports";
 
 const OutCome = () => {
   const [expense, setExpense] = useState("");
@@ -147,6 +148,9 @@ const OutCome = () => {
         fetchIncomeMain={fetchIncome}
         fetchOutMain={fetchOutCome}
       />
+
+<ReguralReport type='outcome' />
+
     </div>
   );
 };

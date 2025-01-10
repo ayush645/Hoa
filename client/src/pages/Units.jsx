@@ -7,6 +7,7 @@ import {
   deleteUnitsApi,
 } from "../services/operation/function";
 import GetUnits from "../components/GetUnits";
+import axios from "axios";
 
 const Units = () => {
   const [type, setType] = useState("");
@@ -77,6 +78,31 @@ const Units = () => {
     fetchUnits();
   }, [id]);
 
+
+  const handleDownloadUnits = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/units/${id}`, {
+        responseType: "blob", // Important for handling binary data
+      });
+
+      // Create a Blob from the response data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link and simulate a click
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `property.pdf`); // Set filename
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading the PDF:", error);
+      alert("Failed to download PDF.");
+    }
+  };
   return (
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
@@ -87,7 +113,7 @@ const Units = () => {
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add units Information"}
           </button>
-          <button onClick={() => window.print()} className="button-85">
+          <button onClick={handleDownloadUnits} className="button-85">
             Print Units
           </button>
         </div>
