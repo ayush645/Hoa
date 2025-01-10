@@ -897,11 +897,11 @@ router.get("/generate-pdf", async (req, res) => {
 
     // Add each row of data
     let yPosition = 170;
-    tableData.forEach((row) => {
+    tableData.forEach((row,index) => {
       doc
         .fontSize(10)
         .font("Helvetica")
-        .text(row.srNo.toString(), 20, yPosition)
+        .text(`${index + 1}`, 20, yPosition)
         .text(row.ownerName, 140, yPosition)
         .text(row.monthPaid.toString(), 250, yPosition)
         .text(row.remainingAmount.toString(), 350, yPosition);

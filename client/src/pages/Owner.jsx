@@ -9,6 +9,9 @@ import {
 } from "../services/operation/function";
 import GetOwner from "../components/GetOwner";
 import axios from "axios";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+
 
 const Owner = () => {
   const [name, setName] = useState("");
@@ -177,13 +180,34 @@ const Owner = () => {
               onChange={(e) => setAddress(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
-            <input
-              type="text"
-              placeholder="Enter Phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
+             <PhoneInput
+        country={"us"} // Default country
+        value={phone}
+        onChange={(phone) => setPhone(phone)}
+        inputStyle={{
+          width: "100%",
+          height: "45px",
+          borderRadius: "8px",
+          padding: "10px",
+          paddingLeft: "45px", // Adjust for the flag and dropdown
+          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+          fontSize: "16px",
+        }}
+        containerStyle={{
+          width: "100%",
+          marginBottom: "16px",
+        }}
+        buttonStyle={{
+          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+          borderRight: "none",
+        }}
+        dropdownStyle={{
+          backgroundColor: "#ffffff", // Tailwind's `bg-white`
+          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+          borderRadius: "0.375rem", // Tailwind's `rounded-md`
+        }}
+        placeholder="Enter phone number"
+      />
             <input
               type="email"
               placeholder="Enter Email"

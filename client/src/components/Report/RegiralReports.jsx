@@ -20,9 +20,9 @@ const ReguralReport = ({ type }) => {
     try {
       setLoading(true);
       const data = await getAllIncomeApi(id);
-      console.log(data[0]?.updateLog);
-      setIncomeState(data[0]?.updateLog || []);
-   
+      const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
+
+  setIncomeState(allUpdateLogs);
     } catch (error) {
       console.error("Error fetching income data:", error);
     } finally {

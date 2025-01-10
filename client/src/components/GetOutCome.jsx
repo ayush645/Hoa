@@ -131,7 +131,10 @@ const GetOutCome = ({
   const fetchIncome = async () => {
     try {
       const data = await getAllOutcomeApi(id);
-      setIncomeData(data);
+      const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
+
+      setIncomeData(allUpdateLogs);
+
       calculateTotalContribution();
     } catch (error) {
       console.error("Error fetching income data:", error);
