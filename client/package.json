@@ -10,6 +10,8 @@
     "axios": "^1.7.9",
     "flag-icon-css": "^4.1.7",
     "iban": "^0.0.14",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "react": "^18.3.1",
     "react-cropper": "^2.3.3",
     "react-dom": "^18.3.1",
@@ -22,7 +24,8 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^10.0.6",
     "sweetalert2": "^11.14.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",

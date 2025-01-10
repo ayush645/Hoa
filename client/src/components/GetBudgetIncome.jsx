@@ -3,6 +3,9 @@ import { FaTrash, FaEdit } from "react-icons/fa";
 import ImageUploaderWithCrop from "./common/ImageUpload";
 import { updateBudgetIncomeApi } from "../services/operation/function";
 import { MdClose } from "react-icons/md"; // Import React Icon
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 const GetBudgetIncome = ({
   propertyData,
@@ -77,6 +80,49 @@ const GetBudgetIncome = ({
       // fetchBudgetIncome();
     }
   };
+
+     const handlePrintPDF = () => {
+        const doc = new jsPDF();
+        const tableColumns = ["Owner Name", "Contribution", , "Date Time"];
+        const tableRows = [];
+    
+        filteredData.forEach((income) => {
+          
+          const row = [
+            income.name,
+            income.amount,
+                  `${new Date(income?.createdAt).toLocaleDateString()} ${new Date(income?.createdAt).toLocaleTimeString()}`,
+
+                ];
+          tableRows.push(row);
+        });
+    
+        doc.text("Income Information", 14, 10);
+        doc.autoTable({
+          head: [tableColumns],
+          body: tableRows,
+          startY: 20,
+        });
+        doc.save("income-information.pdf");
+      };
+    
+      // Export as Excel
+      const handleExportExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(
+          filteredData.map((income) => {
+           
+            return {
+              "Owner Name": income.name,
+              Contribution: income.amount,
+               "Date&Time":                   `${new Date(income?.createdAt).toLocaleDateString()} ${new Date(income?.createdAt).toLocaleTimeString()}`,
+                
+            };
+          })
+        );
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Income Data");
+        XLSX.writeFile(wb, "income-information.xlsx");
+      };
   if (loading) {
     return (
       <p className="text-center text-gray-500 text-lg font-semibold">
@@ -98,7 +144,20 @@ const GetBudgetIncome = ({
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         Property Information
       </h2>
-
+      <div className=" w-full flex justify-center mb-4">
+        <button
+          onClick={handlePrintPDF}
+          className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
+        >
+          Print as PDF
+        </button>
+        <button
+          onClick={handleExportExcel}
+          className="px-4 py-2 bg-green-500 text-white rounded"
+        >
+          Export to Excel
+        </button>
+      </div>
       {/* Filter for Year */}
       <div className="mb-4 flex justify-center">
         <label htmlFor="year" className="mr-2 text-white mt-2">

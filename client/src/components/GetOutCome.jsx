@@ -7,6 +7,10 @@ import {
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 
 const GetOutCome = ({
   propertyData,
@@ -231,13 +235,67 @@ const GetOutCome = ({
       }
     }
   };
-
+    // Export as PDF
+    const handlePrintPDF = () => {
+      const doc = new jsPDF();
+      const tableColumns = ["Expense", ...months, "Total"];
+      const tableRows = [];
+  
+      filteredData.forEach((income) => {
+        const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
+        const row = [
+          income.expense,
+  
+          ...months.map((month) => income.months[month] || 0),
+          totalAmount,
+        ];
+        tableRows.push(row);
+      });
+  
+      doc.text("Income Information", 14, 10);
+      doc.autoTable({
+        head: [tableColumns],
+        body: tableRows,
+        startY: 20,
+      });
+      doc.save("income-information.pdf");
+    };
+  
+    // Export as Excel
+    const handleExportExcel = () => {
+      const ws = XLSX.utils.json_to_sheet(
+        filteredData.map((income) => {
+          const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
+          return {
+            "Expense": income.expense,
+              ...months.reduce((acc, month) => ({ ...acc, [month]: income.months[month] || 0 }), {}),
+            Total: totalAmount,
+          };
+        })
+      );
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Income Data");
+      XLSX.writeFile(wb, "income-information.xlsx");
+    };
   return (
     <div className="income-info-container p-6 max-h-[80vh]">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         OutCome Information
       </h2>
-
+      <div className=" w-full flex justify-center mb-4">
+        <button
+          onClick={handlePrintPDF}
+          className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
+        >
+          Print as PDF
+        </button>
+        <button
+          onClick={handleExportExcel}
+          className="px-4 py-2 bg-green-500 text-white rounded"
+        >
+          Export to Excel
+        </button>
+      </div>
       {/* Year Filter Dropdown */}
       <div className="mb-4 flex justify-center">
         <select

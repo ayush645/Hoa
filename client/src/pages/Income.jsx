@@ -105,9 +105,9 @@ const Income = () => {
           {/* <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Income"}
           </button> */}
-          <button onClick={() => window.print()} className="button-85">
+          {/* <button onClick={() => window.print()} className="button-85">
             Print Income
-          </button>
+          </button> */}
         </div>
 
         {showForm && (

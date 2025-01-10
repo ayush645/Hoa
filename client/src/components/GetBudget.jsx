@@ -92,6 +92,9 @@ const GetBudget = ({ categories, setCategories }) => {
                     <Link to={`/exceptionalbudget/outcome/${category._id}`}>
                       OutComes
                     </Link>
+                    <Link to={`/exceptionalbudget/balnce/${category._id}`}>
+                      Balance
+                    </Link>
                     {/* <Link to={`/exceptionalbudget/balance/${category._id}`}>
                       Balance
                     </Link> */}

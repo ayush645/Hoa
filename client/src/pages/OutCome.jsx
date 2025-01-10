@@ -19,7 +19,8 @@ const OutCome = () => {
   const [incomeData, setIncomeData] = useState('');
 
 
-      const [SelectownerName, setSelectOwnerName] = useState("");
+
+ 
   
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
@@ -99,6 +100,8 @@ const OutCome = () => {
       }
     };
 
+
+    
     
   useEffect(() => {
     fetchOutCome();
@@ -115,9 +118,9 @@ const OutCome = () => {
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Outcome"}
           </button>
-          <button onClick={() => window.print()} className="button-85">
+          {/* <button onClick={() => window.print()} className="button-85">
             Print Outcome
-          </button>
+          </button> */}
         </div>
 
         {showForm && (

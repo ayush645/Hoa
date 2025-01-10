@@ -32,6 +32,7 @@ import ExcepationalBalance from "./pages/ExcepationalBalance";
 import BothExcepational from "./components/common/BothExcepational";
 import RegularStatement from "./components/common/RegularStatement";
 import DownloadPDFButton from "./components/common/TestPrint";
+import ExceptionalBalanceSheet from "./pages/reports/ExceptionalBalanceSheet";
 
 const App = () => {
   return (
@@ -148,6 +149,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <BudgetIncome />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="exceptionalbudget/balnce/:id"
+            element={
+              <PrivateRoute>
+                <ExceptionalBalanceSheet />
               </PrivateRoute>
             }
           />

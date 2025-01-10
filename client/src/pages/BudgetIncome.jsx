@@ -87,9 +87,9 @@ const BudgetIncome = () => {
           {/* <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Budget Income"}
           </button> */}
-          <button onClick={() => window.print()} className="button-85">
+          {/* <button onClick={() => window.print()} className="button-85">
             Print Outcome
-          </button>
+          </button> */}
         </div>
 
         {showForm && (
