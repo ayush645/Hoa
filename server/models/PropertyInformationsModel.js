@@ -18,6 +18,10 @@ const PropertyInformationsSchema = new Schema({
         type: String,
       
     },
+    currency: {
+        type: String,
+        required: true,
+    },
     images: [
         {
             public_id: String,

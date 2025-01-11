@@ -35,12 +35,16 @@ const ownerSchema = new Schema({
             type: String, 
             required: true,
         },
+     
         fee: {
             type: Number, 
             required: true,
         },
     },
-
+    paymentType: {
+        type: String, 
+        required: true,
+    },
     categoryId: {
         type: Schema.Types.ObjectId,
         ref: "Category",

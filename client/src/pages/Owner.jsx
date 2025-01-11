@@ -20,6 +20,7 @@ const Owner = () => {
   const [email, setEmail] = useState("");
   const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
+  const [paymentType, setPaymentType] = useState("");
 
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
@@ -36,7 +37,7 @@ const Owner = () => {
       phone,
       email,
       unit,
-
+      paymentType,
 
       categoryId: id,
     };
@@ -50,9 +51,9 @@ const Owner = () => {
       setEmail("");
       setUnit("");
   
-      setShowForm(false);
       fetchOwner();
     }
+    setShowForm(false);
   };
 
 
@@ -232,6 +233,27 @@ const Owner = () => {
         ))}
       </select>
 
+      <div>
+                <label
+                  htmlFor="paymentType"
+                  className="block text-sm font-semibold text-gray-700 mb-1"
+                >
+                  Payment Type
+                </label>
+                <select
+                  id="paymentType"
+                  value={paymentType}
+                  onChange={(e) => setPaymentType(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700"
+                >
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Online">Online</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+              </div>
+
             <div className="flex justify-center items-center">
               <button onClick={handleSubmit} className="button-85">
                 Create Owner
@@ -245,6 +267,9 @@ const Owner = () => {
         propertyData={propertyData}
         loading={loading}
         onDelete={handleDelete}
+        fetchOwner={fetchOwner}
+        id={id}
+        setLoading={setLoading}
       />
     </div>
   );

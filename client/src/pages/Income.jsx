@@ -95,6 +95,8 @@ const Income = () => {
 
 
 
+ 
+
   return (
     <div className="p-6 min-h-screen">
       <div className="income-page flex flex-col items-center mb-6">

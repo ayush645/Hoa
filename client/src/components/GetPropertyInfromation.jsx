@@ -5,7 +5,7 @@ import Dropzone from "react-dropzone";
 import { handleUpdatePropertyInforamtionAPi, imageUpload } from "../services/operation/function";
 import axios from "axios";
 
-const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
+const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchPropertyInformation}) => {
   const [pName, setPName] = useState("");
   const [pAddress, setPAddress] = useState("");
   const [pLocation, setPLocation] = useState("");
@@ -15,6 +15,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
   const [showForm, setShowForm] = useState(false);
   const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
   const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
+  const [currency, setCurrency] = useState("USD"); // Default value
 
   const[selectId,setSelectId] = useState(null)
 
@@ -45,6 +46,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
       images: JSON.stringify(images),
       logo: imageData,
       numberOfunits,
+      currency
       };
 
     const success = await handleUpdatePropertyInforamtionAPi(propertyData,selectId);
@@ -56,7 +58,8 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
       // setOwnerTitle("");
       // setNumberOfUnits("");
       // setImages([]);
-      // setShowForm(false);
+      fetchPropertyInformation()
+      setShowForm(false);
     }
   };
 
@@ -68,13 +71,14 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/propertyinformation/get/${id}`);
       if (response.data?.success) {
         const property = response.data?.property;
-        setPName(property.pName);
-        setPAddress(property.pAddress);
-        setPLocation(property.pLocation);
-        setOwnerTitle(property.ownerTitle);
-        setNumberOfUnits(property.numberOfunits);
-        setImages(property.images);
-        setImageData(property.logo); // Assuming logo is part of the response
+        setPName(property?.pName);
+        setPAddress(property?.pAddress);
+        setPLocation(property?.pLocation);
+        setOwnerTitle(property?.ownerTitle);
+        setNumberOfUnits(property?.numberOfunits);
+        setImages(property?.images);
+        setImageData(property?.logo); // Assuming logo is part of the response
+        setCurrency(property?.currency); // Assuming logo is part of the response
       }
     } catch (error) {
       console.log(error);
@@ -143,6 +147,10 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
               <p className="text-gray-600">
                 <strong>Number of Units:</strong> {property.numberOfunits}
               </p>
+              <p className="text-gray-600">
+                <strong>Currency:</strong> {property.currency}
+              </p>
+                   
             </div>
 
             {/* Images and Map */}
@@ -237,6 +245,18 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete }) => {
                 onChange={(e) => setNumberOfUnits(e.target.value)}
                 className="border p-2 w-full mb-4 rounded-lg"
               />
+
+<select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="INR">INR</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+            </select>
 
               {/* Dropzone for File Upload */}
               <Dropzone onDrop={uploadImage}>

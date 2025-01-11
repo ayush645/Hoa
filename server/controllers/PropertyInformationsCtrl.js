@@ -59,6 +59,7 @@ const updatePropertyInformationCtrl = async (req, res) => {
             numberOfunits,
             categoryId,
             logo,
+            currency
         } = req.body.propertyData; // Fields to update
 
    
@@ -88,6 +89,7 @@ const updatePropertyInformationCtrl = async (req, res) => {
 
         // Update the property fields (only the ones provided)
         if (pName) property.pName = pName;
+        if (currency) property.currency = currency;
         if (pAddress) property.pAddress = pAddress;
         if (pLocation) property.pLocation = pLocation;
         if (ownerTitle) property.ownerTitle = ownerTitle;

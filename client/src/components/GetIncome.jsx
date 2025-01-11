@@ -20,8 +20,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [selectedIncomeData, setSelectedIncomeData] = useState(null); // Store selected income data for the modal
   const [paymentType, setPaymentType] = useState("");
 
-    const [SelectownerName, setSelectOwnerName] = useState("");
-  
+  const [SelectownerName, setSelectOwnerName] = useState("");
+
   useEffect(() => {
     setIncomeData(propertyData);
   }, [propertyData]);
@@ -64,8 +64,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
-      console.log(selectedIncome?.ownerName)
-      setSelectOwnerName(selectedIncome.ownerName)
+      console.log(selectedIncome?.ownerName);
+      setSelectOwnerName(selectedIncome.ownerName);
       setSelectedIncomeData(selectedIncome); // Set selected income data for modal
       setIsModalOpen(true); // Open the modal
     }
@@ -172,19 +172,21 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   });
 
   const currentDate = new Date(); // Use real current date
-  const totalDeficit = months.reduce((total, month) => total + (monthlyDeficits[month] || 0), 0);
+  const totalDeficit = months.reduce(
+    (total, month) => total + (monthlyDeficits[month] || 0),
+    0
+  );
   const totalIncome = months.reduce(
     (total, month) => total + (monthlyTotals[month] || 0),
     0
   );
-  
+
   const isFutureMonth = (month) => {
     const monthIndex = months.indexOf(month);
     if (monthIndex === -1) return false;
     const selectedDate = new Date(currentDate.getFullYear(), monthIndex, 1);
     return selectedDate > currentDate;
   };
-
 
   const handleChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -201,138 +203,141 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
     }
   };
 
-
   const handleDownload = async (d1month) => {
-  
-    const categoryId = id;  // Replace with actual category ID
-    const month = d1month;  // Replace with the selected month
-     // Replace with the selected year
+    const categoryId = id; // Replace with actual category ID
+    const month = d1month; // Replace with the selected month
+    // Replace with the selected year
 
     try {
-        const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdf?categoryId=${categoryId}&month=${month}`);
-        if (response.ok) {
-            // Create a blob from the response
-            const blob = await response.blob();
-            
-            // Create an anchor element and trigger the download
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `payment_details_${month}.pdf`;
-            link.click();
-        } else {
-            alert('Failed to generate PDF');
-        }
-    } catch (error) {
-        console.error('Error downloading PDF:', error);
-        alert('Error downloading PDF');
-    }
-
-  
-};
-
-
-const handleDownloadOwner = async (owId) => {
-
-
-  const categoryId = id;  // Replace with actual category ID
-  const ownerId = owId
-
-  try {
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`);
-      if (response.ok) {
-          // Create a blob from the response
-          const blob = await response.blob();
-          
-          // Create an anchor element and trigger the download
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(blob);
-          link.download = `payment_details.pdf`;
-          link.click();
-      } else {
-          alert('Failed to generate PDF');
-      }
-  } catch (error) {
-      console.error('Error downloading PDF:', error);
-      alert('Error downloading PDF');
-  }
-
- 
-};
-
-
-
-    // Export as PDF
-    const handlePrintPDF = () => {
-      const doc = new jsPDF();
-      const tableColumns = ["Owner Name", "Contribution", ...months, "Total"];
-      const tableRows = [];
-  
-      filteredData.forEach((income) => {
-        const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
-        const row = [
-          income.ownerName,
-          income.contribution,
-          ...months.map((month) => income.months[month] || 0),
-          totalAmount,
-        ];
-        tableRows.push(row);
-      });
-  
-      doc.text("Income Information", 14, 10);
-      doc.autoTable({
-        head: [tableColumns],
-        body: tableRows,
-        startY: 20,
-      });
-      doc.save("income-information.pdf");
-    };
-  
-    // Export as Excel
-    const handleExportExcel = () => {
-      const ws = XLSX.utils.json_to_sheet(
-        filteredData.map((income) => {
-          const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
-          return {
-            "Owner Name": income.ownerName,
-            Contribution: income.contribution,
-            ...months.reduce((acc, month) => ({ ...acc, [month]: income.months[month] || 0 }), {}),
-            Total: totalAmount,
-          };
-        })
+      const response = await fetch(
+        `${process.env.REACT_APP_BASE_URL}/print/generate-pdf?categoryId=${categoryId}&month=${month}`
       );
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Income Data");
-      XLSX.writeFile(wb, "income-information.xlsx");
-    };
+      if (response.ok) {
+        // Create a blob from the response
+        const blob = await response.blob();
 
-
-    const handleDownloadYearl = async () => {
-   
-      
-
-      const categoryId = id;  // Replace with actual category ID
-      
-      try {
-          const response = await fetch(`${process.env.REACT_APP_BASE_URL}/print/generate-pdfYear?categoryId=${categoryId}`);
-          if (response.ok) {
-              // Create a blob from the response
-              const blob = await response.blob();
-              
-              // Create an anchor element and trigger the download
-              const link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = `YearlReport.pdf`;
-              link.click();
-          } else {
-              alert('Failed to generate PDF');
-          }
-      } catch (error) {
-          console.error('Error downloading PDF:', error);
-          alert('Error downloading PDF');
+        // Create an anchor element and trigger the download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `payment_details_${month}.pdf`;
+        link.click();
+      } else {
+        alert("Failed to generate PDF");
       }
-
-      
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Error downloading PDF");
+    }
   };
+
+  const handleDownloadOwner = async (owId) => {
+    const categoryId = id; // Replace with actual category ID
+    const ownerId = owId;
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BASE_URL}/print/generate-pdf-owner?categoryId=${categoryId}&ownerId=${ownerId}`
+      );
+      if (response.ok) {
+        // Create a blob from the response
+        const blob = await response.blob();
+
+        // Create an anchor element and trigger the download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `payment_details.pdf`;
+        link.click();
+      } else {
+        alert("Failed to generate PDF");
+      }
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Error downloading PDF");
+    }
+  };
+
+  // Export as PDF
+  const handlePrintPDF = () => {
+    const doc = new jsPDF();
+    const tableColumns = ["Owner Name", "Contribution", ...months, "Total"];
+    const tableRows = [];
+
+    filteredData.forEach((income) => {
+      const totalAmount = Object.values(income.months).reduce(
+        (sum, value) => sum + value,
+        0
+      );
+      const row = [
+        income.ownerName,
+        income.contribution,
+        ...months.map((month) => income.months[month] || 0),
+        totalAmount,
+      ];
+      tableRows.push(row);
+    });
+
+    doc.text("Income Information", 14, 10);
+    doc.autoTable({
+      head: [tableColumns],
+      body: tableRows,
+      startY: 20,
+    });
+    doc.save("income-information.pdf");
+  };
+
+  // Export as Excel
+  const handleExportExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      filteredData.map((income) => {
+        const totalAmount = Object.values(income.months).reduce(
+          (sum, value) => sum + value,
+          0
+        );
+        return {
+          "Owner Name": income.ownerName,
+          Contribution: income.contribution,
+          ...months.reduce(
+            (acc, month) => ({ ...acc, [month]: income.months[month] || 0 }),
+            {}
+          ),
+          Total: totalAmount,
+        };
+      })
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Income Data");
+    XLSX.writeFile(wb, "income-information.xlsx");
+  };
+
+  const handleDownloadYearl = async () => {
+    const categoryId = id; // Replace with actual category ID
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BASE_URL}/print/generate-pdfYear?categoryId=${categoryId}`
+      );
+      if (response.ok) {
+        // Create a blob from the response
+        const blob = await response.blob();
+
+        // Create an anchor element and trigger the download
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `YearlReport.pdf`;
+        link.click();
+      } else {
+        alert("Failed to generate PDF");
+      }
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Error downloading PDF");
+    }
+  };
+
+
+
+
+  
   return (
     <div className="income-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -376,7 +381,14 @@ const handleDownloadOwner = async (owId) => {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      {!yearFilter && (
+    <div className="flex justify-center items-center mt-5">
+      <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+        <p className="font-semibold text-lg">Please select a year.</p>
+      </div>
+    </div>
+  )}
+     {yearFilter && <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
@@ -400,9 +412,7 @@ const handleDownloadOwner = async (owId) => {
               <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                 Actions
               </th>
-              <th className="px-4 py-2 text-center text-gray-600 font-semibold">
-                
-              </th>
+              <th className="px-4 py-2 text-center text-gray-600 font-semibold"></th>
             </tr>
           </thead>
           <tbody>
@@ -430,7 +440,7 @@ const handleDownloadOwner = async (owId) => {
                       monthAmount === income.contribution
                         ? "bg-green-500 text-white"
                         : monthAmount === 0
-                        ? "bg-red-500 text-white"
+                        ? ""
                         : monthAmount < income.contribution
                         ? "bg-orange-500 text-white"
                         : "bg-white";
@@ -453,7 +463,10 @@ const handleDownloadOwner = async (owId) => {
                       onClick={() => onDelete(income._id)}
                     />
                   </td>
-                  <td className="px-4 py-2 text-blue-800 underline" onClick={()=>handleDownloadOwner(income._id)}>
+                  <td
+                    className="px-4 py-2 text-blue-800 underline"
+                    onClick={() => handleDownloadOwner(income._id)}
+                  >
                     Owner report
                   </td>
                 </tr>
@@ -488,27 +501,29 @@ const handleDownloadOwner = async (owId) => {
               <td className="px-4 py-2 text-center"></td>
             </tr>
 
-
             <tr>
               <td></td>
               <td></td>
               {months.map((month) => (
                 <td
                   key={month}
-                  onClick={()=>handleDownload(month)}
+                  onClick={() => handleDownload(month)}
                   className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
                 >
                   {month} Report
                 </td>
               ))}
-              <td 
-                  className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
-              
-              onClick={handleDownloadYearl}> Yearl Report</td>
+              <td
+                className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
+                onClick={handleDownloadYearl}
+              >
+                {" "}
+                Yearl Report
+              </td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </div>}
 
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">

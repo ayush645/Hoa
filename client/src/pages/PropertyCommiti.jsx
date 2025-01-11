@@ -119,6 +119,31 @@ const PropertyCommiti = () => {
     }
   };
 
+  const handleOwnerSelect = (e) => {
+    const selectedOwnerName = e.target.value;
+  
+    setName(selectedOwnerName);
+  
+    if (selectedOwnerName !== "manual") {
+      // Find the selected owner from the list
+      const selectedOwner = owners.find(owner => owner.name === selectedOwnerName);
+  
+      if (selectedOwner) {
+      
+        setPhone(selectedOwner?.phone || "");
+        setEmail(selectedOwner?.email || "");
+        setAccount(selectedOwner?.account || "");
+      }
+    } else {
+      // Reset the fields if manual is selected
+      
+      setPhone("");
+      setEmail("");
+      setAccount("");
+    }
+  };
+  
+
   useEffect(() => {
     fetchCommiti();
     fetchOwners();
@@ -168,24 +193,19 @@ const PropertyCommiti = () => {
           <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl">
             <label className="block mb-2">Select or Enter Full Name</label>
             <select
-              value={name || "manual"} // Default to "manual" if name is empty
-              onChange={(e) => {
-                if (e.target.value === "manual") {
-                  setName(""); // Clear the name field for manual input
-                } else {
-                  setName(e.target.value); // Set selected owner name
-                }
-              }}
-              className="border p-2 w-full mb-4 rounded-lg"
-            >
-              <option value="">Select Owner</option>
-              {owners.map((owner) => (
-                <option key={owner.id} value={owner.name}>
-                  {owner.name}
-                </option>
-              ))}
-              <option value="manual">No Found</option>
-            </select>
+  value={name || "manual"}
+  onChange={handleOwnerSelect}
+  className="border p-2 w-full mb-4 rounded-lg"
+>
+  <option value="">Select Owner</option>
+  {owners.map((owner) => (
+    <option key={owner.id} value={owner.name}>
+      {owner.name}
+    </option>
+  ))}
+  <option value="manual">No Found</option>
+</select>
+
 
             {/* Show input field only if "Enter Manually" is selected */}
             {name === "" && (

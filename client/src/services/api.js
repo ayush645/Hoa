@@ -31,6 +31,7 @@ export const admin = {
     DELETE_UNITS: BASE_URL + "/units/delete",
 
     CREATE_OWNER: BASE_URL + "/owner/create",
+    UPDATE_OWNER: BASE_URL + "/owner/update",
     GET_ALL_OWNER: BASE_URL + "/owner/getAll",
     GET_OWNER: BASE_URL + "/owner/getAll",
     DELETE_OWNER: BASE_URL + "/owner/delete",

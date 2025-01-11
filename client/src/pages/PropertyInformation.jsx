@@ -276,6 +276,7 @@ const PropertyInformation = () => {
         propertyData={propertyData}
         loading={loading}
         onDelete={handleDelete} // Pass the delete function
+        fetchPropertyInformation={fetchPropertyInformation}
       />
     </div>
   );

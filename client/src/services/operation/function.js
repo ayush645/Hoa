@@ -17,6 +17,7 @@ const {
     DELETE_UNITS,
     GET_ALL_UNITS,
     CREATE_OWNER,
+    UPDATE_OWNER,
     DELETE_OWNER,
     GET_ALL_OWNER,
     CREATE_INCOME,
@@ -625,6 +626,55 @@ export async function handleCreateOwnerAPi(propertyData) {
         console.error("CREATE PROPERTY ERROR:", error);
         Swal.fire({
             title: "Failed to Create Property Information",
+            text: error.response?.data?.message || "Something went wrong, please try again later.",
+            icon: "error",
+        });
+        throw error; // Re-throw the error for further handling if necessary
+    }
+}
+
+
+export async function handleUpdateOwnerAPi(propertyData, id) {
+    // Show loading alert
+    Swal.fire({
+        title: "Updating Owner Information...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        const response = await apiConnector("PUT", `${UPDATE_OWNER}/${id}`, { propertyData });
+
+        Swal.close();
+console.log(response.data?.success)
+        if (!response?.data?.success) {
+            await Swal.fire({
+                title: "Property Owner Update Failed",
+                text: response.data.message || "Failed to update property information.",
+                icon: "error",
+            });
+            throw new Error(response.data.message);
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Success!",
+            text: response.data.message || "Property Owner has been updated successfully.",
+            icon: "success",
+        });
+
+        // Return the updated property data (optional)
+        return response.data?.success;
+    } catch (error) {
+        // Handle errors and show error message
+        console.error("UPDATE PROPERTY ERROR:", error);
+        Swal.fire({
+            title: "Failed to Update Property Information",
             text: error.response?.data?.message || "Something went wrong, please try again later.",
             icon: "error",
         });
