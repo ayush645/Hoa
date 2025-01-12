@@ -74,10 +74,10 @@ const GetBudgetIncome = ({
     const success = await updateBudgetIncomeApi(propertyData, seletedId);
 
     if (success) {
-      // setName("");
-      // setAmount("");
-      // setShowForm(false);
-      // fetchBudgetIncome();
+      setName("");
+      setAmount("");
+      setShowForm(false);
+      fetchBudgetIncome();
     }
   };
 
@@ -181,7 +181,18 @@ const GetBudgetIncome = ({
         </select>
       </div>
 
-      <div className="overflow-x-auto">
+
+      {!selectedYear && (
+    <div className="flex justify-center items-center mt-5">
+      <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+        <p className="font-semibold text-lg">Please select a year.</p>
+      </div>
+    </div>
+  )}
+ {
+  selectedYear &&
+  <div>
+    <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
@@ -246,6 +257,8 @@ const GetBudgetIncome = ({
       <div className="mt-4 text-white text-center  font-semibold">
         <p>Total Amount: ₹{totalAmount}</p>
       </div>
+    </div>
+ }
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

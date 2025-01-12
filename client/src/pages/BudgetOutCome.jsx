@@ -175,6 +175,9 @@ const BudgetOutCome = () => {
         propertyData={propertyData}
         loading={loading}
         onDelete={handleDelete}
+        setLoading={setLoading}
+        fetchOutCome={fetchOutCome}
+        id={id}
       />
 
       <ExpeptionalReports type={'outcome'} />

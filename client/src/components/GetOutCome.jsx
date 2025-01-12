@@ -156,7 +156,8 @@ const GetOutCome = ({
         selectedIncomeId,
         selectedMonth,
         parseFloat(amount),
-        selectownerName
+        selectownerName,
+        yearFilter
       );
 
       if (result) {
@@ -277,6 +278,7 @@ const GetOutCome = ({
       XLSX.utils.book_append_sheet(wb, ws, "Income Data");
       XLSX.writeFile(wb, "income-information.xlsx");
     };
+
   return (
     <div className="income-info-container p-6 max-h-[80vh]">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -319,7 +321,18 @@ const GetOutCome = ({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+
+      {!yearFilter && (
+    <div className="flex justify-center items-center mt-5">
+      <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+        <p className="font-semibold text-lg">Please select a year.</p>
+      </div>
+    </div>
+  )}
+
+
+   {
+    yearFilter &&  <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
@@ -386,6 +399,7 @@ const GetOutCome = ({
           </tbody>
         </table>
       </div>
+   }
 
       {/* Modal */}
       {isModalOpen && (

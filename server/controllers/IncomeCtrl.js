@@ -109,12 +109,12 @@ const getIncomeCtrl = async (req, res) => {
 
 const updateMonthsIncome = async (req, res) => {
     const { id } = req.params;
-    const { month, amount,operation } = req.body;
-    console.log(req.body);
-    // Validate input
-     
+    const { month, amount, operation,year } = req.body;
+
+
+
     if (!month || typeof amount !== 'number') {
-        return res.status(400).json({ message: "Month and amount are required and amount should be a number" });
+        return res.status(400).json({ message: "Month and amount are required, and amount should be a number" });
     }
 
     const validMonths = [
@@ -128,36 +128,70 @@ const updateMonthsIncome = async (req, res) => {
     }
 
     try {
-        const updatedIncome = await incomeModel.findByIdAndUpdate(
-            id,
-            { $set: { [`months.${month}`]: amount } },
-            { new: true, runValidators: true }
-        );
+        const currentYear = year;
 
-        if (!updatedIncome) {
-            return res.status(404).json({ message: "Income record not found" });
+        // Find the document for the given year
+        let incomeRecord = await incomeModel.findOne({
+            _id: id,
+            createdAt: {
+                $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+                $lte: new Date(`${currentYear}-12-31T23:59:59.999Z`)
+            }
+        });
+
+        if (!incomeRecord) {
+            // If no document exists, create a new one
+            incomeRecord = new incomeModel({
+                _id: id,
+                months: { [month]: amount },
+                totalAmount: amount,
+                updateLog: [{
+                    date: new Date(),
+                    updatedFields: { [month]: amount },
+                    operation:`${operation}'s Contribution ${month}`
+                }]
+            });
+        } else {
+            // Update the existing document
+            incomeRecord.months[month] = amount;
+
+            // Recalculate totalAmount
+            incomeRecord.totalAmount = Object.values(incomeRecord.months).reduce((acc, curr) => acc + curr, 0);
+
+            // Find existing log entry for the month
+            const existingLogIndex = incomeRecord.updateLog.findIndex(log => log.updatedFields.has(month));
+
+            console.log(existingLogIndex)
+            if (existingLogIndex !== -1) {
+                incomeRecord.updateLog[existingLogIndex].date = new Date();
+                incomeRecord.updateLog[existingLogIndex].updatedFields.set(month, String(amount));
+                incomeRecord.updateLog[existingLogIndex].operation = `${operation}'s Contribution ${month}`;
+            } else {
+                // Add a new log entry for the month
+                incomeRecord.updateLog.push({
+                    date: new Date(),
+                    updatedFields: new Map([[month, String(amount)]]),
+                    operation:`${operation}'s Contribution ${month}`
+                });
+            }
         }
 
-        updatedIncome.totalAmount = Object.values(updatedIncome.months).reduce((acc, curr) => acc + curr, 0);
-       
-        updatedIncome.updateLog.push({
-            date: new Date(),
-            updatedFields: { [month]: amount },
+        // Save the document
+        await incomeRecord.save();
 
-            operation:operation
+        res.status(200).json({
+            message: incomeRecord.isNew ? "New income record created successfully" : "Income record updated successfully",
+            data: incomeRecord
         });
-        await updatedIncome.save();
-
-
-
-
-        
-        res.status(200).json({ message: "Month updated successfully", data: updatedIncome });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error", error });
     }
-}
+};
+
+
+
+
 
 
 const findAllLogs = async (req, res) => {

@@ -119,14 +119,15 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         selectedIncomeId, // Send the specific incomeId
         selectedMonth,
         amountToUpdate,
-        SelectownerName
+        SelectownerName,
+        yearFilter
       );
 
       if (result) {
         toast.success("Month updated successfully"); // Success toast
         setSelectedMonth(null);
         setSelectedIncomeId(null); // Clear selectedIncomeId
-        fetchIncome(); // Re-fetch income data after the update
+        // fetchIncome(); // Re-fetch income data after the update
         setIsModalOpen(false); // Close the modal after update
       }
     } catch (error) {
@@ -172,10 +173,16 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   });
 
   const currentDate = new Date(); // Use real current date
-  const totalDeficit = months.reduce(
-    (total, month) => total + (monthlyDeficits[month] || 0),
-    0
-  );
+  const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
+
+  const totalDeficit = months
+    .filter((month) => {
+      const monthIndex = new Date(`1 ${month} 2000`).getMonth(); // Month string se index nikalna
+      return monthIndex <= currentMonthIndex; // Sirf current aur purane months ko include kare
+    })
+    .reduce((total, month) => total + (monthlyDeficits[month] || 0), 0);
+  
+  
   const totalIncome = months.reduce(
     (total, month) => total + (monthlyTotals[month] || 0),
     0
@@ -435,6 +442,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   {months.map((month) => {
                     const monthAmount = income.months[month] || 0;
 
+                    
                     // Determine the background color based on conditions
                     const bgColor =
                       monthAmount === income.contribution
@@ -491,11 +499,20 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
             <tr className="bg-gray-100 font-bold">
               <td className="px-4 py-2 text-gray-800">Deficit</td>
               <td className="px-4 py-2 text-gray-800">-</td>
-              {months.map((month) => (
-                <td key={month} className="px-4 py-2 text-gray-800">
-                  {monthlyDeficits[month] || 0}
-                </td>
-              ))}
+              {months.map((month) => {
+  const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
+  const monthIndex = new Date(`1 ${month} 2000`).getMonth(); // Month string se index nikalna
+
+  return (
+    <td key={month} className="px-4 py-2 text-gray-800">
+      {monthIndex <= currentMonthIndex
+        ? monthlyDeficits[month] || 0 // Current aur purane months ka data
+        : "Not Happened"} 
+    </td>
+  );
+})}
+
+
               {/* null */}
               <td className="px-4 py-2 text-red-800">-{totalDeficit}</td>
               <td className="px-4 py-2 text-center"></td>
@@ -542,7 +559,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 </span>
               </h3>
               <h3 className="text-xl font-bold text-gray-800">
-                Monthly Amount:{" "}
+              Contribution:{" "}
                 <span className="font-medium">
                   {selectedIncomeData.contribution}
                 </span>

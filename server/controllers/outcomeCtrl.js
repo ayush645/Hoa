@@ -104,13 +104,11 @@ const getOutcomeCtrl = async (req, res) => {
 
 const updateMonthsOutcome = async (req, res) => {
     const { id } = req.params;
-    const { month, amount ,operation} = req.body;
-    console.log(req.body);
+    const { month, amount, operation,year } = req.body;
 
-    
     // Validate input
     if (!month || typeof amount !== 'number') {
-        return res.status(400).json({ message: "Month and amount are required and amount should be a number" });
+        return res.status(400).json({ message: "Month and amount are required, and amount should be a number" });
     }
 
     const validMonths = [
@@ -124,32 +122,67 @@ const updateMonthsOutcome = async (req, res) => {
     }
 
     try {
-        const updatedIncome = await outcomeModle.findByIdAndUpdate(
-            id,
-            { $set: { [`months.${month}`]: amount } },
-            { new: true, runValidators: true }
-        );
+        const currentYear = year || new Date().getFullYear();
 
-        if (!updatedIncome) {
-            return res.status(404).json({ message: "Outcome record not found" });
+        // Find the document for the given year
+        let outcomeRecord = await outcomeModle.findOne({
+            _id: id,
+            createdAt: {
+                $gte: new Date(`${currentYear}-01-01T00:00:00.000Z`),
+                $lte: new Date(`${currentYear}-12-31T23:59:59.999Z`)
+            }
+        });
+
+        if (!outcomeRecord) {
+            // Create a new document if it doesn't exist
+            outcomeRecord = new outcomeModle({
+                _id: id,
+                months: { [month]: amount },
+                totalAmount: amount,
+                updateLog: [{
+                    date: new Date(),
+                    updatedFields: new Map([[month, String(amount)]]),
+                    operation
+                }]
+            });
+        } else {
+            // Update the existing document
+            outcomeRecord.months[month] = amount;
+
+            // Recalculate totalAmount
+            outcomeRecord.totalAmount = Object.values(outcomeRecord.months).reduce((acc, curr) => acc + curr, 0);
+
+            // Check for an existing log entry for the month
+            const existingLogIndex = outcomeRecord.updateLog.findIndex(log => log.updatedFields.has(month));
+
+            if (existingLogIndex !== -1) {
+                // Update the existing log entry
+                outcomeRecord.updateLog[existingLogIndex].date = new Date();
+                outcomeRecord.updateLog[existingLogIndex].updatedFields.set(month, String(amount));
+                outcomeRecord.updateLog[existingLogIndex].operation = operation;
+            } else {
+                // Add a new log entry if no existing log is found for the month
+                outcomeRecord.updateLog.push({
+                    date: new Date(),
+                    updatedFields: new Map([[month, String(amount)]]),
+                    operation
+                });
+            }
         }
 
-        updatedIncome.totalAmount = Object.values(updatedIncome.months).reduce((acc, curr) => acc + curr, 0);
-        updatedIncome.updateLog.push({
-            date: new Date(),
-            updatedFields: { [month]: amount },
-            operation:operation
+        // Save the document
+        await outcomeRecord.save();
 
-
+        res.status(200).json({
+            message: outcomeRecord.isNew ? "New outcome record created successfully" : "Outcome record updated successfully",
+            data: outcomeRecord
         });
-        await updatedIncome.save();
-
-        res.status(200).json({ message: "Month updated successfully", data: updatedIncome });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error", error });
     }
-}
+};
+
 
 
 

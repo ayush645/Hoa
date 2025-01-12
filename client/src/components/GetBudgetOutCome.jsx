@@ -1,13 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash } from "react-icons/fa"; // Import Trash Icon
+import { FaTrash ,FaEdit} from "react-icons/fa"; // Import Trash Icon
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import ImageUploaderWithCrop from "./common/ImageUpload";
+import { getAllBudgetIncomeApi, updateBudgetOutcomeAPI } from "../services/operation/function";
+import Swal from "sweetalert2";
 
-const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
+const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOutCome,id}) => {
   const [filteredData, setFilteredData] = useState(propertyData);
   const [selectedYear, setSelectedYear] = useState("");
   const [totalAmount, setTotalAmount] = useState(0);
+
+
+    const [type, setType] = useState("");
+    const [amount, setAmount] = useState("");
+    const [showForm, setShowForm] = useState(false);
+     const [totalAmountOut, setTotalAmountOut] = useState(0);
+    const [totalAmountincome, setTotalAmountIncome] = useState(0);
+   const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+    const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
+  
+  const [seletedId, setSeletedId] = useState(null);
+
+
+  const fetchBudgetIncome = async () => {
+      if (!id) return;
+  
+      try {
+        setLoading(true);
+        const data = await getAllBudgetIncomeApi(id);
+        if (data) {
+          const total = data.reduce(
+            (sum, property) => sum + (parseInt(property.amount) || 0), // Convert amount to an integer
+            0
+          );
+          setTotalAmountIncome(total);
+  
+          console.log(total);
+        }
+      } catch (error) {
+        console.error("Error fetching property information:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   useEffect(() => {
     // Calculate the total amount by summing individual property amounts
@@ -56,6 +93,39 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
     doc.save("income-information.pdf");
   };
 
+    const handleSubmit = async () => {
+      const propertyData = {
+        type,
+        amount,
+       
+        document:imageData
+      };
+      const availableBalance = totalAmountincome - totalAmountOut;
+  console.log(imageData)
+      
+      if (amount > totalAmountincome - totalAmountOut) {
+        Swal.fire({
+          title: "Error!",
+          text: `The amount exceeds the available balance of ${availableBalance.toFixed(
+            2
+          )}.`,
+          icon: "error",
+          confirmButtonText: "Ok",
+        });
+  
+        return false; // Don't allow the amount
+      }
+  
+      const success = await updateBudgetOutcomeAPI(propertyData,seletedId);
+  
+      if (success) {
+        setType("");
+        setAmount("");
+        setShowForm(false);
+        fetchOutCome();
+      }
+    };
+
   // Export as Excel
   const handleExportExcel = () => {
     const ws = XLSX.utils.json_to_sheet(
@@ -75,6 +145,32 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
     XLSX.utils.book_append_sheet(wb, ws, "Income Data");
     XLSX.writeFile(wb, "income-information.xlsx");
   };
+
+  const toggleForm = () => setShowForm(!showForm);
+
+
+  useEffect(()=>{
+    fetchBudgetIncome()
+  },[])
+
+  const editHandle = async (id) => {
+    setSeletedId(id);
+    console.log(id);
+
+    // Filter the propertyData to find the matching item
+    const selectedData = propertyData.find((item) => item._id === id);
+    console.log(selectedData);
+    if (selectedData) {
+      // Set the form fields with the data from the selected item
+      setType(selectedData.type);
+      setAmount(selectedData.amount);
+      setImageData(selectedData.document || null); // If there's a base64 image, set it
+      setShowForm(true); // Show the form modal
+    } else {
+      console.log("Item not found!");
+    }
+  };
+
   if (loading) {
     return (
       <p className="text-center text-gray-500 text-lg font-semibold">
@@ -179,6 +275,13 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
                   >
                     <FaTrash size={16} />
                   </button>
+                  <button
+                    onClick={() => editHandle(property._id)}
+                    className="bg-green-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
+                    title="Delete Property"
+                  >
+                    <FaEdit size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -190,6 +293,48 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete }) => {
       <div className="mt-4 text-white text-center font-semibold">
         <p>Total Amount: {totalAmount}</p>
       </div>
+
+
+
+      {showForm && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl relative">
+            <button
+              onClick={toggleForm}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2"
+            >
+              X
+            </button>
+
+            <h2 className="text-2xl font-semibold mb-4">Create Budget Outcome</h2>
+            <input
+              type="text"
+              placeholder="Enter Expense Type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="number"
+              placeholder="Enter Value of Expense"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <ImageUploaderWithCrop
+              setImageData={setImageData}
+              setSelectedImage={setSelectedImage}
+              selectedImage={selectedImage}
+              title="Upload Document"
+            />
+            <div className="flex justify-center items-center mt-4">
+              <button onClick={handleSubmit} className="button-85">
+                Create Budget Outcome
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

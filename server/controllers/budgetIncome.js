@@ -45,10 +45,9 @@ const createBudgetIncomeCtrl = async (req, res) => {
 const updateBudgetIncomeCtrl = async (req, res) => {
   const { id } = req.params; // Get the ID from the URL params
   const {
-    propertyData: { name, amount,  document },
+    propertyData: { name, amount, document },
   } = req.body;
-  console.log(req.body)
-  
+
   try {
     // Check if all required fields are provided
     if (!name || !amount) {
@@ -58,7 +57,7 @@ const updateBudgetIncomeCtrl = async (req, res) => {
       });
     }
 
-    // Find the property by ID and update it
+    // Find the property by ID
     const property = await budgetIncomeModel.findById(id);
 
     if (!property) {
@@ -73,12 +72,28 @@ const updateBudgetIncomeCtrl = async (req, res) => {
     property.amount = amount;
     property.document = document;
 
-    // Add to the update log
-    property.updateLog.push({
-      date: Date.now(),
-      ammount: amount,
-      operation: `${name} Budget Income updated`,
-    });
+    // Find if there's already a log with the same month/operation
+    const existingLogIndex = property.updateLog.findIndex(log =>
+      log.operation && log.operation.includes(`${name} Budget Income updated`) // Check if log.operation exists
+
+    );
+console.log(existingLogIndex)
+    if (existingLogIndex !== -1) {
+      // If log entry exists, update it
+      property.updateLog[existingLogIndex] = {
+        ...property.updateLog[existingLogIndex],
+        date: Date.now(), // Update the date to the current time
+        ammount: amount,  // Update the amount if necessary
+        operation:`${name} Budget Income updated`
+      };
+    } else {
+      // If no log entry is found, create a new one
+      property.updateLog.push({
+        date: Date.now(),
+        ammount: amount,
+        operation: `${name} Budget Income updated`,
+      });
+    }
 
     // Save the updated property
     await property.save();
@@ -96,6 +111,8 @@ const updateBudgetIncomeCtrl = async (req, res) => {
     });
   }
 };
+
+
 
 const deleteBudgetIncomeCtrl = async (req, res) => {
   const { id } = req.params;

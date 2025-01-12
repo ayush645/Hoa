@@ -15,7 +15,7 @@ function ExpeptionalReports({ type }) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-budget-data`);
         // Set the data to state
-        console.log(response.data)
+        console.log(response.data.data)
         setBudgetData(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -54,17 +54,17 @@ function ExpeptionalReports({ type }) {
 
                 // Sort the updateLog by date (if it exists)
                 const sortedUpdateLog = entry.updateLog?.sort((a, b) => {
-                  return new Date(b.date) - new Date(a.date); // Sort by date (ascending order)
+                  return new Date(a.date) - new Date(b.date); // Sort by date (ascending order)
                 }) || [];
 
                 return (
                   <React.Fragment key={index}>
-                    {sortedUpdateLog.length > 0 ? (
+                    {sortedUpdateLog.length > 0 && (
                       sortedUpdateLog.map((logItem, logIndex) => (
-                        logItem.ammount !==0 && (
+                        logItem && (
                           <tr key={logIndex}>
                             <td className="border border-gray-200 p-2">
-                              {new Date(entry.createdAt).toLocaleString()} {/* Use createdAt */}
+                              {new Date(logItem.date).toLocaleString()} {/* Use createdAt */}
                             </td>
                             <td className="border border-gray-200 p-2">{logItem.operation}</td>
                             <td className={`border border-gray-200 p-2 ${color}`}>
@@ -73,18 +73,7 @@ function ExpeptionalReports({ type }) {
                           </tr>
                         )
                       ))
-                    ) : (
-                      // If there's no updateLog, render a single row
-                      <tr>
-                        <td className="border border-gray-200 p-2">
-                          {new Date(entry.createdAt).toLocaleString()}
-                        </td>
-                        <td className="border border-gray-200 p-2">{entry.operation}</td>
-                        <td className={`border border-gray-200 p-2 ${color}`}>
-                          {sign} ₹{entry.amount}
-                        </td>
-                      </tr>
-                    )}
+                    ) }
                   </React.Fragment>
                 );
               })}

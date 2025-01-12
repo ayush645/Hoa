@@ -39,6 +39,7 @@ const {
 
 
     CREATE_BUDGET_OUTCOME,
+    UPDATE_BUDGET_OUTCOME,
     DELETE_BUDGET_OUTCOME,
     GET_ALL_BUDGET_OUTCOME,
 
@@ -840,11 +841,11 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount,operation) => {
+export const updateMonthIncomeApi = async (id, month, amount,operation,year) => {
     try {
         console.log("Updating income with:", { id, month, amount }); // Debugging
 
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation });
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation,year });
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);
@@ -852,11 +853,11 @@ export const updateMonthIncomeApi = async (id, month, amount,operation) => {
     }
 };
 
-export const updateMonthOutComeApi = async (id, month, amount,operation) => {
+export const updateMonthOutComeApi = async (id, month, amount,operation,year) => {
     try {
         console.log("Updating outcome with:", { id, month, amount }); // Debugging
 
-        const response = await apiConnector("PUT", `${UPDATE_OUTCOME}/${id}`, { month, amount,operation });
+        const response = await apiConnector("PUT", `${UPDATE_OUTCOME}/${id}`, { month, amount,operation,year });
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);
@@ -1382,6 +1383,56 @@ export async function createBudgetOutcomeAPi(propertyData) {
         throw error; // Re-throw the error for further handling if necessary
     }
 }
+
+export async function updateBudgetOutcomeAPI(propertyData, id) {
+    // Show loading alert
+    Swal.fire({
+        title: "Updating Budget Outcome...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        // Make an API request to update the budget outcome
+        const response = await apiConnector("PUT", `${UPDATE_BUDGET_OUTCOME}/${id}`, { propertyData });
+
+        Swal.close();
+
+        if (!response?.data?.success) {
+            await Swal.fire({
+                title: "Budget Outcome Update Failed",
+                text: response.data.message || "Failed to update budget outcome.",
+                icon: "error",
+            });
+            throw new Error(response.data.message);
+        }
+
+        // Show success message
+        Swal.fire({
+            title: "Success!",
+            text: response.data.message || "Budget outcome has been updated.",
+            icon: "success",
+        });
+
+        // Return the updated property data (optional)
+        return response.data.property;
+    } catch (error) {
+        // Handle errors and show error message
+        console.error("UPDATE PROPERTY ERROR:", error);
+        Swal.fire({
+            title: "Failed to Update Budget Outcome",
+            text: error.response?.data?.message || "Something went wrong, please try again later.",
+            icon: "error",
+        });
+        throw error; // Re-throw the error for further handling if necessary
+    }
+}
+
 
 export async function getAllBudgetOutcomeApi(id) {
     let result = [];
