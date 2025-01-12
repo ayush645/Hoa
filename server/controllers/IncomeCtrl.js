@@ -1,6 +1,49 @@
 const incomeModel = require('../models/Income'); // Adjust the path as per your project structure
 const Outcome  = require("../models/outcomeModel")
+const PropertyInformations = require("../models/PropertyInformationsModel"); // Adjust the path as necessary
+const ejs = require("ejs");
+const path = require("path");
+const nodemailer = require("nodemailer");
+const puppeteer = require("puppeteer");
 
+async function generatePDF2(data) {
+  const htmlContent = await ejs.renderFile(
+    path.join(__dirname, "../mail_template/reciapt.ejs"),
+    data
+  );
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlContent);
+  const pdfBuffer = await page.pdf();
+  await browser.close();
+  return pdfBuffer;
+}
+
+async function sendEmail(pdfBuffer, recipientEmail) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.MAIL_USER, // Set in .env
+      pass: process.env.MAIL_PASS, // Set in .env
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.MAIL_USER,
+    to: recipientEmail,
+    subject: "HOA Payment Reminder",
+    text: "Please find the HOA payment reminder attached.",
+    attachments: [
+      {
+        filename: "hoa_payment_reminder.pdf",
+        content: pdfBuffer,
+      },
+    ],
+  };
+
+  await transporter.sendMail(mailOptions);
+}
 const createIncomeCtrl = async (req, res) => {
     const {
         ownerName, // Replace 'ownerName' with 'incomeName' if necessary
@@ -109,7 +152,7 @@ const getIncomeCtrl = async (req, res) => {
 
 const updateMonthsIncome = async (req, res) => {
     const { id } = req.params;
-    const { month, amount, operation,year } = req.body;
+    const { month, amount, operation,year,method } = req.body;
 
 
 
@@ -176,8 +219,44 @@ const updateMonthsIncome = async (req, res) => {
             }
         }
 
+
+
         // Save the document
         await incomeRecord.save();
+        const propertInfo = await PropertyInformations.find({
+            categoryId: incomeRecord.categoryId,
+          });
+
+          const paymentDateTime = new Date();
+
+            // Extract the month, date, and year
+  const month2 = paymentDateTime.toLocaleString('default', { month: 'long' }); // Full month name
+  const date = paymentDateTime.getDate();
+  const year2 = paymentDateTime.getFullYear();
+
+          const monthAmount = incomeRecord.months[month];
+          const contribution = incomeRecord.contribution;
+        const data = {
+            logoPath: propertInfo[0]?.logo?.url,
+            stampImagePath: 'https://i.ibb.co/428Fp08/h1.png',
+            propertyAddress:propertInfo[0]?.pName,
+            ownerName: incomeRecord.ownerName,
+            receiptNumber: '12345',
+            ownerUnit: incomeRecord.unit,
+            dueMonth: contribution,
+            amountToPay: amount,
+            paidAmount: amount,
+            dueAmount: contribution - monthAmount,
+            paymentMethod: method,
+            paymentDateTime: `${month2} ${date}, ${year2}`,
+          
+          };
+
+          const pdfBuffer = await generatePDF2(data);
+
+          // Send Email
+          await sendEmail(pdfBuffer, incomeRecord.email);
+
 
         res.status(200).json({
             message: incomeRecord.isNew ? "New income record created successfully" : "Income record updated successfully",

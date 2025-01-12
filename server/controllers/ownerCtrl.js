@@ -98,6 +98,8 @@ console.log(bugdetOwner)
         // Create income entry
         const incomeCreate = await Income.create({
             ownerName: name,
+            email: email,
+            unit: unit.type,
             categoryId,
             contribution: unit.fee,
         });
@@ -129,7 +131,7 @@ const updateOwnerCtrl = async (req, res) => {
         propertyData: { name, address, phone, email, unit, categoryId,paymentType },
     } = req.body;
 
-   
+   console.log(req.body)
     try {
         // Validate required fields
         if (!ownerId) {
@@ -183,6 +185,9 @@ const updateOwnerCtrl = async (req, res) => {
             {
                 $set: {
                     ownerName: name, // Replace with the new name
+                    email: email, // Replace with the new name
+                    email: email,
+                    unit: unit.type,
                     contribution: unit ? unit.fee : existingOwner.unitDetails.fee, // Update contribution
                 },
             },

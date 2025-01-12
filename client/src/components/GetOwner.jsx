@@ -98,7 +98,7 @@ console.log(success)
       setAddress(selectedData.address || ""); // Set address
       setPhone(selectedData.phone || ""); // Set phone
       setEmail(selectedData.email || ""); // Set email
-      setPaymentType(selectedData.paymentType || ""); // Set email
+      setPaymentType(selectedData.paymentType || "Cash"); // Set email
       setUnit({
         type: selectedData.unitDetails?.type || "",
         currency: selectedData.unitDetails?.currency || "",

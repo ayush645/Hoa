@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Receipt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .email-container .stamp {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.2;
+      z-index: -1;
+    }
+    .header {
+      background-color: #0077cc;
+      color: #ffffff;
+      text-align: center;
+      padding: 15px;
+    }
+    .header .logo {
+      max-width: 120px;
+      margin-bottom: 10px;
+    }
+    .header h1, .header h2, .header h3 {
+      margin: 5px 0;
+    }
+    .email-body {
+      padding: 20px;
+    }
+    .email-body p {
+      margin: 10px 0;
+    }
+    .email-footer {
+      background: #f4f4f4;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .table th, .table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .table th {
+      background-color: #0077cc;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Stamp/Logo -->
+    <img src="<%= stampImagePath %>" alt="Stamp" class="stamp" />
+
+    <!-- Logo and Property Info -->
+    <div class="header">
+      <img src="<%= logoPath %>" alt="Logo" class="logo" />
+      <h1>President of: Home Owners Association</h1>
+      <h2>Property Info: <%= propertyAddress %></h2>
+      <h3>To: <%= ownerName %></h3>
+    </div>
+
+    <!-- Table with Payment Details -->
+    <div class="email-body">
+      <h2>Payment Receipt</h2>
+      <table class="table">
+        <tr>
+          <th>Receipt Number</th>
+          <td><%= receiptNumber %></td>
+        </tr>
+        <tr>
+          <th>Owner Name</th>
+          <td><%= ownerName %></td>
+        </tr>
+        <tr>
+          <th>Owner Unit</th>
+          <td><%= ownerUnit %></td>
+        </tr>
+        <tr>
+          <th>Month of Contribution</th>
+          <td><%= dueMonth %></td>
+        </tr>
+        <tr>
+          <th>Amount to Pay</th>
+          <td><%= amountToPay %></td>
+        </tr>
+        <tr>
+          <th>Paid</th>
+          <td><%= paidAmount %></td>
+        </tr>
+        <tr>
+          <th>Due</th>
+          <td><%= dueAmount %></td>
+        </tr>
+        <tr>
+          <th>Payment Method</th>
+          <td><%= paymentMethod %></td>
+        </tr>
+        <tr>
+          <th>Date and Time</th>
+          <td><%= paymentDateTime %></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    
+</body>
+</html>

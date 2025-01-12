@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HOA Payment Reminder</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 700px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 100px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .header h2 {
+      color: #777;
+      font-size: 18px;
+      margin: 5px 0;
+    }
+
+    .header h3 {
+      color: #555;
+      font-size: 16px;
+    }
+
+    .content {
+      font-size: 16px;
+      color: #444;
+      margin-top: 20px;
+    }
+
+    .content h4 {
+      color: #333;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .content p {
+      margin: 10px 0;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #000;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .stamp-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .stamp {
+      width: 200px;
+      height: 200px;
+      position: relative;
+    }
+
+    .stamp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .signature-container {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .contact-info {
+      margin-top: 15px;
+      color: #777;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      text-align: center;
+      border-radius: 5px;
+      font-size: 14px;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="<%= logoPath %>" alt="Logo" class="logo" />
+      <h1>President of: Home Owners Association</h1>
+      <h2>Property Info: <%= propertyAddress %></h2>
+      <h3>To: <%= ownerName %></h3>
+    </div>
+
+    <div class="content">
+      <h4>Subject: Friendly Reminder: Payment of Overdue HOA Contribution</h4>
+      <p>Dear <%= ownerName %>,</p>
+      <p>This is a reminder regarding your HOA contribution for the month of <%= expiredMonth %>, which is currently overdue.</p>
+      <p><span class="highlight">Outstanding Amount:</span> $<%= outstandingAmount %></p>
+      <p><span class="highlight">Due Date:</span> <%= dueDate %></p>
+      <p>We kindly request that you complete this payment at your earliest convenience to avoid any late fees or disruptions in services.</p>
+      <p>Thank you for your attention to this matter, and we appreciate your continued support for our community.</p>
+
+      <div class="stamp-container">
+        <div class="signature-container">
+          <p>Warm regards,</p>
+          <p>President of HOA</p>
+        </div>
+
+        <div class="stamp">
+          <img src="<%= stampImageUrl %>" alt="Stamp">
+        </div>
+      </div>
+
+      <p class="contact-info"><%= contactInfo %></p>
+    </div>
+
+    <div class="footer">
+      <a href="mailto:<%= contactInfo %>" class="btn">Contact Us</a>
+    </div>
+  </div>
+</body>
+</html>

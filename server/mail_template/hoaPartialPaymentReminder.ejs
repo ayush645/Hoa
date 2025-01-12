@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partial Payment Reminder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background-color: #0077cc;
+      color: #ffffff;
+      text-align: center;
+      padding: 15px;
+    }
+    .header .logo {
+      max-width: 120px;
+      margin-bottom: 10px;
+    }
+    .header h1, .header h2, .header h3 {
+      margin: 5px 0;
+    }
+    .email-header {
+      background-color: #0077cc;
+      color: #ffffff;
+      text-align: center;
+      padding: 15px 20px;
+    }
+    .email-header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .email-body {
+      padding: 20px;
+    }
+    .email-body p {
+      margin: 10px 0;
+    }
+    .email-footer {
+      background: #f4f4f4;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Logo and Property Info -->
+    <div class="header">
+      <img src="<%= logoPath %>" alt="Logo" class="logo" />
+      <h1>President of: Home Owners Association</h1>
+      <h2>Property Info: <%= propertyAddress %></h2>
+      <h3>To: <%= ownerName %></h3>
+    </div>
+
+    <!-- Main Header -->
+    <div class="email-header">
+      <h1>Complete Your Partial HOA Contribution</h1>
+    </div>
+
+    <!-- Email Body -->
+    <div class="email-body">
+      <p>Dear <strong><%= memberName %></strong>,</p>
+      <p>
+        This is a reminder regarding the incomplete payment of your HOA
+        contribution for the month of <strong><%= dueMonth %></strong>, which
+        remains partially unpaid following the expiration of
+        <strong><%= followingMonth %></strong>.
+      </p>
+      <p><strong>Outstanding Amount:</strong> $<%= outstandingAmount.toFixed(2) %></p>
+      <% if (dueDate) { %>
+      <p><strong>Due Date for Completion:</strong> <%= dueDate %></p>
+      <% } %>
+      <p>Thank you for your attention to this matter, and we appreciate your continued support for our community.</p>
+      <p>Warm regards,</p>
+      <p><%= contactInfo %></p>
+    </div>
+
+    <!-- Footer -->
+    <div class="email-footer">
+      <p>© HOA Community. All Rights Reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

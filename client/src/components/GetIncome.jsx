@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import NotifationsSender from "./Report/NotifationsSender";
 
 const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [yearFilter, setYearFilter] = useState(""); // State to store selected year
@@ -18,7 +19,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [incomeData, setIncomeData] = useState(propertyData); // Added state to store fetched income data
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [selectedIncomeData, setSelectedIncomeData] = useState(null); // Store selected income data for the modal
-  const [paymentType, setPaymentType] = useState("");
+  const [paymentType, setPaymentType] = useState("Cash");
 
   const [SelectownerName, setSelectOwnerName] = useState("");
 
@@ -58,6 +59,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const handleMonthClick = (incomeId, month) => {
     setSelectedIncomeId(incomeId); // Set selected income ID
     setSelectedMonth(month);
+
+
 
     // Get selected income data
     const selectedIncome = filteredData.find(
@@ -120,7 +123,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         selectedMonth,
         amountToUpdate,
         SelectownerName,
-        yearFilter
+        yearFilter,
+        paymentType
       );
 
       if (result) {
@@ -172,7 +176,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       monthlyTotal; // Deficit is the contribution - total for that month
   });
 
-  const currentDate = new Date(); // Use real current date
+ 
   const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
 
   const totalDeficit = months
@@ -181,19 +185,11 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       return monthIndex <= currentMonthIndex; // Sirf current aur purane months ko include kare
     })
     .reduce((total, month) => total + (monthlyDeficits[month] || 0), 0);
-  
-  
+
   const totalIncome = months.reduce(
     (total, month) => total + (monthlyTotals[month] || 0),
     0
   );
-
-  const isFutureMonth = (month) => {
-    const monthIndex = months.indexOf(month);
-    if (monthIndex === -1) return false;
-    const selectedDate = new Date(currentDate.getFullYear(), monthIndex, 1);
-    return selectedDate > currentDate;
-  };
 
   const handleChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -341,10 +337,6 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
     }
   };
 
-
-
-
-  
   return (
     <div className="income-info-container p-6 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
@@ -389,172 +381,177 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
       {/* Table */}
       {!yearFilter && (
-    <div className="flex justify-center items-center mt-5">
-      <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
-        <p className="font-semibold text-lg">Please select a year.</p>
-      </div>
-    </div>
-  )}
-     {yearFilter && <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Owner Name
-              </th>
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Contribution
-              </th>
-              {months.map((month) => (
-                <th
-                  key={month}
-                  className="px-4 py-2 text-left text-gray-600 font-semibold"
-                >
-                  {month}
-                </th>
-              ))}
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Total Amount
-              </th>
-              <th className="px-4 py-2 text-center text-gray-600 font-semibold">
-                Actions
-              </th>
-              <th className="px-4 py-2 text-center text-gray-600 font-semibold"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((income) => {
-              const totalAmount = Object.values(income.months).reduce(
-                (sum, value) => sum + value,
-                0
-              );
-              return (
-                <tr
-                  key={income._id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 text-gray-800">
-                    {income.ownerName}
-                  </td>
-                  <td className="px-4 py-2 text-gray-800">
-                    {income.contribution}
-                  </td>
-                  {months.map((month) => {
-  const monthAmount = income.months[month] || 0;
-
-  // Convert the month to a Date object (assuming the month string is in a format like "January", "February", etc.)
-  const monthIndex = new Date(`${month} 1, 2025`).getMonth(); // Set a fixed year to avoid errors
-  const currentMonthIndex = new Date().getMonth(); // Current month index
-
-  // Determine the background color based on conditions
-  const bgColor = 
-    monthIndex > currentMonthIndex && monthAmount > 0
-      ? "bg-yellow-400 text-black" // Apply yellow if it's a future month and the amounts are equal
-      : monthAmount === income.contribution
-      ? "bg-green-500 text-white"
-      : monthAmount === 0
-      ? ""
-      : monthAmount < income.contribution
-      ? "bg-orange-500 text-white"
-      : "bg-white";
-
-  return (
-    <td
-      key={month}
-      className={`px-4 py-2 ${bgColor} cursor-pointer border`}
-      onClick={() => handleMonthClick(income._id, month)}
-    >
-   {monthAmount > 0 && monthIndex > currentMonthIndex ? (
-        <span className=" fle flex-col"> {monthAmount}  Advance</span> // Display "Pay in Advance" for future months with zero amount
-      ) : (
-        monthAmount
+        <div className="flex justify-center items-center mt-5">
+          <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+            <p className="font-semibold text-lg">Please select a year.</p>
+          </div>
+        </div>
       )}
-    </td>
-  );
-})}
-
-
-                  <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
-                  <td className="px-4 py-2 text-center">
-                    <FaTrash
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => onDelete(income._id)}
-                    />
-                  </td>
-                  <td
-                    className="px-4 py-2 text-blue-800 underline"
-                    onClick={() => handleDownloadOwner(income._id)}
+      {yearFilter && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Owner Name
+                </th>
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Contribution
+                </th>
+                {months.map((month) => (
+                  <th
+                    key={month}
+                    className="px-4 py-2 text-left text-gray-600 font-semibold"
                   >
-                    Owner report
+                    {month}
+                  </th>
+                ))}
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Total Amount
+                </th>
+                <th className="px-4 py-2 text-center text-gray-600 font-semibold">
+                  Actions
+                </th>
+                <th className="px-4 py-2 text-center text-gray-600 font-semibold"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((income) => {
+                const totalAmount = Object.values(income.months).reduce(
+                  (sum, value) => sum + value,
+                  0
+                );
+                return (
+                  <tr
+                    key={income._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-2 text-gray-800">
+                      {income.ownerName}
+                    </td>
+                    <td className="px-4 py-2 text-gray-800">
+                      {income.contribution}
+                    </td>
+                    {months.map((month) => {
+                      const monthAmount = income.months[month] || 0;
+
+                      // Convert the month to a Date object (assuming the month string is in a format like "January", "February", etc.)
+                      const monthIndex = new Date(
+                        `${month} 1, 2025`
+                      ).getMonth(); // Set a fixed year to avoid errors
+                      const currentMonthIndex = new Date().getMonth(); // Current month index
+
+                      // Determine the background color based on conditions
+                      const bgColor =
+                        monthIndex > currentMonthIndex && monthAmount > 0
+                          ? "bg-yellow-400 text-black" // Apply yellow if it's a future month and the amounts are equal
+                          : monthAmount === income.contribution
+                          ? "bg-green-500 text-white"
+                          : monthAmount === 0
+                          ? ""
+                          : monthAmount < income.contribution
+                          ? "bg-orange-500 text-white"
+                          : "bg-white";
+
+                      return (
+                        <td
+                          key={month}
+                          className={`px-4 py-2 ${bgColor} cursor-pointer border`}
+                          onClick={() => handleMonthClick(income._id, month)}
+                        >
+                          {monthAmount > 0 && monthIndex > currentMonthIndex ? (
+                            <span className=" fle flex-col">
+                              {" "}
+                              {monthAmount} Advance
+                            </span> // Display "Pay in Advance" for future months with zero amount
+                          ) : (
+                            monthAmount
+                          )}
+                        </td>
+                      );
+                    })}
+
+                    <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
+                    <td className="px-4 py-2 text-center">
+                      <FaTrash
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => onDelete(income._id)}
+                      />
+                    </td>
+                    <td
+                      className="px-4 py-2 text-blue-800 underline"
+                      onClick={() => handleDownloadOwner(income._id)}
+                    >
+                      Owner report
+                    </td>
+                  </tr>
+                );
+              })}
+
+              {/* Footer Row for Total */}
+              <tr className="bg-gray-100 font-bold">
+                <td className="px-4 py-2 text-gray-800">Total</td>
+                <td className="px-4 py-2 text-gray-800">{totalContribution}</td>
+                {months.map((month) => (
+                  <td key={month} className="px-4 py-2 text-gray-800">
+                    {monthlyTotals[month]}
                   </td>
-                </tr>
-              );
-            })}
+                ))}
+                {/* //null */}
+                <td className="px-4 py-2 text-gray-800">{totalIncome}</td>
+                <td className="px-4 py-2 text-center"></td>
+              </tr>
 
-            {/* Footer Row for Total */}
-            <tr className="bg-gray-100 font-bold">
-              <td className="px-4 py-2 text-gray-800">Total</td>
-              <td className="px-4 py-2 text-gray-800">{totalContribution}</td>
-              {months.map((month) => (
-                <td key={month} className="px-4 py-2 text-gray-800">
-                  {monthlyTotals[month]}
-                </td>
-              ))}
-              {/* //null */}
-              <td className="px-4 py-2 text-gray-800">{totalIncome}</td>
-              <td className="px-4 py-2 text-center"></td>
-            </tr>
+              {/* Footer Row for Deficit */}
+              <tr className="bg-gray-100 font-bold">
+                <td className="px-4 py-2 text-gray-800">Deficit</td>
+                <td className="px-4 py-2 text-gray-800">-</td>
+                {months.map((month) => {
+                  const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
+                  const monthIndex = new Date(`1 ${month} 2000`).getMonth(); // Month string se index nikalna
 
-            {/* Footer Row for Deficit */}
-            <tr className="bg-gray-100 font-bold">
-              <td className="px-4 py-2 text-gray-800">Deficit</td>
-              <td className="px-4 py-2 text-gray-800">-</td>
-              {months.map((month) => {
-  const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
-  const monthIndex = new Date(`1 ${month} 2000`).getMonth(); // Month string se index nikalna
+                  return (
+                    <td key={month} className="px-4 py-2 text-gray-800">
+                      {monthIndex <= currentMonthIndex
+                        ? monthlyDeficits[month] || 0 // Current aur purane months ka data
+                        : "Not Happened"}
+                    </td>
+                  );
+                })}
 
-  return (
-    <td key={month} className="px-4 py-2 text-gray-800">
-      {monthIndex <= currentMonthIndex
-        ? monthlyDeficits[month] || 0 // Current aur purane months ka data
-        : "Not Happened"} 
-    </td>
-  );
-})}
+                {/* null */}
+                <td className="px-4 py-2 text-red-800">-{totalDeficit}</td>
+                <td className="px-4 py-2 text-center"></td>
+              </tr>
 
-
-              {/* null */}
-              <td className="px-4 py-2 text-red-800">-{totalDeficit}</td>
-              <td className="px-4 py-2 text-center"></td>
-            </tr>
-
-            <tr>
-              <td></td>
-              <td></td>
-              {months.map((month) => (
+              <tr>
+                <td></td>
+                <td></td>
+                {months.map((month) => (
+                  <td
+                    key={month}
+                    onClick={() => handleDownload(month)}
+                    className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
+                  >
+                    {month} Report
+                  </td>
+                ))}
                 <td
-                  key={month}
-                  onClick={() => handleDownload(month)}
                   className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
+                  onClick={handleDownloadYearl}
                 >
-                  {month} Report
+                  {" "}
+                  Yearl Report
                 </td>
-              ))}
-              <td
-                className="px-4 py-2 text-left text-blue-600 underline cursor-pointer "
-                onClick={handleDownloadYearl}
-              >
-                {" "}
-                Yearl Report
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md space-y-6">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 ">
+          <div className="bg-white max-h-[95vh] overflow-y-auto rounded-lg shadow-lg p-8 w-full max-w-md space-y-6">
             <div className="space-y-2">
               <h3 className="text-xl font-bold text-gray-800">
                 Year: <span className="font-medium">{yearFilter}</span>
@@ -569,7 +566,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 </span>
               </h3>
               <h3 className="text-xl font-bold text-gray-800">
-              Contribution:{" "}
+                Contribution:{" "}
                 <span className="font-medium">
                   {selectedIncomeData.contribution}
                 </span>
@@ -654,6 +651,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 Submit
               </button>
             </div>
+            <NotifationsSender ownerId={selectedIncomeId} dueMonth={selectedMonth} />
+
           </div>
         </div>
       )}

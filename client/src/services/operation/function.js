@@ -841,11 +841,11 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount,operation,year) => {
+export const updateMonthIncomeApi = async (id, month, amount,operation,year,method) => {
     try {
         console.log("Updating income with:", { id, month, amount }); // Debugging
 
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation,year });
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation,year, method});
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);

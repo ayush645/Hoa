@@ -54,6 +54,7 @@ app.use("/api/v1/budgetoutcome", require("./routes/budgetoutcomeRoute"));
 app.get('/api/v1/get-budget-data', getBudgetDataCtrl);
 
 app.use("/api/v1/print",require("./routes/printController"))
+app.use("/api/v1/mail",require("./routes/mailSender"))
 
 
 
