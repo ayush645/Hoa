@@ -127,7 +127,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         toast.success("Month updated successfully"); // Success toast
         setSelectedMonth(null);
         setSelectedIncomeId(null); // Clear selectedIncomeId
-        // fetchIncome(); // Re-fetch income data after the update
+        fetchIncome(); // Re-fetch income data after the update
         setIsModalOpen(false); // Close the modal after update
       }
     } catch (error) {
@@ -440,29 +440,39 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                     {income.contribution}
                   </td>
                   {months.map((month) => {
-                    const monthAmount = income.months[month] || 0;
+  const monthAmount = income.months[month] || 0;
 
-                    
-                    // Determine the background color based on conditions
-                    const bgColor =
-                      monthAmount === income.contribution
-                        ? "bg-green-500 text-white"
-                        : monthAmount === 0
-                        ? ""
-                        : monthAmount < income.contribution
-                        ? "bg-orange-500 text-white"
-                        : "bg-white";
+  // Convert the month to a Date object (assuming the month string is in a format like "January", "February", etc.)
+  const monthIndex = new Date(`${month} 1, 2025`).getMonth(); // Set a fixed year to avoid errors
+  const currentMonthIndex = new Date().getMonth(); // Current month index
 
-                    return (
-                      <td
-                        key={month}
-                        className={`px-4 py-2 ${bgColor} cursor-pointer border`}
-                        onClick={() => handleMonthClick(income._id, month)}
-                      >
-                        {monthAmount}
-                      </td>
-                    );
-                  })}
+  // Determine the background color based on conditions
+  const bgColor = 
+    monthIndex > currentMonthIndex && monthAmount > 0
+      ? "bg-yellow-400 text-black" // Apply yellow if it's a future month and the amounts are equal
+      : monthAmount === income.contribution
+      ? "bg-green-500 text-white"
+      : monthAmount === 0
+      ? ""
+      : monthAmount < income.contribution
+      ? "bg-orange-500 text-white"
+      : "bg-white";
+
+  return (
+    <td
+      key={month}
+      className={`px-4 py-2 ${bgColor} cursor-pointer border`}
+      onClick={() => handleMonthClick(income._id, month)}
+    >
+   {monthAmount > 0 && monthIndex > currentMonthIndex ? (
+        <span className=" fle flex-col"> {monthAmount}  Advance</span> // Display "Pay in Advance" for future months with zero amount
+      ) : (
+        monthAmount
+      )}
+    </td>
+  );
+})}
+
 
                   <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
                   <td className="px-4 py-2 text-center">
@@ -584,6 +594,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   <option value="Not Paid">Not Paid</option>
                   <option value="Full Paid">Full Paid</option>
                   <option value="Partially Paid">Partially Paid</option>
+                  <option value="Full Paid">Pay In Advacne </option>
                 </select>
               </div>
 

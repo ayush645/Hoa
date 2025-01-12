@@ -151,6 +151,7 @@ const Income = () => {
         loading={loading}
         onDelete={handleDelete}
         id={id}
+      
       />
 
       <ReguralReport type='income' />
