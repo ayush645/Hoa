@@ -99,6 +99,7 @@ const PrintInformation = () => {
                   </h3>
                 </div>
 
+
                 {/* Property Details */}
                 <div className="p-6">
                   <p className="text-gray-600 mb-2">

@@ -1,60 +1,66 @@
-import React, { useState } from "react";
-import { FaEdit, FaTrash, FaTools } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaTrash } from "react-icons/fa";
 import EditCategoryModal from "./EditCategoryModal";
 import { deleteCategoryApi } from "../services/operation/function";
-import { useNavigate } from "react-router-dom"; // Import for navigation
-import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
-const GetCategory = ({ categories, setCategories ,fetchCategories}) => {
+const GetCategory = ({ categories, setCategories, fetchCategories }) => {
   const [editCategory, setEditCategory] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const navigate = useNavigate();
 
+  // Load selected category from sessionStorage on component mount
+  useEffect(() => {
+    const savedCategoryId = sessionStorage.getItem("selectedCategoryId");
+    if (savedCategoryId) {
+      setSelectedCategoryId(savedCategoryId);
+    }
+  }, []);
 
   const handleDelete = async (id) => {
     try {
       const result = await Swal.fire({
-        title: 'Are you sure?',
+        title: "Are you sure?",
         text: "You won't be able to revert this!",
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!',
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
       });
-  
+
       if (result.isConfirmed) {
         const response = await deleteCategoryApi(id);
         if (response) {
-          fetchCategories()
+          fetchCategories();
           setCategories(categories.filter((item) => item._id !== id));
-          Swal.fire('Deleted!', 'Your Property has been deleted.', 'success');
+          Swal.fire("Deleted!", "Your Property has been deleted.", "success");
         }
       }
     } catch (error) {
-      console.error('Error deleting Property:', error.message);
-      Swal.fire('Error!', 'Failed to delete the Property.', 'error');
+      console.error("Error deleting Property:", error.message);
+      Swal.fire("Error!", "Failed to delete the Property.", "error");
     }
   };
-  
 
-  const handleEdit = (category) => {
-    setEditCategory(category);
+  const handleManage = (id) => {
+    const newSelectedId = selectedCategoryId === id ? null : id;
+    setSelectedCategoryId(newSelectedId);
+
+    // Save the new selected category ID to sessionStorage
+    if (newSelectedId) {
+      sessionStorage.setItem("selectedCategoryId", newSelectedId);
+    } else {
+      sessionStorage.removeItem("selectedCategoryId");
+    }
   };
 
-  const handleManage = (category) => {
-    setSelectedCategory(category);
-  };
-
-  const closeModal = () => {
-    setSelectedCategory(null);
-  };
-
-  const handleNavigation = (link) => {
+  const handleNavigation = (link, id) => {
     if (link === "printreports") {
       navigate("/print");
-    } else if (selectedCategory) {
-      navigate(`/${link}/${selectedCategory._id}`);
+    } else {
+      navigate(`/${link}/${id}`);
     }
   };
 
@@ -91,33 +97,60 @@ const GetCategory = ({ categories, setCategories ,fetchCategories}) => {
           <tbody>
             {categories.length > 0 ? (
               categories.map((category, index) => (
-                <tr
-                  key={category._id}
-                  className="border-b last:border-none hover:bg-gray-100"
-                >
-                  <td className="px-6 py-3">{index + 1}</td>
-                  <td className="px-6 py-3">{category.name}</td>
-                  <td className="px-6 py-3 text-center flex justify-center space-x-4">
-                    {/* <button
-                      onClick={() => handleEdit(category)}
-                      className="text-blue-500 hover:text-blue-600 text-lg"
-                    >
-                      <FaEdit />
-                    </button> */}
-                    <button
-                      onClick={() => handleDelete(category._id)}
-                      className="text-red-500 hover:text-red-600 text-lg"
-                    >
-                      <FaTrash />
-                    </button>
-                    <button
-                      onClick={() => handleManage(category)}
-                      className="text-green-500 hover:text-green-600 text-lg"
-                    >
-                      Manage
-                    </button>
-                  </td>
-                </tr>
+                <React.Fragment key={category._id}>
+                  <tr className="border-b last:border-none hover:bg-gray-100">
+                    <td className="px-6 py-3">{index + 1}</td>
+                    <td className="px-6 py-3">{category.name}</td>
+                    <td className="px-6 py-3 text-center flex justify-center space-x-4">
+                      <button
+                        onClick={() => handleDelete(category._id)}
+                        className="text-red-500 hover:text-red-600 text-lg"
+                      >
+                        <FaTrash />
+                      </button>
+                      <button
+                        onClick={() => handleManage(category._id)}
+                        className="text-green-500 hover:text-green-600 text-lg"
+                      >
+                        Manage
+                      </button>
+                    </td>
+                  </tr>
+                  {selectedCategoryId === category._id && (
+                    <tr>
+                      <td colSpan="3" className="px-6 py-3">
+                        <div className="flex space-x-4 justify-center">
+                          {[
+                            "Property Information",
+                            "Property Units",
+                            "Property Owners",
+                            "Property Comitee",
+                            "Regular Budget",
+                            "Exceptional Budget",
+                            "Print Reports",
+                            "Upload Documents",
+                
+                
+                
+                          ].map((link, index) => (
+                            <button
+                              key={index}
+                              onClick={() =>
+                                handleNavigation(
+                                  link.replace(/\s+/g, "").toLowerCase(),
+                                  category._id
+                                )
+                              }
+                              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                            >
+                              {link}
+                            </button>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
@@ -129,45 +162,6 @@ const GetCategory = ({ categories, setCategories ,fetchCategories}) => {
           </tbody>
         </table>
       </div>
-
-      {/* Popup Modal */}
-      {selectedCategory && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-96 p-6">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              Manage Category
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                "Property Information",
-                "Property Comitee",
-                "Property Units",
-                "Property Owners",
-                "Regular Budget",
-                "Exceptional Budget",
-                "Print Reports",
-                "Upload Documents",
-              ].map((link, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    handleNavigation(link.replace(/\s+/g, "").toLowerCase())
-                  }
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-center"
-                >
-                  {link}
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={closeModal}
-              className="mt-6 w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -43,6 +43,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
     );
   }
 
+
+  
+
   // Handle the year change
   const handleYearChange = (event) => {
     setYearFilter(event.target.value);

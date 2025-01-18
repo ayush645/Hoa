@@ -129,7 +129,7 @@ const PropertyInformation = () => {
       // Create a temporary link and simulate a click
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `property.pdf`); // Set filename
+      link.setAttribute("download", `Property_Report.pdf`); // Set filename
       document.body.appendChild(link);
       link.click();
 

@@ -18,6 +18,8 @@ const Owner = () => {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [account, setAccount] = useState("");
+
   const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
   const [paymentType, setPaymentType] = useState("");
@@ -26,6 +28,8 @@ const Owner = () => {
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unitsData,setUnitsData] = useState([])
+  const [ibanError, setIbanError] = useState("");
+  
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,9 +37,11 @@ const Owner = () => {
   const handleSubmit = async () => {
     const propertyData = {
       name,
+      ownershipTitle,
       address,
       phone,
       email,
+      account,
       unit,
       paymentType,
 
@@ -46,9 +52,11 @@ const Owner = () => {
 
     if (success) {
       setName("");
+      setOwnershipTitle("");
       setAddress("");
       setPhone("");
       setEmail("");
+      setAccount("")
       setUnit("");
   
       fetchOwner();
@@ -56,6 +64,22 @@ const Owner = () => {
     setShowForm(false);
   };
 
+  const isValidIBAN = (iban) => {
+    const regex = /^[A-Z0-9]{15,34}$/;
+    return regex.test(iban);
+  };
+
+  const handleAccountChange = (e) => {
+    const value = e.target.value.toUpperCase(); // Ensure the account number is in uppercase
+    setAccount(value);
+
+    // Validate IBAN format using the isValidIBAN function from the 'iban' package
+    if (value && !isValidIBAN(value)) {
+      setIbanError("Invalid IBAN format.");
+    } else {
+      setIbanError("");
+    }
+  };
 
     const fetchUnits = async () => {
       if (!id) return;
@@ -137,7 +161,7 @@ const Owner = () => {
          // Create a temporary link and simulate a click
          const link = document.createElement("a");
          link.href = url;
-         link.setAttribute("download", `Ownersreport.pdf`); // Set filename
+         link.setAttribute("download", `Owners_Report.pdf`); // Set filename
          document.body.appendChild(link);
          link.click();
    
@@ -171,6 +195,14 @@ const Owner = () => {
               placeholder="Enter Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+
+       <input
+              type="text"
+              placeholder="Enter Ownership Title"
+              value={ownershipTitle}
+              onChange={(e) => setOwnershipTitle(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
          
@@ -216,8 +248,20 @@ const Owner = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
+
+<input
+              type="text"
+              placeholder="Enter Bank Account"
+              value={account}
+              onChange={handleAccountChange}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+
+            {/* Display error message if IBAN is invalid */}
+            {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
          <label htmlFor="unit" className="block mb-2">
         Select Unit
+
       </label>
       <select
         id="unit"

@@ -34,7 +34,7 @@ const PrintCommiti = () => {
       // Create a temporary link and simulate a click
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `property.pdf`); // Set filename
+      link.setAttribute("download", `Committee_Report.pdf`); // Set filename
       document.body.appendChild(link);
       link.click();
 
@@ -81,9 +81,7 @@ const PrintCommiti = () => {
                 <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                   Email
                 </th>
-                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                  Bank Account
-                </th>
+                
             
               </tr>
             </thead>
@@ -100,9 +98,7 @@ const PrintCommiti = () => {
                   </td>
                   <td className="px-4 py-2 text-gray-800">{property?.phone}</td>
                   <td className="px-4 py-2 text-gray-800">{property?.email}</td>
-                  <td className="px-4 py-2 text-gray-800">
-                    {property?.account}
-                  </td>
+                 
              
                 </tr>
               ))}

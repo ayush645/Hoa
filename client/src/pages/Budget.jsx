@@ -4,13 +4,14 @@ import {
   getAllBudgetApi,
 } from "../services/operation/function";
 import GetBudget from "../components/GetBudget";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 
 const Budget = () => {
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [categories, setCategories] = useState([]);
  const {id} = useParams()
+ const navigate = useNavigate();
   const fetchBudget = async () => {
  
     try {
@@ -45,6 +46,14 @@ const Budget = () => {
   return (
     <div className="category-page flex flex-col items-center p-6">
       <button
+  onClick={() => navigate("/")}
+  className="button-85"
+  style={{ right: '200px', top: '44px' }}
+>
+  Go to Home
+</button>
+
+      <button
         className="button-85"
         // className={`${
         //   showForm ? "bg-red-500" : "bg-blue-500"
@@ -53,6 +62,7 @@ const Budget = () => {
       >
         {showForm ? "Cancel" : "Add Budget "}
       </button>
+      
 
       <br />
       {showForm && (

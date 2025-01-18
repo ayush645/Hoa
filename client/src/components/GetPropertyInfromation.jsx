@@ -246,16 +246,63 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
                 className="border p-2 w-full mb-4 rounded-lg"
               />
 
+
+
 <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             >
               <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="INR">INR</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
+<option value="EUR">EUR</option>
+<option value="INR">INR</option>
+<option value="GBP">GBP</option>
+<option value="JPY">JPY</option>
+<option value="AUD">AUD</option>
+<option value="CAD">CAD</option>
+<option value="CHF">CHF</option>
+<option value="CNY">CNY</option>
+<option value="SEK">SEK</option>
+<option value="NZD">NZD</option>
+<option value="MXN">MXN</option>
+<option value="SGD">SGD</option>
+<option value="HKD">HKD</option>
+<option value="NOK">NOK</option>
+<option value="KRW">KRW</option>
+<option value="TRY">TRY</option>
+<option value="RUB">RUB</option>
+<option value="BRL">BRL</option>
+<option value="ZAR">ZAR</option>
+<option value="MYR">MYR</option>
+<option value="INR">INR</option>
+<option value="PLN">PLN</option>
+<option value="IDR">IDR</option>
+<option value="THB">THB</option>
+<option value="ARS">ARS</option>
+<option value="AED">AED</option>
+<option value="SAR">SAR</option>
+<option value="EGP">EGP</option>
+<option value="KES">KES</option>
+<option value="CLP">CLP</option>
+<option value="COP">COP</option>
+<option value="PHP">PHP</option>
+<option value="PEN">PEN</option>
+<option value="VND">VND</option>
+<option value="TWD">TWD</option>
+<option value="RSD">RSD</option>
+<option value="BGN">BGN</option>
+<option value="HUF">HUF</option>
+<option value="CZK">CZK</option>
+<option value="HRK">HRK</option>
+<option value="RON">RON</option>
+<option value="LKR">LKR</option>
+<option value="BHD">BHD</option>
+<option value="OMR">OMR</option>
+<option value="QAR">QAR</option>
+<option value="KWD">KWD</option>
+<option value="KGS">KGS</option>
+<option value="UZS">UZS</option>
+
             </select>
 
               {/* Dropzone for File Upload */}

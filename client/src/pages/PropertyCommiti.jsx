@@ -150,6 +150,8 @@ const PropertyCommiti = () => {
   }, [id]);
 
 
+
+  
   const handlePrint = async() => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/commiti/${id}`, {
@@ -162,7 +164,7 @@ const PropertyCommiti = () => {
       // Create a temporary link and simulate a click
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `property.pdf`); // Set filename
+      link.setAttribute("download", `Committee_Report.pdf`); // Set filename
       document.body.appendChild(link);
       link.click();
 

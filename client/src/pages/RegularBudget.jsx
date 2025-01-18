@@ -1,11 +1,26 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams,useNavigate } from "react-router-dom";
 
 const RegularBudget = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
 
   return (
+    
+
+    
     <div className="flex justify-center mx-auto space-x-4 text-white mt-6">
+
+
+
+
+        
+          <button onClick={() => navigate("/")} className="button-85">
+            Go to Home
+          </button>
+
+
       {/* Income Button */}
       <Link
         to={`/regularbudget/income/${id}`}

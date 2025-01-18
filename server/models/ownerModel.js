@@ -22,6 +22,10 @@ const ownerSchema = new Schema({
         type: String,
         required: true,
     },
+    account: {
+        type: String,
+        required: true,
+    },
     unit: {
         type: String,
        

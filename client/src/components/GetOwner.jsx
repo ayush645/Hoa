@@ -21,6 +21,7 @@ const GetOwner = ({
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [account, setAccount] = useState("");
   const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -31,9 +32,11 @@ const GetOwner = ({
   const handleSubmit = async () => {
     const propertyData = {
       name,
+      ownershipTitle,
       address,
       phone,
       email,
+      account,
       unit,
       paymentType
     };
@@ -43,9 +46,11 @@ const GetOwner = ({
 console.log(success)
     if (success) {
       setName("");
+      setOwnershipTitle("")
       setAddress("");
       setPhone("");
       setEmail("");
+      setAccount("");
       setUnit("");
       setPaymentType("");
    
@@ -97,7 +102,8 @@ console.log(success)
       setName(selectedData.name || ""); // Set name
       setAddress(selectedData.address || ""); // Set address
       setPhone(selectedData.phone || ""); // Set phone
-      setEmail(selectedData.email || ""); // Set email
+      setEmail(selectedData.email || "");
+      setEmail(selectedData.account || ""); // Set email
       setPaymentType(selectedData.paymentType || "Cash"); // Set email
       setUnit({
         type: selectedData.unitDetails?.type || "",
@@ -123,10 +129,13 @@ console.log(success)
 
     if (selectedData) {
       // Populate the state variables with the selected item's data
-      setName(selectedData.name || ""); // Set name
+      setName(selectedData.name || ""); 
       setAddress(selectedData.address || ""); // Set address
       setPhone(selectedData.phone || ""); // Set phone
-      setEmail(selectedData.email || ""); // Set email
+      setEmail(selectedData.email || "");
+      setEmail(selectedData.account || "");
+
+       // Set email
       setUnit({
         type: selectedData.unitDetails?.type || "",
         currency: selectedData.unitDetails?.currency || "",
@@ -137,9 +146,11 @@ console.log(success)
 
        const propertyData = {
             name:selectedData.name,
+            ownershipTitle:selectedData.ownershipTitle,
             address:selectedData.address,
             phone:selectedData.phone,
             email:selectedData.email,
+            account:selectedData.account,
             unit:selectedData.unitDetails,
             paymentType: selectedData.paymentType,
       
@@ -150,9 +161,11 @@ console.log(success)
       
           if (success) {
             setName("");
+            setOwnershipTitle("");
             setAddress("");
             setPhone("");
             setEmail("");
+            setAccount("")
             setUnit("");
         
             setShowForm(false);
@@ -197,6 +210,7 @@ console.log(success)
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Payment Type</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Phone</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Email</th>
+        <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Account No</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Unit</th>
         <th className="px-6 py-4 text-center font-semibold text-sm tracking-wide">Actions</th>
       </tr>
@@ -213,6 +227,8 @@ console.log(success)
           <td className="px-6 py-4 text-gray-800">{property?.paymentType || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.phone || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.email || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-800">{property?.account || "N/A"}</td>
+
           <td className="px-6 py-4 text-gray-800">{property?.unit || "N/A"}</td>
           <td className="px-6 py-4 text-center min-w-[150px] flex justify-center gap-2">
             <button
@@ -272,6 +288,14 @@ console.log(success)
               className="border p-2 w-full mb-4 rounded-lg"
             />
 
+<input
+              type="text"
+              placeholder="Enter Ownership Title"
+              value={ownershipTitle}
+              onChange={(e) => setOwnershipTitle(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+
             <input
               type="text"
               placeholder="Enter Address"
@@ -314,6 +338,13 @@ console.log(success)
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Enter Account No"
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             />
 

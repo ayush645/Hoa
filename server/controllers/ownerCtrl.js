@@ -6,10 +6,11 @@ const budgetModel = require("../models/budgetModel");
 
 const createOwnerCtrl = async (req, res) => {
     const {
-        propertyData: { name, address, phone, email, unit, categoryId ,paymentType},
+        propertyData: { name,ownershipTitle, address, phone, email,account, unit, categoryId ,paymentType},
     } = req.body;
 
 console.log(req.body)
+
 
 
 
@@ -25,6 +26,13 @@ console.log(bugdetOwner)
             return res.status(400).json({
                 success: false,
                 message: "Name is required",
+            });
+        }
+
+        if (!ownershipTitle) {
+            return res.status(400).json({
+                success: false,
+                message: "ownershipTitle is required",
             });
         }
         
@@ -46,6 +54,13 @@ console.log(bugdetOwner)
             return res.status(400).json({
                 success: false,
                 message: "Email is required",
+            });
+        }
+
+        if (!account) {
+            return res.status(400).json({
+                success: false,
+                message: "Account No is required",
             });
         }
         
@@ -85,14 +100,16 @@ console.log(bugdetOwner)
         // Create owner entry
         const owner = await ownerModel.create({
             name,
+            ownershipTitle,
             address,
             phone,
             email,
+            account,
             unitDetails: unit, // Full unit object
             unit: unit.type, // Only the unit type
             categoryId,
-            paymentType,
-            ownershipTitle : code,
+            paymentType
+            
         });
 
         // Create income entry
@@ -128,7 +145,7 @@ const updateOwnerCtrl = async (req, res) => {
     const ownerId = req.params.id
     const {
       
-        propertyData: { name, address, phone, email, unit, categoryId,paymentType },
+        propertyData: { name,ownershipTitle, address, phone, email,account, unit, categoryId,paymentType },
     } = req.body;
 
    console.log(req.body)
@@ -160,9 +177,12 @@ const updateOwnerCtrl = async (req, res) => {
 
         // Update fields if provided
         if (name) existingOwner.name = name;
+        if (ownershipTitle) existingOwner.ownershipTitle = ownershipTitle;
         if (address) existingOwner.address = address;
         if (phone) existingOwner.phone = phone;
         if (email) existingOwner.email = email;
+        if (account) existingOwner.account = account;
+
         if (paymentType) existingOwner.paymentType = paymentType;
         if (unit) {
             existingOwner.unitDetails = unit; // Full unit object

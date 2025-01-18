@@ -34,7 +34,7 @@ const PrintOwner = () => {
          // Create a temporary link and simulate a click
          const link = document.createElement("a");
          link.href = url;
-         link.setAttribute("download", `Ownersreport.pdf`); // Set filename
+         link.setAttribute("download", `Owners_Report.pdf`); // Set filename
          document.body.appendChild(link);
          link.click();
    
