@@ -38,7 +38,7 @@ async function generatePDF2(data) {
   return pdfBuffer;
 }
 // Send email using Nodemailer
-async function sendEmail(pdfBuffer, recipientEmail) {
+async function sendEmail(pdfBuffer, recipientEmail,filename) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -54,7 +54,7 @@ async function sendEmail(pdfBuffer, recipientEmail) {
     text: "Please find the HOA payment reminder attached.",
     attachments: [
       {
-        filename: "hoa_payment_reminder.pdf",
+        filename:filename ,
         content: pdfBuffer,
       },
     ],
@@ -107,7 +107,7 @@ console.log("hello")
     const pdfBuffer = await generatePDF(data);
 
     // Send Email
-    await sendEmail(pdfBuffer, owner.email);
+    await sendEmail(pdfBuffer, owner.email,"hoa_payment_reminder.pdf");
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {
@@ -159,7 +159,7 @@ router.post("/partialPayment", async (req, res) => {
     const pdfBuffer = await generatePDF2(data);
 
     // Send Email
-    await sendEmail(pdfBuffer, owner.email);
+    await sendEmail(pdfBuffer, owner.email,"Partial_Reminder.pdf");
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {

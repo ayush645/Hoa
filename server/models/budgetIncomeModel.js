@@ -17,6 +17,10 @@ const budgetIncomeSchema = new Schema(
       url: String,
     },
 
+    uniqueId: {
+      type: String,
+      required: true,
+    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Budget",
@@ -24,8 +28,8 @@ const budgetIncomeSchema = new Schema(
     },
     updateLog: [
       {
-        date: { type: Date, },
-        ammount: { type: Number, },
+        date: { type: Date },
+        ammount: { type: Number },
 
         operation: { type: String },
       },

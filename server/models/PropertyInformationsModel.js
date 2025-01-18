@@ -20,7 +20,6 @@ const PropertyInformationsSchema = new Schema({
     },
     currency: {
         type: String,
-        required: true,
     },
     images: [
         {

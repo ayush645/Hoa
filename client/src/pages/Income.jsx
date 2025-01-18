@@ -10,7 +10,6 @@ import {
 import GetIncome from "../components/GetIncome";
 import ReguralReport from "../components/Report/RegiralReports";
 
-
 const Income = () => {
   const [ownerName, setOwnerName] = useState("");
   const [owners, setOwners] = useState([]); // State to store fetched owner data
@@ -18,8 +17,6 @@ const Income = () => {
   const [showForm, setShowForm] = useState(false);
   const [incomeData, setIncomeData] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -93,15 +90,14 @@ const Income = () => {
     fetchOwners(); // Fetch owners on component mount
   }, [id]);
 
-
-
- 
-
   return (
     <div className="p-6 min-h-screen">
       <div className="income-page flex flex-col items-center mb-6">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
-        <button onClick={() => navigate(`/regularbudget/${id}`)} className="button-85">
+          <button
+            onClick={() => navigate(`/regularbudget/${id}`)}
+            className="button-85"
+          >
             Budget Menu
           </button>
           <button onClick={() => navigate("/")} className="button-85">
@@ -154,10 +150,8 @@ const Income = () => {
         loading={loading}
         onDelete={handleDelete}
         id={id}
-      
       />
 
-      <ReguralReport type='income' />
     </div>
   );
 };

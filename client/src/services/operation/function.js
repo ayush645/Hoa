@@ -621,7 +621,7 @@ export async function handleCreateOwnerAPi(propertyData) {
         });
 
         // Return the created property data (optional)
-        return response.data.property;
+        return response?.data?.success;
     } catch (error) {
         // Handle errors and show error message
         console.error("CREATE PROPERTY ERROR:", error);
@@ -841,14 +841,47 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount,operation,year,method) => {
+export const updateMonthIncomeApi = async (id, month, amount, operation, year, method) => {
     try {
-        console.log("Updating income with:", { id, month, amount }); // Debugging
+        // Show loading alert
+        Swal.fire({
+            title: "Please wait...",
+            text: "Updating income, this might take a moment.",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
 
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount,operation,year, method});
+        // Make the API call
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount, operation, year, method });
+
+        // Close loading alert
+        Swal.close();
+
+        // Show success alert
+        await Swal.fire({
+            title: "Success!",
+            text: `Income updated successfully for ${month}.`,
+            icon: "success",
+            confirmButtonText: "OK",
+        });
+
         return response.data;
     } catch (error) {
         console.error("Error updating month:", error);
+
+        // Close loading alert
+        Swal.close();
+
+        // Show error alert
+        await Swal.fire({
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to update income. Please try again later.",
+            icon: "error",
+            confirmButtonText: "OK",
+        });
+
         throw error;
     }
 };

@@ -155,7 +155,6 @@ const OutCome = () => {
         fetchOutMain={fetchOutCome}
       />
 
-<ReguralReport type='outcome' />
 
     </div>
   );

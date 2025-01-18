@@ -8,10 +8,19 @@ const incomeSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+
+      
+    },
+ 
+    uniqueId :{
+        type: String,
+        required: true,
     },
     unit: {
         type: String,
         required: true,
+
+       
     },
     months: {
         January: { type: Number, default: 0 },
@@ -27,6 +36,21 @@ const incomeSchema = new mongoose.Schema({
         November: { type: Number, default: 0 },
         December: { type: Number, default: 0 },
     },
+    statuses: {
+        January: { type: String, default: "not updated" },
+        February: { type: String, default: "not updated" },
+        March: { type: String, default: "not updated" },
+        April: { type: String, default: "not updated" },
+        May: { type: String, default: "not updated" },
+        June: { type: String, default: "not updated" },
+        July: { type: String, default: "not updated" },
+        August: { type: String, default: "not updated" },
+        September: { type: String, default: "not updated" },
+        October: { type: String, default: "not updated" },
+        November: { type: String, default: "not updated" },
+        December: { type: String, default: "not updated" },
+      },
+
     contribution: {
         type: Number,
         default: 0,

@@ -37,6 +37,7 @@ const createCategory = async (req, res) => {
         category: newCategory,
       });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: "Error in create category api" });
   }
 };

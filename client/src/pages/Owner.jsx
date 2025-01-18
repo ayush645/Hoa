@@ -22,7 +22,7 @@ const Owner = () => {
 
   const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
-  const [paymentType, setPaymentType] = useState("");
+  const [paymentType, setPaymentType] = useState("Cash");
 
   const [showForm, setShowForm] = useState(false);
   const [propertyData, setPropertyData] = useState([]);
@@ -49,7 +49,7 @@ const Owner = () => {
     };
 
     const success = await handleCreateOwnerAPi(propertyData);
-
+console.log(success)
     if (success) {
       setName("");
       setOwnershipTitle("");
@@ -59,9 +59,10 @@ const Owner = () => {
       setAccount("")
       setUnit("");
   
-      fetchOwner();
     }
     setShowForm(false);
+    fetchOwner();
+
   };
 
   const isValidIBAN = (iban) => {

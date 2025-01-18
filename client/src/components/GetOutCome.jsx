@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
-
+import ReguralReport from "./Report/RegiralReports";
 
 const GetOutCome = ({
   propertyData,
@@ -236,48 +236,57 @@ const GetOutCome = ({
       }
     }
   };
-    // Export as PDF
-    const handlePrintPDF = () => {
-      const doc = new jsPDF();
-      const tableColumns = ["Expense", ...months, "Total"];
-      const tableRows = [];
-  
-      filteredData.forEach((income) => {
-        const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
-        const row = [
-          income.expense,
-  
-          ...months.map((month) => income.months[month] || 0),
-          totalAmount,
-        ];
-        tableRows.push(row);
-      });
-  
-      doc.text("Income Information", 14, 10);
-      doc.autoTable({
-        head: [tableColumns],
-        body: tableRows,
-        startY: 20,
-      });
-      doc.save("income-information.pdf");
-    };
-  
-    // Export as Excel
-    const handleExportExcel = () => {
-      const ws = XLSX.utils.json_to_sheet(
-        filteredData.map((income) => {
-          const totalAmount = Object.values(income.months).reduce((sum, value) => sum + value, 0);
-          return {
-            "Expense": income.expense,
-              ...months.reduce((acc, month) => ({ ...acc, [month]: income.months[month] || 0 }), {}),
-            Total: totalAmount,
-          };
-        })
+  // Export as PDF
+  const handlePrintPDF = () => {
+    const doc = new jsPDF();
+    const tableColumns = ["Expense", ...months, "Total"];
+    const tableRows = [];
+
+    filteredData.forEach((income) => {
+      const totalAmount = Object.values(income.months).reduce(
+        (sum, value) => sum + value,
+        0
       );
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Income Data");
-      XLSX.writeFile(wb, "income-information.xlsx");
-    };
+      const row = [
+        income.expense,
+
+        ...months.map((month) => income.months[month] || 0),
+        totalAmount,
+      ];
+      tableRows.push(row);
+    });
+
+    doc.text("Income Information", 14, 10);
+    doc.autoTable({
+      head: [tableColumns],
+      body: tableRows,
+      startY: 20,
+    });
+    doc.save("income-information.pdf");
+  };
+
+  // Export as Excel
+  const handleExportExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      filteredData.map((income) => {
+        const totalAmount = Object.values(income.months).reduce(
+          (sum, value) => sum + value,
+          0
+        );
+        return {
+          Expense: income.expense,
+          ...months.reduce(
+            (acc, month) => ({ ...acc, [month]: income.months[month] || 0 }),
+            {}
+          ),
+          Total: totalAmount,
+        };
+      })
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Income Data");
+    XLSX.writeFile(wb, "income-information.xlsx");
+  };
 
   return (
     <div className="income-info-container p-6 max-h-[80vh]">
@@ -323,83 +332,84 @@ const GetOutCome = ({
       {/* Table */}
 
       {!yearFilter && (
-    <div className="flex justify-center items-center mt-5">
-      <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
-        <p className="font-semibold text-lg">Please select a year.</p>
-      </div>
-    </div>
-  )}
+        <div className="flex justify-center items-center mt-5">
+          <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+            <p className="font-semibold text-lg">Please select a year.</p>
+          </div>
+        </div>
+      )}
 
-
-   {
-    yearFilter &&  <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Expenses
-              </th>
-              {months.map((month) => (
-                <th
-                  key={month}
-                  className="px-4 py-2 text-left text-gray-600 font-semibold"
-                >
-                  {month}
+      {yearFilter && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Expenses
                 </th>
-              ))}
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
-                Total
-              </th>
-              <th className="px-4 py-2 text-center text-gray-600 font-semibold">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((income) => {
-              const totalAmount = Object.values(income.months).reduce(
-                (sum, value) => sum + value,
-                0
-              );
-              return (
-                <tr
-                  key={income._id}
-                  className="border-b border-gray-200 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 text-gray-800">{income.expense}</td>
-                  {months.map((month) => (
-                    <td
-                      key={month}
-                      className="px-4 py-2 text-gray-800 cursor-pointer"
-                      onClick={() => handleMonthClick(income._id, month)}
-                    >
-                      {income.months[month] || 0}
+                {months.map((month) => (
+                  <th
+                    key={month}
+                    className="px-4 py-2 text-left text-gray-600 font-semibold"
+                  >
+                    {month}
+                  </th>
+                ))}
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Total
+                </th>
+                <th className="px-4 py-2 text-center text-gray-600 font-semibold">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((income) => {
+                const totalAmount = Object.values(income.months).reduce(
+                  (sum, value) => sum + value,
+                  0
+                );
+                return (
+                  <tr
+                    key={income._id}
+                    className="border-b border-gray-200 hover:bg-gray-50"
+                  >
+                    <td className="px-4 py-2 text-gray-800">
+                      {income.expense}
                     </td>
-                  ))}
-                  <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
-                  <td className="px-4 py-2 text-center">
-                    <FaTrash
-                      className="text-red-500 cursor-pointer"
-                      onClick={() => onDelete(income._id)}
-                    />
+                    {months.map((month) => (
+                      <td
+                        key={month}
+                        className="px-4 py-2 text-gray-800 cursor-pointer"
+                        onClick={() => handleMonthClick(income._id, month)}
+                      >
+                        {income.months[month] || 0}
+                      </td>
+                    ))}
+                    <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
+                    <td className="px-4 py-2 text-center">
+                      <FaTrash
+                        className="text-red-500 cursor-pointer"
+                        onClick={() => onDelete(income._id)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+              <tr className="bg-gray-100 font-bold">
+                <td className="px-4 py-2 text-gray-800">Total</td>
+                {months.map((month) => (
+                  <td key={month} className="px-4 py-2 text-gray-800">
+                    {monthlyTotals[month]}
                   </td>
-                </tr>
-              );
-            })}
-            <tr className="bg-gray-100 font-bold">
-              <td className="px-4 py-2 text-gray-800">Total</td>
-              {months.map((month) => (
-                <td key={month} className="px-4 py-2 text-gray-800">
-                  {monthlyTotals[month]}
-                </td>
-              ))}
-              <td className="px-4 py-2 text-gray-800">{totalContribution}</td>
-              <td className="px-4 py-2 text-center"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-   }
+                ))}
+                <td className="px-4 py-2 text-gray-800">{totalContribution}</td>
+                <td className="px-4 py-2 text-center"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (
@@ -437,6 +447,8 @@ const GetOutCome = ({
       )}
 
       {/* Total Calculation */}
+
+      {yearFilter && <ReguralReport type="outcome" />}
     </div>
   );
 };

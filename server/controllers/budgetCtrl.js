@@ -27,6 +27,7 @@ const income = await ownerModel.find({categoryId:CateId})
           name: owner.name,
           amount: 0,
           categoryId:newCategory._id,
+          uniqueId:owner.uniqueId
         });
       })
     );

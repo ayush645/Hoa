@@ -9,6 +9,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import NotifationsSender from "./Report/NotifationsSender";
+import ReguralReport from "./Report/RegiralReports";
 
 const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [yearFilter, setYearFilter] = useState(""); // State to store selected year
@@ -43,9 +44,6 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
     );
   }
 
-
-  
-
   // Handle the year change
   const handleYearChange = (event) => {
     setYearFilter(event.target.value);
@@ -62,8 +60,6 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const handleMonthClick = (incomeId, month) => {
     setSelectedIncomeId(incomeId); // Set selected income ID
     setSelectedMonth(month);
-
-
 
     // Get selected income data
     const selectedIncome = filteredData.find(
@@ -179,7 +175,6 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       monthlyTotal; // Deficit is the contribution - total for that month
   });
 
- 
   const currentMonthIndex = new Date().getMonth(); // Current month ka index (0 - January, 11 - December)
 
   const totalDeficit = months
@@ -446,15 +441,19 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
                       // Determine the background color based on conditions
                       const bgColor =
-                        monthIndex > currentMonthIndex && monthAmount > 0
-                          ? "bg-yellow-400 text-black" // Apply yellow if it's a future month and the amounts are equal
+                        income.statuses[month] === "not paid" &&
+                        monthAmount === 0
+                          ? "bg-red-500 text-white"
+                          : monthAmount === 0 &&
+                            income.statuses !== "not updated"
+                          ? "bg-white text-gray-800"
+                          : monthIndex > currentMonthIndex && monthAmount > 0
+                          ? "bg-yellow-400 text-black"
                           : monthAmount === income.contribution
                           ? "bg-green-500 text-white"
-                          : monthAmount === 0
-                          ? ""
                           : monthAmount < income.contribution
                           ? "bg-orange-500 text-white"
-                          : "bg-white";
+                          : "";
 
                       return (
                         <td
@@ -463,10 +462,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                           onClick={() => handleMonthClick(income._id, month)}
                         >
                           {monthAmount > 0 && monthIndex > currentMonthIndex ? (
-                            <span className=" fle flex-col">
-                              {" "}
+                            <span className="flex flex-col">
                               {monthAmount} Advance
-                            </span> // Display "Pay in Advance" for future months with zero amount
+                            </span>
                           ) : (
                             monthAmount
                           )}
@@ -552,6 +550,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         </div>
       )}
 
+      {yearFilter && <ReguralReport type="income" />}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 ">
           <div className="bg-white max-h-[95vh] overflow-y-auto rounded-lg shadow-lg p-8 w-full max-w-md space-y-6">
@@ -654,8 +653,10 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 Submit
               </button>
             </div>
-            <NotifationsSender ownerId={selectedIncomeId} dueMonth={selectedMonth} />
-
+            <NotifationsSender
+              ownerId={selectedIncomeId}
+              dueMonth={selectedMonth}
+            />
           </div>
         </div>
       )}

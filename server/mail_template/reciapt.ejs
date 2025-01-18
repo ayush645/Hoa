@@ -22,17 +22,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       position: relative;
     }
-    .email-container .stamp {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      opacity: 0.2;
-      z-index: -1;
-    }
     .header {
-      background-color: #0077cc;
-      color: #ffffff;
       text-align: center;
       padding: 15px;
     }
@@ -67,21 +57,28 @@
       text-align: left;
     }
     .table th {
-      background-color: #0077cc;
-      color: white;
+      color: black;
+    }
+
+    /* Position the stamp to the right side of the email */
+    .email-container .stamp {
+   display: flex;
+   align-items: end;
+     margin-top: 70px;
+      transform: translateY(-50%);
+      width: 150px;
+      height: 150px;
+      opacity: 1;
+      z-index: 1; /* Ensure the stamp is above content */
     }
   </style>
 </head>
 <body>
   <div class="email-container">
-    <!-- Stamp/Logo -->
-    <img src="<%= stampImagePath %>" alt="Stamp" class="stamp" />
-
     <!-- Logo and Property Info -->
     <div class="header">
       <img src="<%= logoPath %>" alt="Logo" class="logo" />
-      <h1>President of: Home Owners Association</h1>
-      <h2>Property Info: <%= propertyAddress %></h2>
+      <h2> <%= propertyAddress %></h2>
       <h3>To: <%= ownerName %></h3>
     </div>
 
@@ -127,8 +124,10 @@
         </tr>
       </table>
     </div>
-
-    <!-- Footer -->
     
+    <!-- Stamp -->
+    <img src="https://i.ibb.co/428Fp08/h1.png" alt="Stamp" class="stamp" />
+    
+  </div>
 </body>
 </html>
