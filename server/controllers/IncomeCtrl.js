@@ -24,6 +24,8 @@ async function generatePDF2(data) {
         bottom: "20mm",
         left: "10mm",
       },
+      path: "./output.pdf", // Optional: specify the output file path
+      args: ["--no-sandbox", "--disable-setuid-sandbox"] // Add these arguments for headless mode
     };
 
     // Generate PDF from HTML
