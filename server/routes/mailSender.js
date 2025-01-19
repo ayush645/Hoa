@@ -10,9 +10,7 @@ const PropertyCommitiModel = require("../models/PropertyCommitiModel");
 
 const router = express.Router();
 
-
-
-const puppeteer = require('puppeteer-core');
+const puppeteer = require("puppeteer-core");
 
 async function generatePDF(data) {
   try {
@@ -24,22 +22,22 @@ async function generatePDF(data) {
 
     // Launch Puppeteer with Chromium path and options
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+      executablePath: "/usr/bin/chromium-browser", // Update with the correct path
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary flags for Puppeteer
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
     });
 
     const page = await browser.newPage();
     await page.setContent(htmlContent);
-    
+
     // Define PDF options
     const pdfBuffer = await page.pdf({
-      format: 'A4',
+      format: "A4",
       margin: {
-        top: '20mm',
-        right: '10mm',
-        bottom: '20mm',
-        left: '10mm',
+        top: "20mm",
+        right: "10mm",
+        bottom: "20mm",
+        left: "10mm",
       },
     });
 
@@ -62,9 +60,9 @@ async function generatePDF2(data) {
 
     // Launch Puppeteer with Chromium path and options
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+      executablePath: "/usr/bin/chromium-browser", // Update with the correct path
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary flags for Puppeteer
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
     });
 
     const page = await browser.newPage();
@@ -72,12 +70,12 @@ async function generatePDF2(data) {
 
     // Define PDF options
     const pdfBuffer = await page.pdf({
-      format: 'A4',
+      format: "A4",
       margin: {
-        top: '20mm',
-        right: '10mm',
-        bottom: '20mm',
-        left: '10mm',
+        top: "20mm",
+        right: "10mm",
+        bottom: "20mm",
+        left: "10mm",
       },
     });
 
@@ -90,11 +88,8 @@ async function generatePDF2(data) {
   }
 }
 
-
-
-
 // Send email using Nodemailer
-async function sendEmail(pdfBuffer, recipientEmail,filename) {
+async function sendEmail(pdfBuffer, recipientEmail, filename) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -110,7 +105,7 @@ async function sendEmail(pdfBuffer, recipientEmail,filename) {
     text: "Please find the HOA payment reminder attached.",
     attachments: [
       {
-        filename:filename ,
+        filename: filename,
         content: pdfBuffer,
       },
     ],
@@ -122,7 +117,7 @@ async function sendEmail(pdfBuffer, recipientEmail,filename) {
 // API Endpoint to send email
 router.post("/dueMail", async (req, res) => {
   const { ownerId, dueMonth } = req.body;
-console.log("hello")
+  console.log("hello");
   if (!ownerId || !dueMonth) {
     return res
       .status(400)
@@ -136,9 +131,12 @@ console.log("hello")
       categoryId: owner.categoryId,
     });
 
-    const comity = await PropertyCommitiModel.findOne({categoryId:owner.categoryId,position:"President"})
-    console.log(comity)
-    
+    const comity = await PropertyCommitiModel.findOne({
+      categoryId: owner.categoryId,
+      position: "President",
+    });
+    console.log(comity);
+
     const monthAmount = owner.months[dueMonth];
     const contribution = owner.contribution;
 
@@ -153,7 +151,7 @@ console.log("hello")
     // Prepare data for template
     const data = {
       logoPath: propertInfo[0]?.logo?.url, // Replace with actual logo path
-      prisident:comity.name,
+      prisident: comity.name,
       propertyAddress: propertInfo[0]?.pName,
       ownerName: owner.ownerName,
       expiredMonth: dueMonth, // Use the due month provided by the frontend
@@ -167,7 +165,7 @@ console.log("hello")
     const pdfBuffer = await generatePDF(data);
 
     // Send Email
-    await sendEmail(pdfBuffer, owner.email,"hoa_payment_reminder.pdf");
+    await sendEmail(pdfBuffer, owner.email, "hoa_payment_reminder.pdf");
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {
@@ -219,7 +217,7 @@ router.post("/partialPayment", async (req, res) => {
     const pdfBuffer = await generatePDF2(data);
 
     // Send Email
-    await sendEmail(pdfBuffer, owner.email,"Partial_Reminder.pdf");
+    await sendEmail(pdfBuffer, owner.email, "Partial_Reminder.pdf");
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (error) {

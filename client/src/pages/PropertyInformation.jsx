@@ -141,6 +141,31 @@ const PropertyInformation = () => {
       alert("Failed to download PDF.");
     }
   };
+
+
+
+
+
+  const [toSuggestions, setToSuggestions] = useState([]);
+
+
+  const onChangeTo = (event) => {
+    const value = event.target.value;
+    setPLocation(value);
+    fetchSuggestions(value, setToSuggestions);
+  };
+
+  const fetchSuggestions = (value, setSuggestions) => {
+    const service = new window.google.maps.places.AutocompleteService();
+    service.getPlacePredictions({ input: value }, (predictions) => {
+      setSuggestions(predictions || []);
+    });
+  };
+
+  const onSuggestionSelectedTo = (suggestion) => {
+    setPLocation(suggestion.description);
+    setToSuggestions([]);
+  };
   return (
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
@@ -215,6 +240,26 @@ const PropertyInformation = () => {
                 onChange={(e) => setNumberOfUnits(e.target.value)}
                 className="border p-2 w-full mb-4 rounded-lg"
               />
+
+
+<input
+                    type="text"
+                    placeholder="To"
+                    value={pLocation}
+                    onChange={onChangeTo}
+                    className="w-full px-4 py-4 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-2xl"
+                  />
+                  <ul className="mt-2">
+                    {toSuggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.place_id}
+                        onClick={() => onSuggestionSelectedTo(suggestion)}
+                        className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-2xl"
+                      >
+                        {suggestion.description}
+                      </li>
+                    ))}
+                  </ul>
 
               {/* Dropzone for File Upload */}
               <Dropzone onDrop={uploadImage}>

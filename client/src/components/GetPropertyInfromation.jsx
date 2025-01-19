@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import ImageUploaderWithCrop from "./common/ImageUpload";
 import Dropzone from "react-dropzone";
@@ -85,7 +85,55 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
     }
   };
 
+  const [suggestions, setSuggestions] = useState([]); // Suggestions state
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
+  // Load Google Maps API script dynamically
+  useEffect(() => {
+    if (window.google) return; // Prevent duplicate loading
+    const script = document.createElement("script");
+    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyASz6Gqa5Oa3WialPx7Z6ebZTj02Liw-Gk&libraries=places";
+    script.async = true;
+    script.onload = () => {
+      console.log("Google Maps API loaded successfully.");
+    };
+    document.body.appendChild(script);
+  }, []);
+
+  // Fetch suggestions from Google Maps API
+  const fetchSuggestions = (value) => {
+    if (!value) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const service = new window.google.maps.places.AutocompleteService();
+    service.getPlacePredictions({ input: value }, (predictions, status) => {
+      setIsLoading(false);
+
+      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+        setSuggestions(predictions);
+      } else {
+        console.error("Error fetching predictions", status);
+        setSuggestions([]);
+      }
+    });
+  };
+
+  // Handle input change
+  const onChangeFrom = (event) => {
+    const value = event.target.value;
+    setPLocation(value);
+    fetchSuggestions(value);
+  };
+
+  // Handle suggestion click
+  const onSuggestionSelectedFrom = (suggestion) => {
+    setPLocation(suggestion.description);
+    setSuggestions([]); // Clear suggestions after selection
+  };
 
   if (loading) {
     return (
@@ -103,6 +151,8 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
     );
   }
 
+
+  
   return (
     <div className="property-info-container px-6 py-12 bg-gray-100 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-8 text-center">
@@ -224,13 +274,35 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
                 onChange={(e) => setPAddress(e.target.value)}
                 className="border p-2 w-full mb-4 rounded-lg"
               />
-              <input
-                type="text"
-                placeholder="Enter property location"
-                value={pLocation}
-                onChange={(e) => setPLocation(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
+            <div className="relative">
+      <input
+        type="text"
+        placeholder="Enter property location"
+        value={pLocation}
+        onChange={onChangeFrom}
+        className="border p-2 w-full mb-4 rounded-lg"
+      />
+
+      {isLoading && (
+        <div className="absolute top-12 left-0 w-full text-center text-gray-500">
+          Loading suggestions...
+        </div>
+      )}
+
+      {suggestions.length > 0 && (
+        <ul className="absolute top-12 left-0 w-full border mt-2 bg-white z-10 rounded-lg shadow-lg">
+          {suggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              onClick={() => onSuggestionSelectedFrom(suggestion)}
+            >
+              {suggestion.description}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
               <input
                 type="text"
                 placeholder="Enter ownership title"
