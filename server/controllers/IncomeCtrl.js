@@ -6,35 +6,25 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 
 const pdf = require("html-pdf-node");
+const puppeteer = require('puppeteer-core');
+const chromeLambda = require('chrome-aws-lambda');
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-const pdfMake = require('pdfmake/build/pdfmake');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
 
 async function generatePDF2(data) {
   try {
-    // Render the EJS template
-    const htmlContent = await ejs.renderFile(
-      path.join(__dirname, "../mail_template/reciapt.ejs"),
-      data
-    );
-
-    // Define PDF document definition
-    const docDefinition = {
-      content: htmlContent, // Can be an array of objects, images, tables, etc.
-      pageSize: 'A4',
-      pageMargins: [10, 20, 10, 20] // Define margins [left, top, right, bottom]
-    };
-
-    // Generate PDF from document definition
-    const pdfDoc = pdfMake.createPdf(docDefinition);
-    
-    // Return the PDF as a buffer
-    return new Promise((resolve, reject) => {
-      pdfDoc.getBuffer((buffer) => {
-        resolve(buffer);
-      });
+    const browser = await puppeteer.launch({
+      executablePath: await chromeLambda.executablePath,
+      headless: true,
     });
+
+    const page = await browser.newPage();
+    const htmlContent = await ejs.renderFile(path.join(__dirname, "../mail_template/reciapt.ejs"), data);
+    await page.setContent(htmlContent);
+    const pdfBuffer = await page.pdf({ format: 'A4' });
+
+    await browser.close();
+
+    return pdfBuffer;
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;

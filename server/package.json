@@ -15,6 +15,7 @@
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
+    "chrome-aws-lambda": "^10.1.0",
     "cloudinary": "^2.5.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -31,8 +32,8 @@
     "nodemon": "^3.1.7",
     "npm": "^10.9.2",
     "pdfkit": "^0.16.0",
-    "pdfmake": "^0.2.18",
     "puppeteer": "^24.0.0",
+    "puppeteer-core": "^10.4.0",
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.4",
     "xlsx": "^0.18.5"
