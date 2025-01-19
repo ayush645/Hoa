@@ -7,6 +7,10 @@ const nodemailer = require("nodemailer");
 
 const pdf = require("html-pdf-node");
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+const pdfMake = require('pdfmake/build/pdfmake');
+const pdfFonts = require('pdfmake/build/vfs_fonts');
+
 async function generatePDF2(data) {
   try {
     // Render the EJS template
@@ -15,24 +19,22 @@ async function generatePDF2(data) {
       data
     );
 
-    // Define PDF options
-    const options = {
-      format: "A4",
-      margin: {
-        top: "20mm",
-        right: "10mm",
-        bottom: "20mm",
-        left: "10mm",
-      },
-      path: "./output.pdf", // Optional: specify the output file path
-      args: ["--no-sandbox", "--disable-setuid-sandbox"] // Add these arguments for headless mode
+    // Define PDF document definition
+    const docDefinition = {
+      content: htmlContent, // Can be an array of objects, images, tables, etc.
+      pageSize: 'A4',
+      pageMargins: [10, 20, 10, 20] // Define margins [left, top, right, bottom]
     };
 
-    // Generate PDF from HTML
-    const file = { content: htmlContent };
-    const pdfBuffer = await pdf.generatePdf(file, options);
-
-    return pdfBuffer;
+    // Generate PDF from document definition
+    const pdfDoc = pdfMake.createPdf(docDefinition);
+    
+    // Return the PDF as a buffer
+    return new Promise((resolve, reject) => {
+      pdfDoc.getBuffer((buffer) => {
+        resolve(buffer);
+      });
+    });
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;
