@@ -5,9 +5,8 @@ const ejs = require("ejs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
-const pdf = require("html-pdf-node");
+
 const puppeteer = require('puppeteer-core');
-const chromeLambda = require('chrome-aws-lambda');
 
 
 

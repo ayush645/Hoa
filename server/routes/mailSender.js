@@ -12,6 +12,8 @@ const router = express.Router();
 
 
 
+const puppeteer = require('puppeteer-core');
+
 async function generatePDF(data) {
   try {
     // Render the EJS template
@@ -20,20 +22,28 @@ async function generatePDF(data) {
       data
     );
 
-    // Define PDF options
-    const options = {
-      format: "A4",
-      margin: {
-        top: "20mm",
-        right: "10mm",
-        bottom: "20mm",
-        left: "10mm",
-      },
-    };
+    // Launch Puppeteer with Chromium path and options
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary flags for Puppeteer
+    });
 
-    // Generate PDF from HTML
-    const file = { content: htmlContent };
-    const pdfBuffer = await pdf.generatePdf(file, options);
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+    
+    // Define PDF options
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '20mm',
+        right: '10mm',
+        bottom: '20mm',
+        left: '10mm',
+      },
+    });
+
+    await browser.close();
 
     return pdfBuffer;
   } catch (error) {
@@ -43,28 +53,43 @@ async function generatePDF(data) {
 }
 
 async function generatePDF2(data) {
-  const htmlContent = await ejs.renderFile(
-    path.join(__dirname, "../mail_template/hoaPartialPaymentReminder.ejs"),
-    data
-  );
+  try {
+    // Render the EJS template
+    const htmlContent = await ejs.renderFile(
+      path.join(__dirname, "../mail_template/hoaPartialPaymentReminder.ejs"),
+      data
+    );
 
- // Define PDF options
- const options = {
-  format: "A4",
-  margin: {
-    top: "20mm",
-    right: "10mm",
-    bottom: "20mm",
-    left: "10mm",
-  },
-};
+    // Launch Puppeteer with Chromium path and options
+    const browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Necessary flags for Puppeteer
+    });
 
-// Generate PDF from HTML
-const file = { content: htmlContent };
-const pdfBuffer = await pdf.generatePdf(file, options);
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
 
-return pdfBuffer;
+    // Define PDF options
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      margin: {
+        top: '20mm',
+        right: '10mm',
+        bottom: '20mm',
+        left: '10mm',
+      },
+    });
+
+    await browser.close();
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    throw error;
+  }
 }
+
 
 
 
