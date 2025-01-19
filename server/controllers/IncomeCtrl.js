@@ -4,23 +4,40 @@ const PropertyInformations = require("../models/PropertyInformationsModel"); // 
 const ejs = require("ejs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const puppeteer = require("puppeteer");
+
+const pdf = require("html-pdf-node");
 
 async function generatePDF2(data) {
-  const htmlContent = await ejs.renderFile(
-    path.join(__dirname, "../mail_template/reciapt.ejs"),
-    data
-  );
+  try {
+    // Render the EJS template
+    const htmlContent = await ejs.renderFile(
+      path.join(__dirname, "../mail_template/reciapt.ejs"),
+      data
+    );
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(htmlContent);
-  const pdfBuffer = await page.pdf();
-  await browser.close();
-  return pdfBuffer;
+    // Define PDF options
+    const options = {
+      format: "A4",
+      margin: {
+        top: "20mm",
+        right: "10mm",
+        bottom: "20mm",
+        left: "10mm",
+      },
+    };
+
+    // Generate PDF from HTML
+    const file = { content: htmlContent };
+    const pdfBuffer = await pdf.generatePdf(file, options);
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    throw error;
+  }
 }
 
-async function sendEmail(pdfBuffer, recipientEmail,filename) {
+async function sendEmail(pdfBuffer, recipientEmail, filename) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -29,7 +46,6 @@ async function sendEmail(pdfBuffer, recipientEmail,filename) {
     },
   });
 
-  
   const mailOptions = {
     from: process.env.MAIL_USER,
     to: recipientEmail,
@@ -45,6 +61,8 @@ async function sendEmail(pdfBuffer, recipientEmail,filename) {
 
   await transporter.sendMail(mailOptions);
 }
+
+
 const createIncomeCtrl = async (req, res) => {
   const {
     ownerName, // Replace 'ownerName' with 'incomeName' if necessary
@@ -156,11 +174,9 @@ const updateMonthsIncome = async (req, res) => {
   const { month, amount, operation, year, method } = req.body;
 
   if (!month || typeof amount !== "number") {
-    return res
-      .status(400)
-      .json({
-        message: "Month and amount are required, and amount should be a number",
-      });
+    return res.status(400).json({
+      message: "Month and amount are required, and amount should be a number",
+    });
   }
 
   const validMonths = [
@@ -194,7 +210,7 @@ const updateMonthsIncome = async (req, res) => {
       },
     });
 
-    let status = amount === 0 ? "not paid":"not updated"
+    let status = amount === 0 ? "not paid" : "not updated";
     if (!incomeRecord) {
       // If no document exists, create a new one
       incomeRecord = new incomeModel({
@@ -214,7 +230,6 @@ const updateMonthsIncome = async (req, res) => {
       // Update the existing document
       incomeRecord.months[month] = amount;
       incomeRecord.statuses[month] = status;
-     
 
       // Recalculate totalAmount
       incomeRecord.totalAmount = Object.values(incomeRecord.months).reduce(
@@ -280,7 +295,7 @@ const updateMonthsIncome = async (req, res) => {
     const pdfBuffer = await generatePDF2(data);
 
     // Send Email
-    await sendEmail(pdfBuffer, incomeRecord.email,"Payment_Receipt.pdf");
+    await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
 
     res.status(200).json({
       message: incomeRecord.isNew

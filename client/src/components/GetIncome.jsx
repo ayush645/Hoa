@@ -407,6 +407,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                   Total Amount
                 </th>
+                <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+                  Deficit
+                </th>
                 <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                   Actions
                 </th>
@@ -419,6 +422,21 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   (sum, value) => sum + value,
                   0
                 );
+
+                const currentMonthIndex = new Date().getMonth(); // Get current month index (0-based)
+                const monthsUpToCurrent = months.filter(
+                  (_, index) => index <= currentMonthIndex
+                ); // Filter months up to the current one
+
+                const paidUpToCurrent = monthsUpToCurrent.reduce(
+                  (sum, month) => {
+                    return sum + (income.months[month] || 0);
+                  },
+                  0
+                ); // Sum of amounts paid up to the current month
+
+                const deficit = income.contribution - paidUpToCurrent; // Calculate deficit
+
                 return (
                   <tr
                     key={income._id}
@@ -465,6 +483,10 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                             <span className="flex flex-col">
                               {monthAmount} Advance
                             </span>
+                          ) : monthAmount === 0 ? (
+                            <span>0</span>
+                          ) : monthAmount !== income.contribution ? (
+                            monthAmount - income.contribution
                           ) : (
                             monthAmount
                           )}
@@ -473,6 +495,10 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                     })}
 
                     <td className="px-4 py-2 text-gray-800">{totalAmount}</td>
+                    <td className="px-4 py-2 bg-red-600">
+                      {deficit === 0 ? "0" : `-${deficit}`}
+                    </td>
+
                     <td className="px-4 py-2 text-center">
                       <FaTrash
                         className="text-red-500 cursor-pointer"
@@ -588,12 +614,31 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   id="paymentStatus"
                   value={paymentStatus}
                   onChange={(e) => setPaymentStatus(e.target.value)}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 `}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
                 >
-                  <option value="Not Paid">Not Paid</option>
-                  <option value="Full Paid">Full Paid</option>
-                  <option value="Partially Paid">Partially Paid</option>
-                  <option value="Full Paid">Pay In Advacne </option>
+                  {/* Dynamically Render Options */}
+                  {(() => {
+                    const currentMonthIndex = new Date().getMonth(); // Current month index
+                    const selectedMonthIndex = new Date(
+                      `${selectedMonth} 1, ${yearFilter}`
+                    ).getMonth(); // Selected month index
+
+                    if (selectedMonthIndex > currentMonthIndex) {
+                      // Future month: Show only "Pay In Advance"
+                      return (
+                        <option value="Pay In Advance">Pay In Advance</option>
+                      );
+                    } else {
+                      // Current or past month: Show all options except "Pay In Advance"
+                      return (
+                        <>
+                          <option value="Not Paid">Not Paid</option>
+                          <option value="Full Paid">Full Paid</option>
+                          <option value="Partially Paid">Partially Paid</option>
+                        </>
+                      );
+                    }
+                  })()}
                 </select>
               </div>
 
@@ -653,10 +698,23 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 Submit
               </button>
             </div>
-            <NotifationsSender
-              ownerId={selectedIncomeId}
-              dueMonth={selectedMonth}
-            />
+            {(() => {
+              const currentMonthIndex = new Date().getMonth(); // Current month index
+              const selectedMonthIndex = new Date(
+                `${selectedMonth} 1, ${yearFilter}`
+              ).getMonth(); // Selected month index
+
+              // Only render NotifationsSender for current or past months
+              if (selectedMonthIndex <= currentMonthIndex) {
+                return (
+                  <NotifationsSender
+                    ownerId={selectedIncomeId}
+                    dueMonth={selectedMonth}
+                  />
+                );
+              }
+              return null; // Do not render anything for future months
+            })()}
           </div>
         </div>
       )}

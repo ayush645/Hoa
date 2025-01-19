@@ -125,7 +125,7 @@ export async function getAllCategoryApi() {
 
         console.log("CREATE CATEGORY ERROR............", error);
         Swal.fire({
-            title: "Failed to Create Category",
+            title: "Failed to Fetch Category",
             text:
                 error.response?.data?.message ||
                 "Something went wrong, please try again later.",
@@ -867,7 +867,7 @@ export const updateMonthIncomeApi = async (id, month, amount, operation, year, m
             confirmButtonText: "OK",
         });
 
-        return response.data;
+        return true;
     } catch (error) {
         console.error("Error updating month:", error);
 

@@ -1,27 +1,45 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
-const puppeteer = require("puppeteer");
 const ejs = require("ejs");
 const path = require("path");
 const Owner = require("../models/Income"); // Adjust the path as necessary
 const PropertyInformations = require("../models/PropertyInformationsModel"); // Adjust the path as necessary
+const pdf = require("html-pdf-node");
+const PropertyCommitiModel = require("../models/PropertyCommitiModel");
 
 const router = express.Router();
 
-// Generate PDF using Puppeteer
-async function generatePDF(data) {
-  const htmlContent = await ejs.renderFile(
-    path.join(__dirname, "../mail_template/hoaPaymentReminder.ejs"),
-    data
-  );
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(htmlContent);
-  const pdfBuffer = await page.pdf();
-  await browser.close();
-  return pdfBuffer;
+
+async function generatePDF(data) {
+  try {
+    // Render the EJS template
+    const htmlContent = await ejs.renderFile(
+      path.join(__dirname, "../mail_template/hoaPaymentReminder.ejs"),
+      data
+    );
+
+    // Define PDF options
+    const options = {
+      format: "A4",
+      margin: {
+        top: "20mm",
+        right: "10mm",
+        bottom: "20mm",
+        left: "10mm",
+      },
+    };
+
+    // Generate PDF from HTML
+    const file = { content: htmlContent };
+    const pdfBuffer = await pdf.generatePdf(file, options);
+
+    return pdfBuffer;
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    throw error;
+  }
 }
 
 async function generatePDF2(data) {
@@ -30,13 +48,26 @@ async function generatePDF2(data) {
     data
   );
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(htmlContent);
-  const pdfBuffer = await page.pdf();
-  await browser.close();
-  return pdfBuffer;
+ // Define PDF options
+ const options = {
+  format: "A4",
+  margin: {
+    top: "20mm",
+    right: "10mm",
+    bottom: "20mm",
+    left: "10mm",
+  },
+};
+
+// Generate PDF from HTML
+const file = { content: htmlContent };
+const pdfBuffer = await pdf.generatePdf(file, options);
+
+return pdfBuffer;
 }
+
+
+
 // Send email using Nodemailer
 async function sendEmail(pdfBuffer, recipientEmail,filename) {
   const transporter = nodemailer.createTransport({
@@ -80,6 +111,9 @@ console.log("hello")
       categoryId: owner.categoryId,
     });
 
+    const comity = await PropertyCommitiModel.findOne({categoryId:owner.categoryId,position:"President"})
+    console.log(comity)
+    
     const monthAmount = owner.months[dueMonth];
     const contribution = owner.contribution;
 
@@ -94,6 +128,7 @@ console.log("hello")
     // Prepare data for template
     const data = {
       logoPath: propertInfo[0]?.logo?.url, // Replace with actual logo path
+      prisident:comity.name,
       propertyAddress: propertInfo[0]?.pName,
       ownerName: owner.ownerName,
       expiredMonth: dueMonth, // Use the due month provided by the frontend

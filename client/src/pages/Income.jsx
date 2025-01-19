@@ -150,6 +150,7 @@ const Income = () => {
         loading={loading}
         onDelete={handleDelete}
         id={id}
+        fetchIncome={fetchIncome}
       />
 
     </div>
