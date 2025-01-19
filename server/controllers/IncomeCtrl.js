@@ -7,13 +7,14 @@ const nodemailer = require("nodemailer");
 
 
 const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer');
 
 
-
+//VPS
 async function generatePDF2(data) {
   try {
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+      // executablePath: '/usr/bin/chromium-browser', // Update with the correct path
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add necessary flags for Puppeteer
     });
@@ -32,6 +33,21 @@ async function generatePDF2(data) {
   }
 }
 
+
+//window
+// async function generatePDF2(data) {
+//   const htmlContent = await ejs.renderFile(
+//     path.join(__dirname, "../mail_template/reciapt.ejs"),
+//     data
+//   );
+
+//   const browser = await puppeteer.launch();
+//   const page = await browser.newPage();
+//   await page.setContent(htmlContent);
+//   const pdfBuffer = await page.pdf();
+//   await browser.close();
+//   return pdfBuffer;
+// }
 
 async function sendEmail(pdfBuffer, recipientEmail, filename) {
   const transporter = nodemailer.createTransport({

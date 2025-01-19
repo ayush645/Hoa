@@ -6,6 +6,7 @@ import * as XLSX from "xlsx";
 import ImageUploaderWithCrop from "./common/ImageUpload";
 import { getAllBudgetIncomeApi, updateBudgetOutcomeAPI } from "../services/operation/function";
 import Swal from "sweetalert2";
+import ExpeptionalReports from "./Report/ExpeptionalReports";
 
 const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOutCome,id}) => {
   const [filteredData, setFilteredData] = useState(propertyData);
@@ -20,7 +21,8 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOut
     const [totalAmountincome, setTotalAmountIncome] = useState(0);
    const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
     const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
-  
+    const[change,setChange] = useState(0)
+
   const [seletedId, setSeletedId] = useState(null);
 
 
@@ -123,6 +125,7 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOut
         setAmount("");
         setShowForm(false);
         fetchOutCome();
+        setChange(change + 1)
       }
     };
 
@@ -229,7 +232,10 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOut
         </select>
       </div>
 
-      <div className="overflow-x-auto">
+
+{
+  selectedYear && <div>
+<div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
@@ -287,12 +293,20 @@ const GetBudgetOutCome = ({ propertyData, loading, onDelete ,setLoading,fetchOut
             ))}
           </tbody>
         </table>
-      </div>
 
-      {/* Total Amount */}
+      </div>
+ {/* Total Amount */}
       <div className="mt-4 text-white text-center font-semibold">
         <p>Total Amount: {totalAmount}</p>
       </div>
+
+<ExpeptionalReports type={'outcome'} change={change} />
+
+</div>
+}
+     
+
+     
 
 
 

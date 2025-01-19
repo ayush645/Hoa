@@ -1,7 +1,7 @@
 import axios from 'axios'; 
 import React, { useEffect, useState } from 'react';
 
-function ExpeptionalReports({ type }) {
+function ExpeptionalReports({ type,change }) {
   const [budgetData, setBudgetData] = useState({
     income: [],
     outcome: [],
@@ -10,6 +10,7 @@ function ExpeptionalReports({ type }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log(change)
     // Fetching data using axios
     const fetchData = async () => {
       try {
@@ -25,7 +26,7 @@ function ExpeptionalReports({ type }) {
     };
 
     fetchData();
-  }, []);
+  }, [change]);
 
   // Filter data based on the type (either 'income' or 'outcome')
   const filteredData = type === 'income' ? budgetData.income : budgetData.outcome;

@@ -18,7 +18,6 @@ const BudgetIncome = () => {
   const [loading, setLoading] = useState(true);
   const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
   const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
-
   const { id } = useParams(); // Getting categoryId directly from the URL
   const navigate = useNavigate();
 
@@ -31,12 +30,14 @@ const BudgetIncome = () => {
     };
 
     const success = await CreateBudgetIncomeAPi(propertyData);
+ 
 
     if (success) {
       setName("");
       setAmount("");
       setShowForm(false);
       fetchBudgetIncome();
+
     }
   };
 
@@ -47,6 +48,8 @@ const BudgetIncome = () => {
       setLoading(true);
       const data = await getAllBudgetIncomeApi(id);
       setPropertyData(data);
+   
+
     } catch (error) {
       console.error("Error fetching property information:", error);
     } finally {
@@ -137,8 +140,7 @@ const BudgetIncome = () => {
       />
 
 
-      <ExpeptionalReports
-      type="income" />
+    
     </div>
   );
 };

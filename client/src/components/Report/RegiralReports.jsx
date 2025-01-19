@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getAllIncomeApi, getAllOutcomeApi } from "../../services/operation/function";
 
-const ReguralReport = ({ type }) => {
+const ReguralReport = ({ type,mainData }) => {
   const [filteredData, setFilteredData] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
   const { id } = useParams();
-
+const main =mainData
   // /BalanceStatement
   const [outCome, setOutComeState] = useState([]);
   const [income, setIncomeState] = useState([]);
@@ -19,7 +19,7 @@ const ReguralReport = ({ type }) => {
 
     try {
       setLoading(true);
-      const data = await getAllIncomeApi(id);
+      const data = main;
       const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
 
       console.log(allUpdateLogs)
@@ -66,7 +66,9 @@ const ReguralReport = ({ type }) => {
   useEffect(()=>{
     fetchIncome()
     fetchOutcome()
-  },[])
+  },[mainData])
+
+
   useEffect(() => {
     // Filter data based on the type
     const filterDataByType = () => {

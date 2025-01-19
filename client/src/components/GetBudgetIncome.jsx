@@ -6,6 +6,7 @@ import { MdClose } from "react-icons/md"; // Import React Icon
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import ExpeptionalReports from "./Report/ExpeptionalReports";
 
 const GetBudgetIncome = ({
   propertyData,
@@ -24,6 +25,7 @@ const GetBudgetIncome = ({
   const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
   const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
   const [seletedId, setSeletedId] = useState(null);
+  const[change,setChange] = useState(0)
 
   useEffect(() => {
     const total = filteredData.reduce(
@@ -78,6 +80,7 @@ const GetBudgetIncome = ({
       setAmount("");
       setShowForm(false);
       fetchBudgetIncome();
+      setChange(change + 1)
     }
   };
 
@@ -259,7 +262,11 @@ const GetBudgetIncome = ({
       </div>
     </div>
  }
-
+{
+  selectedYear && 
+      <ExpeptionalReports
+      type="income" change={change} />
+}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[80vh] overflow-y-auto">

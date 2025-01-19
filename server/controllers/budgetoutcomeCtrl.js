@@ -1,5 +1,5 @@
 const budgetoutcomeModle = require("../models/budgetOutcomeModel");
-
+const Budget = require("../models/budgetModel")
 const createbudgetOutComeCtrl = async (req, res) => {
   const {
     propertyData: { type, amount, categoryId, document },
@@ -173,6 +173,36 @@ const getBudgetOutcomeCtrl = async (req, res) => {
     });
   }
 };
+const getBudgetOutcomeDocument = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+
+    // Find all BudgetOutcomes based on the categoryId
+    const budget = await Budget.find({ serachUpdateId:categoryId }); // Populate category name
+   
+  
+   const budgetOutcomes = await budgetoutcomeModle.find({ categoryId:budget[0]._id }).populate('categoryId', 'name'); // Populate category name
+
+   
+    if (budgetOutcomes.length === 0) {
+      return res.status(404).json({ message: 'No documents found for this category.' });
+    }
+
+    // Return the fetched data with success status code
+    return res.status(200).json({
+      status: 'success',
+      message: 'Documents fetched successfully',
+      data: budgetOutcomes
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ 
+      status: 'error', 
+      message: 'Server error. Please try again later.' 
+    });
+  }
+};
+
 
 
 
@@ -181,5 +211,6 @@ module.exports = {
   deletebudOutcomeCtrl,
   getAllBudgetOutcomeCtrl,
   getBudgetOutcomeCtrl,
-  updateBudgetOutcomeCtrl
+  updateBudgetOutcomeCtrl,
+  getBudgetOutcomeDocument
 };

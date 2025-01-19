@@ -5,7 +5,7 @@ const ejs = require("ejs");
 const path = require("path");
 const Owner = require("../models/Income"); // Adjust the path as necessary
 const PropertyInformations = require("../models/PropertyInformationsModel"); // Adjust the path as necessary
-const pdf = require("html-pdf-node");
+
 const PropertyCommitiModel = require("../models/PropertyCommitiModel");
 
 const router = express.Router();

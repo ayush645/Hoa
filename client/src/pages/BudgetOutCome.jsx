@@ -183,7 +183,6 @@ const BudgetOutCome = () => {
         id={id}
       />
 
-      <ExpeptionalReports type={'outcome'} />
     </div>
   );
 };

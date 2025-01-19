@@ -24,8 +24,30 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
   const [SelectownerName, setSelectOwnerName] = useState("");
 
+
+  const [mainData,setmainData] = useState([])
+
+
+
+   const fetchIncome2 = async () => {
+      if (!id) return;
+  
+      try {
+     
+        const data = await getAllIncomeApi(id);
+        setmainData(data)
+     
+      } catch (error) {
+        console.error("Error fetching income data:", error);
+      } finally {
+      
+      }
+    };
+
+
   useEffect(() => {
     setIncomeData(propertyData);
+    fetchIncome2()
   }, [propertyData]);
 
   if (loading) {
@@ -131,6 +153,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         setSelectedMonth(null);
         setSelectedIncomeId(null); // Clear selectedIncomeId
         fetchIncome(); // Re-fetch income data after the update
+        fetchIncome2()
         setIsModalOpen(false); // Close the modal after update
       }
     } catch (error) {
@@ -576,7 +599,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         </div>
       )}
 
-      {yearFilter && <ReguralReport type="income" />}
+      {yearFilter && <ReguralReport type="income" mainData={mainData} />}
+   
+   
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 ">
           <div className="bg-white max-h-[95vh] overflow-y-auto rounded-lg shadow-lg p-8 w-full max-w-md space-y-6">

@@ -33,6 +33,7 @@ import BothExcepational from "./components/common/BothExcepational";
 import RegularStatement from "./components/common/RegularStatement";
 import DownloadPDFButton from "./components/common/TestPrint";
 import ExceptionalBalanceSheet from "./pages/reports/ExceptionalBalanceSheet";
+import UploadDocuments from "./pages/UploadDocuments";
 
 const App = () => {
   return (
@@ -69,6 +70,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <PropertyInformation />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/uploaddocuments/:id"
+            element={
+              <PrivateRoute>
+                <UploadDocuments />
               </PrivateRoute>
             }
           />

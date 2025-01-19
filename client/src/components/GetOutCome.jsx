@@ -28,6 +28,7 @@ const GetOutCome = ({
   const [incomeData, setIncomeData] = useState(propertyData);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prev, setPre] = useState(0);
+  const [maindat, setMainData] = useState([]);
 
   const [selectownerName, setSelectOwnerName] = useState("");
 
@@ -138,6 +139,21 @@ const GetOutCome = ({
     }
   };
 
+
+    const fetchOutcome = async () => {
+      if (!id) return;
+  
+      try {
+     
+        const data = await getAllOutcomeApi(id);
+        setMainData(data)
+      
+      } catch (error) {
+        console.error("Error fetching outcome data:", error);
+      } finally {
+
+      }
+    };
   const calculateTotalContribution = () => {
     const ammm = incomeData.reduce(
       (sum, income) => sum + (parseFloat(income.totalAmount) || 0),
@@ -169,7 +185,7 @@ const GetOutCome = ({
         calculateTotalContribution();
         setIsModalOpen(false);
         fetchIncomeMain();
-        window.location.reload();
+      
       }
     } catch (error) {
       toast.error("Error updating the month. Please try again.");
@@ -448,7 +464,7 @@ const GetOutCome = ({
 
       {/* Total Calculation */}
 
-      {yearFilter && <ReguralReport type="outcome" />}
+      {yearFilter && <ReguralReport type="outcome" mainData={incomeData} />}
     </div>
   );
 };

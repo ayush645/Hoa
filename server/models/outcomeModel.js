@@ -24,6 +24,11 @@ const outcomeSchema = new Schema({
         type: Number,
         default: 0,
     },
+    
+    document: {
+        public_id: String,
+        url: String,
+      },
 
     categoryId: {
         type: Schema.Types.ObjectId,
