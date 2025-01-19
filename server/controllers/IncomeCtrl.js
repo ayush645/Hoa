@@ -10,11 +10,13 @@ const puppeteer = require('puppeteer-core');
 const chromeLambda = require('chrome-aws-lambda');
 
 
+
 async function generatePDF2(data) {
   try {
     const browser = await puppeteer.launch({
-      executablePath: await chromeLambda.executablePath,
+      executablePath: '/usr/bin/chromium-browser', // Update with the correct path
       headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add necessary flags for Puppeteer
     });
 
     const page = await browser.newPage();
@@ -30,6 +32,7 @@ async function generatePDF2(data) {
     throw error;
   }
 }
+
 
 async function sendEmail(pdfBuffer, recipientEmail, filename) {
   const transporter = nodemailer.createTransport({
