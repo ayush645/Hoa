@@ -1254,15 +1254,36 @@ router.get("/generate-pdf-owner", async (req, res) => {
     const rowHeight = 20;
     yPosition = tableStartY;
 
+
+    let totalPaid1 = 0;
+    let totalRemaining2 = 0;
+
+    const currentMonth = new Date().getMonth();  // 0-based (0 = January, 11 = December)
+
     // Add each row of data (month-wise)
     tableData.forEach((row, index) => {
+      const monthIndex = new Date(`${currentYear}-${row.month}-01`).getMonth(); // Convert month name to month index (0-11)
+      let paidAmount = row.paidAmount;
+      let remainingAmount = row.remainingAmount;
+    
+ 
+
+      if (monthIndex > currentMonth) {
+        // If the month is in the future, set "Not Happened"
+        paidAmount = "Not Happened";
+        remainingAmount = "Not Happened";
+      }else {
+        // If the month has passed, accumulate totals
+        totalPaid1 += parseFloat(paidAmount) || 0;
+        totalRemaining2 += parseFloat(remainingAmount) || 0;
+      }
       doc
         .fontSize(10)
         .font("Helvetica")
         .text(`${index + 1}`, 20, yPosition)
         .text(row.month, 120, yPosition)
-        .text(row.paidAmount.toFixed(2), 250, yPosition)
-        .text(row.remainingAmount.toFixed(2), 380, yPosition);
+        .text(paidAmount, 250, yPosition)
+        .text(remainingAmount, 380, yPosition);
 
       yPosition += rowHeight; // Move down for the next row
 
@@ -1278,9 +1299,9 @@ router.get("/generate-pdf-owner", async (req, res) => {
     doc
       .fontSize(12)
       .font("Helvetica-Bold")
-      .text(`Total Paid: ${totalPaid.toFixed(2)}`, 20, yPosition);
+      .text(`Total Paid: ${totalPaid1.toFixed(2)}`, 20, yPosition);
     doc.text(
-      `Total Remaining: ${totalRemaining.toFixed(2)}`,
+      `Total Remaining: ${totalRemaining2.toFixed(2)}`,
       20,
       yPosition + 20
     );
