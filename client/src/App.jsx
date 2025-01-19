@@ -34,6 +34,7 @@ import RegularStatement from "./components/common/RegularStatement";
 import DownloadPDFButton from "./components/common/TestPrint";
 import ExceptionalBalanceSheet from "./pages/reports/ExceptionalBalanceSheet";
 import UploadDocuments from "./pages/UploadDocuments";
+import UnitsReport from "./pages/UnitsReports";
 
 const App = () => {
   return (
@@ -178,6 +179,14 @@ const App = () => {
             }
           />
           <Route
+            path="/print/:id"
+            element={
+              <PrivateRoute>
+                <Print />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/print"
             element={
               <PrivateRoute>
@@ -206,6 +215,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <PrintOwner />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="print/unit/:id"
+            element={
+              <PrivateRoute>
+                <UnitsReport />
               </PrivateRoute>
             }
           />

@@ -58,7 +58,7 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
 
   const handleNavigation = (link, id) => {
     if (link === "printreports") {
-      navigate("/print");
+      navigate(`/print/${id}`);
     } else {
       navigate(`/${link}/${id}`);
     }

@@ -40,9 +40,7 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
               Currency
               </th>
-              <th className="px-4 py-2 text-center text-gray-600 font-semibold">
-                Actions
-              </th>
+          
             </tr>
           </thead>
           <tbody>
@@ -61,15 +59,7 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
                 <td className="px-4 py-2 text-gray-800">
                   {property?.currency || "N/A"}
                 </td>
-                <td className="px-4 py-2 text-center">
-                  <button
-                    onClick={() => onDelete(property._id)}
-                    className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
-                    title="Delete Property"
-                  >
-                    <FaTrash size={16} />
-                  </button>
-                </td>
+               
               </tr>
             ))}
           </tbody>

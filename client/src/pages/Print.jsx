@@ -1,10 +1,10 @@
 import axios from "axios";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Print = () => {
 
-
+const{id} = useParams()
 
 
   const handleDownloadUnits = async () => {
@@ -54,11 +54,14 @@ const Print = () => {
         <Link to="/print/owner" className="button-85 text-center">
           Property owners
         </Link>
-        <button 
+        <Link to={`/print/unit/${id}`} className="button-85 text-center">
+        Units Report
+        </Link>
+        {/* <button 
         onClick={handleDownloadUnits}
         className="button-85 text-center">
          Download Units Report
-        </button>
+        </button> */}
         
       </div>
     </div>
