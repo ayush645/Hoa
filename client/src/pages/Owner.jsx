@@ -20,7 +20,7 @@ const Owner = () => {
   const [email, setEmail] = useState("");
   const [account, setAccount] = useState("");
 
-  const [unit, setUnit] = useState({ type: "", currency: "", fee: "" }); // Initialize as an object
+  const [unit, setUnit] = useState({ type: "", currency: "", fee: "",unitCode: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
   const [paymentType, setPaymentType] = useState("Cash");
 
@@ -144,6 +144,7 @@ console.log(success)
         type: selectedUnit.type,
         currency: selectedUnit.currency,
         fee: selectedUnit.fee,
+        unitCode: selectedUnit.unitCode,
       });
     } else {
       setUnit({ type: "", currency: "", fee: "" });

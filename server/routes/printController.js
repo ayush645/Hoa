@@ -255,6 +255,7 @@ const generatePropertyPDFcommiti = async (req, res) => {
 
 const generateUnitsPDF = async (req, res) => {
   try {
+     
     const units = await Units.find(); // Fetch all units
 
     if (!units || units.length === 0) {
@@ -361,89 +362,111 @@ const generateUnitsPDF = async (req, res) => {
   }
 };
 
+
 const generateOwnersPDF = async (req, res) => {
   try {
     const { id } = req.params;
     let owners = [];
     if (id) {
-      owners = await Owner.find({ categoryId: id }).populate(
-        "categoryId",
-        "name"
-      ); // Fetch all owners and populate category name
+      owners = await Owner.find({ categoryId: id }).populate("categoryId", "name");
     } else {
-      owners = await Owner.find().populate("categoryId", "name"); // Fetch all owners and populate category name
+      owners = await Owner.find().populate("categoryId", "name");
     }
+
+    const propertyInfo = await PropertyInformations.findOne({ categoryId: id });
 
     if (!owners || owners.length === 0) {
       throw new Error("No owners found");
     }
 
     const doc = new PDFDocument({ margin: 40 });
-
-    // Define the output file path
     const outputDir = `/output/`;
     const filePath = `${outputDir}owners.pdf`;
 
-    // Ensure the directory exists
     if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true }); // Create the directory if it doesn't exist
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     const writeStream = fs.createWriteStream(filePath);
-    doc.pipe(writeStream); // Pipe the document to the file
+    doc.pipe(writeStream);
 
-    // Title
-    doc.text(`Home Owners Association Management System \nwww.hoam.com`, {
-      align: "center",
-    });
+    let logoBuffer = null;
+
+    // Header: System Name and URL
+    doc
+      .fontSize(6)
+      .font("Helvetica-Bold")
+      .text("Home Owners Association Management System", { align: "center" })
+      .text("www.hoam.com", { align: "center" })
+      .moveDown(2);
+
+    let yPosition = doc.y;  // Set initial Y position
+    yPosition += 20;  // Adjust this value to control the distance between header and logo
+
+    // Add Property Logo
+    if (propertyInfo.logo && propertyInfo.logo.url) {
+      if (propertyInfo.logo.url.startsWith("http")) {
+        const response = await axios.get(propertyInfo.logo.url, {
+          responseType: "arraybuffer",
+        });
+        logoBuffer = Buffer.from(response.data, "binary");
+      } else {
+        logoBuffer = fs.readFileSync(propertyInfo.logo.url); // Local image
+      }
+
+      // Center the logo and adjust y-position
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      yPosition += 120; // Adjust Y-position after logo (height of the logo + some space)
+    }
+
+    // Add Property Name (below the logo)
     doc
       .fontSize(18)
       .font("Helvetica-Bold")
-      .text("Owners Details", 40, 100, { align: "center" })
-      .moveDown();
+      .text(propertyInfo.pName || "Property Name", { align: "center" })
+      .moveDown(3);  // Add space after the property name
 
-    // Table Headers
-    doc
-      .fontSize(12)
-      .font("Helvetica-Bold")
-      .text("Name", 20, 150)
-      .text("Address", 140, 150)
-      .text("Phone", 250, 150)
-      .text("Email", 350, 150)
-      .text("Unit", 470, 150)
-      .moveDown(1);
+    // Define column widths for 6 columns (Sr. No., Name, Address, Phone, Email, Unit)
+    const columnWidths = [35, 98, 98, 98, 98, 98]; // 6 columns, adjust width as needed
+    const headers = ["Sr.", "Name", "Address", "Phone", "Email", "Unit"];
 
-    // Add each owner data in the table
-    let yPosition = 170;
+    // Table header (6 columns)
+    let xPosition = 20;
+    doc.fontSize(12).font("Helvetica-Bold");
+    headers.forEach((header, i) => {
+      doc.text(header, xPosition, yPosition, { width: columnWidths[i], align: "center" });
+      xPosition += columnWidths[i] + 10;
+    });
+
+    yPosition += 20; // Move yPosition down after the header
+
+    doc.fontSize(10).font("Helvetica");
+
+    // Table data (6 columns per row)
     for (let i = 0; i < owners.length; i++) {
       const owner = owners[i];
-      const name = owner.name; // Owner's name
-      const address = owner.address; // Owner's address
-      const phone = owner.phone; // Owner's phone
-      const email = owner.email; // Owner's email
-      const unit = owner.unit; // Unit
+      const data = [i + 1, owner.name, owner.address, owner.phone, owner.email, owner.unit]; // Add Sr. No. here
 
-      doc
-        .fontSize(10)
-        .font("Helvetica")
-        .text(name, 20, yPosition)
-        .text(address, 140, yPosition)
-        .text(phone, 250, yPosition)
-        .text(email, 350, yPosition)
-        .text(unit, 470, yPosition);
+      // Create new row for each 6 items (one row has 6 columns)
+      xPosition = 20;
+      data.forEach((item, idx) => {
+        doc.text(item || "N/A", xPosition, yPosition, { width: columnWidths[idx], align: "center", lineBreak: true });
+        xPosition += columnWidths[idx] + 10;
+      });
 
-      yPosition += 20; // Move down for the next row
+      // Move to next row (after 6 columns)
+      yPosition += 30;
 
-      // If we're getting close to the end of the page, add a new page
+      // Add a new page if the current one is full
       if (yPosition > doc.page.height - 100) {
         doc.addPage();
-        yPosition = 40; // Reset y-position for the new page
+        yPosition = 40; // Reset Y position for new page
       }
     }
 
-    // Combine data for QR Code (combine the data of all owners)
+    // QR Code generation
     const qrData = {
-      owners: owners.map((owner) => ({
+      owners: owners.map(owner => ({
         name: owner.name,
         address: owner.address,
         phone: owner.phone,
@@ -452,39 +475,45 @@ const generateOwnersPDF = async (req, res) => {
       })),
     };
 
-    // Generate a single QR Code for all owners combined
     const qrCodePath = `${outputDir}combined-qr.png`;
-    await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save the combined QR code to file
+    await QRCode.toFile(qrCodePath, JSON.stringify(qrData));
 
-    // Add text before QR code and center the QR code
-    let qrYPosition = yPosition + 20; // Adjust QR code placement after table
+    const qrSize = 150;
+    const qrX = (doc.page.width - qrSize) / 2;
+    const qrYPosition = yPosition + 20;
 
-    // Centered QR code
-    const qrSize = 150; // Define the size of the QR code
-    const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
+    doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize });
 
-    doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
+    doc.end();
 
-    doc.end(); // Finalize the PDF
-
-    // Send the file for download
     writeStream.on("finish", () => {
-      res.download(filePath, `owners.pdf`, (err) => {
+      res.download(filePath, "owners.pdf", (err) => {
         if (err) {
           console.error("Error sending PDF:", err);
         }
-        // Clean up the generated PDF file
         fs.unlinkSync(filePath);
       });
     });
 
-    // Clean up the QR code file after use
     fs.unlinkSync(qrCodePath);
+
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("An error occurred while generating the PDF.");
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const generatePropertyPDFId = async (req, res) => {
   const { id } = req.params;
@@ -741,111 +770,185 @@ const generateUnitsPDFId = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const units = await Units.find({ categoryId: id }); // Fetch all units
+    // Fetch data
+    const units = await Units.find({ categoryId: id });
+    const ownersDetails = await Owner.find({ categoryId: id });
+    const propertyInfo = await PropertyInformations.findOne({ categoryId: id });
 
-    if (!units || units.length === 0) {
-      throw new Error("No units found");
+    if (!units || units.length === 0 || !propertyInfo) {
+      throw new Error("Required data not found");
     }
 
     const doc = new PDFDocument({ margin: 40 });
 
-    // Define the output file path
+    // Output file path
     const outputDir = `/output/`;
     const filePath = `${outputDir}units.pdf`;
 
-    // Ensure the directory exists
+    // Ensure directory exists
     if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true }); // Create the directory if it doesn't exist
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     const writeStream = fs.createWriteStream(filePath);
-    doc.pipe(writeStream); // Pipe the document to the file
+    doc.pipe(writeStream);
 
-    // Title
-    doc.text(`Home Owners Association Management System \nwww.hoam.com`, {
-      align: "center",
-    });
+    let logoBuffer = null;
+
+    // Header: System Name and URL
+    doc
+      .fontSize(6)
+      .font("Helvetica-Bold")
+      .text("Home Owners Association Management System", { align: "center" })
+      .text("www.hoam.com", { align: "center" })
+      .moveDown(2);
+
+    let yPosition = doc.y;  // Set initial Y position
+    yPosition += 20;  // Adjust this value to control the distance between header and logo
+
+    // Add Property LogoyPosition += 20;  // Adjust this value to control the distance between header and logo
+
+    if (propertyInfo.logo && propertyInfo.logo.url) {
+      if (propertyInfo.logo.url.startsWith("http")) {
+        const response = await axios.get(propertyInfo.logo.url, {
+          responseType: "arraybuffer",
+        });
+        logoBuffer = Buffer.from(response.data, "binary");
+      } else {
+        logoBuffer = fs.readFileSync(propertyInfo.logo.url); // Local image
+      }
+
+      // Center the logo and adjust y-position
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      yPosition += 120; // Adjust Y-position after logo (height of the logo + some space)
+    }
+
+    // Add Property Name (below the logo)
     doc
       .fontSize(18)
       .font("Helvetica-Bold")
-      .text("Units Details", 40, 100, { align: "center" })
-      .moveDown();
+      .text(propertyInfo.pName || "Property Name", { align: "center" })
+      .moveDown(3);  // Add space after the property name
 
-    // Table Headers
+    // Section 1: Unit Details
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("Unit Details", 40, yPosition ,{ align: "center" })
+      .moveDown(1);
+
+    yPosition += 25;
+
+    // Table Headers for Unit Details
     doc
       .fontSize(12)
       .font("Helvetica-Bold")
-      .text("Unit Code", 40, 150)
-      .text("Description", 120, 150)
-      .text("Monthly Fees", 250, 150)
-      .moveDown(1);
+      .text("Unit Code", 40, yPosition)
+      .text("Description", 120, yPosition)
+      .text("Monthly Fees", 250, yPosition);
 
-    // Add each unit data in the table
-    let yPosition = 170;
-    for (let i = 0; i < units.length; i++) {
-      const unit = units[i];
-      const unitCode = i + 1; // Unit Code
-      const description = unit.type; // Description (assuming `type` is the description)
-      const monthlyFee = unit.fee; // Monthly Fee
+    yPosition += 20;
+
+    for (const unit of units) {
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset yPosition
+      }
 
       doc
         .fontSize(10)
         .font("Helvetica")
-        .text(unitCode, 40, yPosition)
-        .text(description, 120, yPosition)
-        .text(monthlyFee, 250, yPosition);
+        .text(unit.unitCode, 40, yPosition)
+        .text(unit.type || "N/A", 120, yPosition)
+        .text(unit.fee || "N/A", 250, yPosition);
 
-      yPosition += 20; // Move down for the next row
-
-      // If we're getting close to the end of the page, add a new page
-      if (yPosition > doc.page.height - 100) {
-        doc.addPage();
-        yPosition = 40; // Reset y-position for the new page
-      }
+      yPosition += 20;
     }
 
-    // Combine data for QR Code (combine the data of all units)
-    const qrData = {
-      units: units.map((unit) => ({
-        unitCode: unit._id, // Unique identifier for each unit
-        description: unit.type, // Description
-        monthlyFee: unit.fee, // Monthly Fee
-      })),
-    };
+    // Section 2: Owner Details
+    if (yPosition > doc.page.height - 100) {
+      doc.addPage();
+      yPosition = 40; // Reset yPosition
+    }
 
-    // Generate a single QR Code for all units combined
-    const qrCodePath = `${outputDir}combined-qr.png`;
-    await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save the combined QR code to file
+    doc
+      .fontSize(14)
+      .font("Helvetica-Bold")
+      .text("Owner Details", 40, yPosition,{ align: "center" });
 
-    // Add text before QR code and center the QR code
-    let qrYPosition = yPosition + 20; // Adjust QR code placement after table
+    yPosition += 25;
 
-    // Centered QR code
-    const qrSize = 150; // Define the size of the QR code
-    const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
+    const unitOwnerData = ownersDetails.map((owner) => ({
+      unitCode: owner.unitDetails?.unitCode || "N/A",
+      ownerName: owner.name || "N/A",
+      description: owner.unit || "N/A",
+      ownershipTitle: owner.ownershipTitle || "N/A",
+    }));
 
-    doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
+    // Table Headers for Owner Details
+    doc
+      .fontSize(12)
+      .font("Helvetica-Bold")
+      .text("Unit Code", 40, yPosition)
+      .text("Description", 120, yPosition)
+      .text("Owner", 250, yPosition)
+      .text("Ownership Title", 360, yPosition);
 
-    doc.end(); // Finalize the PDF
+    yPosition += 20;
 
-    // Send the file for download
+    for (const data of unitOwnerData) {
+      if (yPosition > doc.page.height - 100) {
+        doc.addPage();
+        yPosition = 40; // Reset yPosition
+      }
+
+      doc
+        .fontSize(10)
+        .font("Helvetica")
+        .text(data.unitCode, 40, yPosition)
+        .text(data.description, 120, yPosition)
+        .text(data.ownerName, 250, yPosition)
+        .text(data.ownershipTitle, 360, yPosition);
+
+      yPosition += 20;
+    }
+
+
+       // QR Code Generation: Generate a dummy QR Code
+       const qrCodeData = "https://www.dummy-url.com";
+       const qrCodePath = `${outputDir}qr_code.png`;
+   
+       await QRCode.toFile(qrCodePath, qrCodeData, {
+         width: 100, // Adjust QR Code size
+       });
+   
+       // Add QR Code at the bottom
+       doc.image(qrCodePath, (doc.page.width - 100) / 2, doc.page.height - 120, { width: 100 });
+   
+       // Clean up by deleting the QR code file after PDF generation
+       fs.unlinkSync(qrCodePath);
+    doc.end();
+
     writeStream.on("finish", () => {
       res.download(filePath, `units.pdf`, (err) => {
         if (err) {
           console.error("Error sending PDF:", err);
         }
-        // Clean up the generated PDF file
         fs.unlinkSync(filePath);
       });
     });
-
-    // Clean up the QR code file after use
-    fs.unlinkSync(qrCodePath);
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("An error occurred while generating the PDF.");
   }
 };
+
+
+
+
+
+
+
 
 router.get("/generate-pdf", async (req, res) => {
   const { categoryId, month } = req.query;
