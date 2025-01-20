@@ -95,7 +95,7 @@ const generatePropertyPDF = async (req, res) => {
       await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save QR code to file
 
       // Get the size of the QR code to center it horizontally
-      const qrSize = 150; // Define the size of the QR code
+      const qrSize = 50; // Define the size of the QR code
 
       // Calculate the position to center the QR code horizontally
       const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
@@ -219,7 +219,7 @@ const generatePropertyPDFcommiti = async (req, res) => {
     let qrYPosition = yPosition + 20; // Adjust QR code placement after table
 
     // Centered QR code
-    const qrSize = 150; // Define the size of the QR code
+    const qrSize = 80; // Define the size of the QR code
     const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
 
     for (let i = 0; i < propertyCommittees.length; i++) {
@@ -336,7 +336,7 @@ const generateUnitsPDF = async (req, res) => {
     let qrYPosition = yPosition + 20; // Adjust QR code placement after table
 
     // Centered QR code
-    const qrSize = 150; // Define the size of the QR code
+    const qrSize = 80; // Define the size of the QR code
     const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
 
     doc.image(qrCodePath, qrX, qrYPosition, { width: qrSize, height: qrSize }); // Position QR code
@@ -478,7 +478,7 @@ const generateOwnersPDF = async (req, res) => {
     const qrCodePath = `${outputDir}combined-qr.png`;
     await QRCode.toFile(qrCodePath, JSON.stringify(qrData));
 
-    const qrSize = 150;
+    const qrSize = 80;
     const qrX = (doc.page.width - qrSize) / 2;
     const qrYPosition = yPosition + 20;
 
@@ -606,7 +606,7 @@ const generatePropertyPDFId = async (req, res) => {
       await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save QR code to file
 
       // Get the size of the QR code to center it horizontally
-      const qrSize = 150; // Define the size of the QR code
+      const qrSize = 80; // Define the size of the QR code
 
       // Calculate the position to center the QR code horizontally
       const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
@@ -732,7 +732,7 @@ const generatePropertyPDFcommitiId = async (req, res) => {
     let qrYPosition = yPosition + 20; // Adjust QR code placement after table
 
     // Centered QR code
-    const qrSize = 150; // Define the size of the QR code
+    const qrSize = 80; // Define the size of the QR code
     const qrX = (doc.page.width - qrSize) / 2; // Center horizontally
 
     for (let i = 0; i < propertyCommittees.length; i++) {
