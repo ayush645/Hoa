@@ -24,7 +24,7 @@ const Navbar = () => {
               Home
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/print" className="hover:text-gray-200">
               Print
             </Link>
@@ -33,7 +33,7 @@ const Navbar = () => {
             <Link to="/upload" className="hover:text-gray-200">
               Upload
             </Link>
-          </li>
+          </li> */}
         </ul>
 
         {/* Hamburger Menu for small screens */}
@@ -57,7 +57,7 @@ const Navbar = () => {
               Home
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/print"
               className="block hover:text-gray-200"
@@ -74,7 +74,7 @@ const Navbar = () => {
             >
               Upload
             </Link>
-          </li>
+          </li> */}
         </ul>
       )}
     </nav>
