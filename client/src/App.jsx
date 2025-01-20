@@ -146,14 +146,7 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/exceptionalbudget/balance/:id"
-            element={
-              <PrivateRoute>
-                <ExcepationalBalance />
-              </PrivateRoute>
-            }
-          />
+       
           <Route
             path="/exceptionalbudget/income/:id"
             element={

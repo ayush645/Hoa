@@ -156,8 +156,10 @@ const[incomeState,setIncomeState] = useState([])
         </select>
       </div>
 
-      {/* Balance Table */}
-      <div className="overflow-x-auto">
+{
+  selectedYear && <div>
+        {/* Balance Table */}
+        <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-white">
             <tr>
@@ -178,6 +180,9 @@ const[incomeState,setIncomeState] = useState([])
         </table>
       </div>
       <BalanceStatement outCome={outComeState} income={incomeState} />
+</div>
+}
+
     </div>
   );
 };

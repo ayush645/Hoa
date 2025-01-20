@@ -53,7 +53,9 @@ const BothExcepationSheet = ({ income, outCome }) => {
             {mergedData.map((entry, index) => {
               const color = entry.type === 'income' ? 'text-green-500' : 'text-red-500';
               const sign = entry.type === 'income' ? '+' : '-';
-
+             if(!entry.operation){
+              return null
+             }
               return (
                 <tr key={index}>
                   <td className="border border-gray-200 p-2">

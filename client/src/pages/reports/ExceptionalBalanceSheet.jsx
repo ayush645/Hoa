@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { getAllBudgetIncomeApi, getAllBudgetOutcomeApi } from "../../services/operation/function";
+import BothExcepational from "../../components/common/BothExcepational";
 
 const Balance = () => {
   const [incomeData, setIncomeData] = useState([]);
@@ -151,6 +152,8 @@ const[incomeState,setIncomeState] = useState([])
       </div>
 
       {/* Balance Table */}
+     {
+      selectedYear && <div>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
           <thead className="bg-gray-800 text-white">
@@ -172,6 +175,9 @@ const[incomeState,setIncomeState] = useState([])
         </table>
       </div>
      
+      <BothExcepational />
+      </div>
+     }
     </div>
   );
 };

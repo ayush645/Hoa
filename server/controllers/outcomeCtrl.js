@@ -82,6 +82,9 @@ const getAllOutcomeCtrl = async (req, res) => {
         });
     }
 };
+
+
+
 const getOutcomeCtrl = async (req, res) => {
     try {
         const properties = await outcomeModle.find().sort({ createdAt: -1 });;
