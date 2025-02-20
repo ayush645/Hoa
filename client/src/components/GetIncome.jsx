@@ -135,9 +135,13 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       amountToUpdate = 0;
       status = "not paid";
     } else if (paymentStatus === "Full Paid") {
+      status = "full advance";
+      
       // Use the contribution from the selected income
       amountToUpdate = income.contribution;
     } else if (paymentStatus === "Partially Paid") {
+      status = "partially advance";
+
       // Ensure partialAmount is a valid number
       const validPartialAmount = parseFloat(partialAmount);
       if (isNaN(validPartialAmount) || validPartialAmount <= 0) {
@@ -476,24 +480,23 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   (_, index) => index <= currentMonthIndex
                 ); // Filter months up to the current one
 
-                const paidUpToCurrent = monthsUpToCurrent.reduce(
-                  (sum, month) => {
-                    // Ensure that payment does not exceed monthly contribution
-                    return (
-                      sum +
-                      Math.min(income.months[month] || 0, income.contribution)
-                    );
-                  },
-                  0
-                );
+                const paidUpToCurrent = monthsUpToCurrent.reduce((sum, month) => {
+  const monthAmount = income.months[month] || 0;
+  
+  // Check if the status is "pay in advance" and amount is less than contribution
+  if (monthAmount < income.contribution && income.statuses[month] === "pay in advance") {
+    return sum + income.contribution; // Add full contribution (give discount)
+  }
 
-                // Correct deficit calculation (excluding fine)
-                const deficit =
-                  income.contribution * monthsUpToCurrent.length >
-                  paidUpToCurrent
-                    ? income.contribution * monthsUpToCurrent.length -
-                      paidUpToCurrent
-                    : 0;
+  return sum + Math.min(monthAmount, income.contribution); // Normal case
+}, 0);
+
+// Correct deficit calculation (excluding fine)
+const deficit =
+  income.contribution * monthsUpToCurrent.length > paidUpToCurrent
+    ? income.contribution * monthsUpToCurrent.length - paidUpToCurrent
+    : 0;
+
 
                 return (
                   <tr
@@ -523,7 +526,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                           : monthAmount === 0 &&
                             income.statuses !== "not updated"
                           ? "bg-white text-gray-800"
-                          : monthIndex > currentMonthIndex && monthAmount > 0
+                          : income?.statuses[month] === "pay in advance" && monthAmount > 0
                           ? "bg-yellow-400 text-black"
                           : monthAmount > income.contribution
                           ? "bg-pink-500 text-white" // New condition for pink background
@@ -539,19 +542,22 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                           className={`px-4 py-2 ${bgColor} cursor-pointer border`}
                           onClick={() => handleMonthClick(income._id, month)}
                         >
-                          {monthAmount > 0 && monthIndex > currentMonthIndex ? (
-                            <span className="flex flex-col">
-                              {monthAmount} Advance
-                            </span>
-                          ) : monthAmount === 0 ? (
-                            <span>0</span>
-                          ) : monthAmount <= income.contribution ? (
-                            monthAmount - income.contribution
-                          ) : (
-                            <span className="flex flex-col">
-                              {monthAmount} Late
-                            </span>
-                          )}
+                      {monthAmount > 0 && income?.statuses[month] === "pay in advance" ? (
+  <span className="flex flex-col">
+    {monthAmount} Advance
+  </span>
+) : monthAmount === 0 ? (
+  <span>0</span>
+) : monthAmount === income.contribution ? ( // ✅ New condition added
+  <span>{monthAmount}</span>
+) : monthAmount < income.contribution ? (
+  monthAmount - income.contribution
+) : (
+  <span className="flex flex-col">
+    {monthAmount} Late
+  </span>
+)}
+
                         </td>
                       );
                     })}
