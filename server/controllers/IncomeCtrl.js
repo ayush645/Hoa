@@ -5,49 +5,51 @@ const ejs = require("ejs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
+//VPS
+// const puppeteer = require('puppeteer-core');
 
-const puppeteer = require('puppeteer-core');
-// const puppeteer = require('puppeteer');
+//window
+const puppeteer = require('puppeteer');
 
 
 //VPS
-async function generatePDF2(data) {
-  try {
-    const browser = await puppeteer.launch({
-      // executablePath: '/usr/bin/chromium-browser', // Update with the correct path
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add necessary flags for Puppeteer
-    });
+// async function generatePDF2(data) {
+//   try {
+//     const browser = await puppeteer.launch({
+//       // executablePath: '/usr/bin/chromium-browser', // Update with the correct path
+//       headless: true,
+//       args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add necessary flags for Puppeteer
+//     });
 
-    const page = await browser.newPage();
-    const htmlContent = await ejs.renderFile(path.join(__dirname, "../mail_template/reciapt.ejs"), data);
-    await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+//     const page = await browser.newPage();
+//     const htmlContent = await ejs.renderFile(path.join(__dirname, "../mail_template/reciapt.ejs"), data);
+//     await page.setContent(htmlContent);
+//     const pdfBuffer = await page.pdf({ format: 'A4' });
 
-    await browser.close();
+//     await browser.close();
 
-    return pdfBuffer;
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    throw error;
-  }
-}
+//     return pdfBuffer;
+//   } catch (error) {
+//     console.error("Error generating PDF:", error);
+//     throw error;
+//   }
+// }
 
 
 //window
-// async function generatePDF2(data) {
-//   const htmlContent = await ejs.renderFile(
-//     path.join(__dirname, "../mail_template/reciapt.ejs"),
-//     data
-//   );
+async function generatePDF2(data) {
+  const htmlContent = await ejs.renderFile(
+    path.join(__dirname, "../mail_template/reciapt.ejs"),
+    data
+  );
 
-//   const browser = await puppeteer.launch();
-//   const page = await browser.newPage();
-//   await page.setContent(htmlContent);
-//   const pdfBuffer = await page.pdf();
-//   await browser.close();
-//   return pdfBuffer;
-// }
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(htmlContent);
+  const pdfBuffer = await page.pdf();
+  await browser.close();
+  return pdfBuffer;
+}
 
 async function sendEmail(pdfBuffer, recipientEmail, filename) {
   const transporter = nodemailer.createTransport({
@@ -183,8 +185,9 @@ const getIncomeCtrl = async (req, res) => {
 
 const updateMonthsIncome = async (req, res) => {
   const { id } = req.params;
-  const { month, amount, operation, year, method } = req.body;
+  const { month, amount, operation, year, method,status } = req.body;
 
+console.log(status)
   if (!month || typeof amount !== "number") {
     return res.status(400).json({
       message: "Month and amount are required, and amount should be a number",
@@ -222,7 +225,7 @@ const updateMonthsIncome = async (req, res) => {
       },
     });
 
-    let status = amount === 0 ? "not paid" : "not updated";
+    // let status = amount === 0 ? "not paid" : "not updated";
     if (!incomeRecord) {
       // If no document exists, create a new one
       incomeRecord = new incomeModel({

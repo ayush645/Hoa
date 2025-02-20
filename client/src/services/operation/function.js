@@ -841,7 +841,7 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount, operation, year, method) => {
+export const updateMonthIncomeApi = async (id, month, amount, operation, year, method,status) => {
     try {
         // Show loading alert
         Swal.fire({
@@ -854,7 +854,7 @@ export const updateMonthIncomeApi = async (id, month, amount, operation, year, m
         });
 
         // Make the API call
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount, operation, year, method });
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount, operation, year, method ,status});
 
         // Close loading alert
         Swal.close();

@@ -22,32 +22,37 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
   const [selectedIncomeData, setSelectedIncomeData] = useState(null); // Store selected income data for the modal
   const [paymentType, setPaymentType] = useState("Cash");
 
+  // Pay In Advance
+  const [advanceType, setAdvanceType] = useState("percentage"); // Default: Percentage
+  const [advancePercentage, setAdvancePercentage] = useState(0);
+  const [advanceAmount, setAdvanceAmount] = useState(0);
+  const [remainingAmount, setRemainingAmount] = useState(0);
+
+  // Late Paid
+  const [lateType, setLateType] = useState("percentage"); // Default: Percentage
+  const [latePercentage, setLatePercentage] = useState(0);
+  const [lateAmount, setLateAmount] = useState(0);
+  const [updatedContribution, setUpdatedContribution] = useState(0);
+
   const [SelectownerName, setSelectOwnerName] = useState("");
 
+  const [mainData, setmainData] = useState([]);
 
-  const [mainData,setmainData] = useState([])
+  const fetchIncome2 = async () => {
+    if (!id) return;
 
-
-
-   const fetchIncome2 = async () => {
-      if (!id) return;
-  
-      try {
-     
-        const data = await getAllIncomeApi(id);
-        setmainData(data)
-     
-      } catch (error) {
-        console.error("Error fetching income data:", error);
-      } finally {
-      
-      }
-    };
-
+    try {
+      const data = await getAllIncomeApi(id);
+      setmainData(data);
+    } catch (error) {
+      console.error("Error fetching income data:", error);
+    } finally {
+    }
+  };
 
   useEffect(() => {
     setIncomeData(propertyData);
-    fetchIncome2()
+    fetchIncome2();
   }, [propertyData]);
 
   if (loading) {
@@ -88,8 +93,10 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
-      console.log(selectedIncome?.ownerName);
+      console.log(selectedIncome?.contribution);
       setSelectOwnerName(selectedIncome.ownerName);
+      setRemainingAmount(selectedIncome?.contribution || 0);
+      setUpdatedContribution(selectedIncome?.contribution || 0);
       setSelectedIncomeData(selectedIncome); // Set selected income data for modal
       setIsModalOpen(true); // Open the modal
     }
@@ -107,6 +114,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
   const handleSubmit = async () => {
     let amountToUpdate = 0;
+    let status = "not updated";
 
     // Ensure we have the selectedIncomeId and the selected month
     if (!selectedIncomeId) {
@@ -125,6 +133,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
     if (paymentStatus === "Not Paid") {
       amountToUpdate = 0;
+      status = "not paid";
     } else if (paymentStatus === "Full Paid") {
       // Use the contribution from the selected income
       amountToUpdate = income.contribution;
@@ -136,7 +145,16 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         return;
       }
       amountToUpdate = validPartialAmount;
+    } else if (paymentStatus === "Pay In Advance") {
+      status = "pay in advance";
+
+      amountToUpdate = remainingAmount;
+    } else if (paymentStatus === "Late Paid") {
+      status = "late paid";
+      console.log(updatedContribution);
+      amountToUpdate = updatedContribution;
     }
+
 
     try {
       const result = await updateMonthIncomeApi(
@@ -145,7 +163,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         amountToUpdate,
         SelectownerName,
         yearFilter,
-        paymentType
+        paymentType,
+        status
       );
 
       if (result) {
@@ -153,8 +172,10 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         setSelectedMonth(null);
         setSelectedIncomeId(null); // Clear selectedIncomeId
         fetchIncome(); // Re-fetch income data after the update
-        fetchIncome2()
+        fetchIncome2();
         setIsModalOpen(false); // Close the modal after update
+        setRemainingAmount(0);
+        setAdvanceAmount(0);
       }
     } catch (error) {
       toast.error("Error updating the month. Please try again."); // Error toast
@@ -192,6 +213,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       (sum, income) => sum + (income.months[month] || 0),
       0
     );
+
     monthlyTotals[month] = monthlyTotal;
     monthlyDeficits[month] =
       incomeData.reduce((sum, income) => sum + income.contribution, 0) -
@@ -202,10 +224,13 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
   const totalDeficit = months
     .filter((month) => {
-      const monthIndex = new Date(`1 ${month} 2000`).getMonth(); // Month string se index nikalna
-      return monthIndex <= currentMonthIndex; // Sirf current aur purane months ko include kare
+      const monthIndex = new Date(`1 ${month} 2025`).getMonth();
+      return monthIndex <= currentMonthIndex;
     })
-    .reduce((total, month) => total + (monthlyDeficits[month] || 0), 0);
+    .reduce(
+      (total, month) => total + Math.max(monthlyDeficits[month] || 0, 0),
+      0
+    );
 
   const totalIncome = months.reduce(
     (total, month) => total + (monthlyTotals[month] || 0),
@@ -453,12 +478,22 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
                 const paidUpToCurrent = monthsUpToCurrent.reduce(
                   (sum, month) => {
-                    return sum + (income.months[month] || 0);
+                    // Ensure that payment does not exceed monthly contribution
+                    return (
+                      sum +
+                      Math.min(income.months[month] || 0, income.contribution)
+                    );
                   },
                   0
-                ); // Sum of amounts paid up to the current month
+                );
 
-                const deficit = income.contribution - paidUpToCurrent; // Calculate deficit
+                // Correct deficit calculation (excluding fine)
+                const deficit =
+                  income.contribution * monthsUpToCurrent.length >
+                  paidUpToCurrent
+                    ? income.contribution * monthsUpToCurrent.length -
+                      paidUpToCurrent
+                    : 0;
 
                 return (
                   <tr
@@ -490,6 +525,8 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                           ? "bg-white text-gray-800"
                           : monthIndex > currentMonthIndex && monthAmount > 0
                           ? "bg-yellow-400 text-black"
+                          : monthAmount > income.contribution
+                          ? "bg-pink-500 text-white" // New condition for pink background
                           : monthAmount === income.contribution
                           ? "bg-green-500 text-white"
                           : monthAmount < income.contribution
@@ -508,10 +545,12 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                             </span>
                           ) : monthAmount === 0 ? (
                             <span>0</span>
-                          ) : monthAmount !== income.contribution ? (
+                          ) : monthAmount <= income.contribution ? (
                             monthAmount - income.contribution
                           ) : (
-                            monthAmount
+                            <span className="flex flex-col">
+                              {monthAmount} Late
+                            </span>
                           )}
                         </td>
                       );
@@ -563,14 +602,14 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   return (
                     <td key={month} className="px-4 py-2 text-gray-800">
                       {monthIndex <= currentMonthIndex
-                        ? monthlyDeficits[month] || 0 // Current aur purane months ka data
+                        ? Math.max(monthlyDeficits[month] || 0, 0) // Negative value ko 0 kar raha hai
                         : "Not Happened"}
                     </td>
                   );
                 })}
 
                 {/* null */}
-                <td className="px-4 py-2 text-red-800">-{totalDeficit}</td>
+                <td className="px-4 py-2 text-red-800">{totalDeficit}</td>
                 <td className="px-4 py-2 text-center"></td>
               </tr>
 
@@ -600,8 +639,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       )}
 
       {yearFilter && <ReguralReport type="income" mainData={mainData} />}
-   
-   
+
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 ">
           <div className="bg-white max-h-[95vh] overflow-y-auto rounded-lg shadow-lg p-8 w-full max-w-md space-y-6">
@@ -651,14 +689,20 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                     if (selectedMonthIndex > currentMonthIndex) {
                       // Future month: Show only "Pay In Advance"
                       return (
-                        <option value="Pay In Advance">Pay In Advance</option>
+                        <>
+                          <option value="">Select</option>
+                          <option value="Pay In Advance">Pay In Advance</option>
+                        </>
                       );
                     } else {
                       // Current or past month: Show all options except "Pay In Advance"
                       return (
                         <>
+                          <option value="">Select</option>
+
                           <option value="Not Paid">Not Paid</option>
                           <option value="Full Paid">Full Paid</option>
+                          <option value="Late Paid">Late Paid</option>
                           <option value="Partially Paid">Partially Paid</option>
                         </>
                       );
@@ -666,6 +710,190 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                   })()}
                 </select>
               </div>
+
+              {/* Advance Payment Section */}
+              {paymentStatus === "Pay In Advance" && (
+                <div className="space-y-4">
+                  {/* Radio Buttons for Selection */}
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value="percentage"
+                        checked={advanceType === "percentage"}
+                        onChange={() => setAdvanceType("percentage")}
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        By Percentage
+                      </span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value="amount"
+                        checked={advanceType === "amount"}
+                        onChange={() => setAdvanceType("amount")}
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        By Amount
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Percentage Input */}
+                  {advanceType === "percentage" && (
+                    <div>
+                      <label
+                        htmlFor="advancePercentage"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                      >
+                        Advance Percentage
+                      </label>
+                      <input
+                        type="number"
+                        id="advancePercentage"
+                        value={advancePercentage}
+                        onChange={(e) => {
+                          setAdvancePercentage(e.target.value);
+                          const deductedAmount =
+                            (selectedIncomeData.contribution * e.target.value) /
+                            100;
+                          setRemainingAmount(
+                            selectedIncomeData.contribution - deductedAmount
+                          );
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Direct Amount Input */}
+                  {advanceType === "amount" && (
+                    <div>
+                      <label
+                        htmlFor="advanceAmount"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                      >
+                        Advance Amount
+                      </label>
+                      <input
+                        type="number"
+                        id="advanceAmount"
+                        value={advanceAmount}
+                        onChange={(e) => {
+                          setAdvanceAmount(e.target.value);
+                          setRemainingAmount(
+                            selectedIncomeData.contribution - e.target.value
+                          );
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Calculated Remaining Amount */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Remaining Contribution Amount
+                    </label>
+                    <div className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100">
+                      {remainingAmount}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {paymentStatus === "Late Paid" && (
+                <div className="space-y-4">
+                  {/* Radio Buttons for Selection */}
+                  <div className="flex space-x-4">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value="percentage"
+                        checked={lateType === "percentage"}
+                        onChange={() => setLateType("percentage")}
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        By Percentage
+                      </span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        value="amount"
+                        checked={lateType === "amount"}
+                        onChange={() => setLateType("amount")}
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        By Amount
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Percentage Input */}
+                  {lateType === "percentage" && (
+                    <div>
+                      <label
+                        htmlFor="latePercentage"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                      >
+                        Late Payment Percentage
+                      </label>
+                      <input
+                        type="number"
+                        id="latePercentage"
+                        value={latePercentage}
+                        onChange={(e) => {
+                          setLatePercentage(e.target.value);
+                          const addedAmount =
+                            (selectedIncomeData.contribution * e.target.value) /
+                            100;
+                          setUpdatedContribution(
+                            selectedIncomeData.contribution + addedAmount
+                          );
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Direct Amount Input */}
+                  {lateType === "amount" && (
+                    <div>
+                      <label
+                        htmlFor="lateAmount"
+                        className="block text-sm font-semibold text-gray-700 mb-1"
+                      >
+                        Late Payment Amount
+                      </label>
+                      <input
+                        type="number"
+                        id="lateAmount"
+                        value={lateAmount}
+                        onChange={(e) => {
+                          setLateAmount(e.target.value);
+                          setUpdatedContribution(
+                            selectedIncomeData.contribution +
+                              parseFloat(e.target.value)
+                          );
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Updated Contribution Amount */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Updated Contribution Amount
+                    </label>
+                    <div className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100">
+                      {updatedContribution}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Partial Amount Input */}
               {paymentStatus === "Partially Paid" && (
@@ -711,7 +939,17 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
 
             <div className="flex justify-end space-x-4">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setPaymentStatus("");
+                  setIsModalOpen(false);
+                  setRemainingAmount(0);
+                  setAdvanceAmount(0);
+                  setAdvancePercentage(0);
+
+                  setUpdatedContribution(0);
+                  setLateAmount(0);
+                  setLatePercentage(0);
+                }}
                 className="px-6 py-2 bg-gray-400 text-white font-semibold rounded-md hover:bg-gray-500 transition duration-300"
               >
                 Cancel
