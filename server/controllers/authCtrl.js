@@ -1,9 +1,7 @@
 const bcrypt = require("bcryptjs");
 const authModel = require("../models/authModel");
 const jwt = require("jsonwebtoken");
-
-
-
+const { uploadImageToCloudinary } = require("../config/imageUploader");
 
 const registerCtrl = async (req, res) => {
   try {
@@ -28,6 +26,7 @@ const registerCtrl = async (req, res) => {
     const user = await authModel.create({
       name,
       email,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
 
       phone,
       password: hashedPassword,
@@ -45,9 +44,6 @@ const registerCtrl = async (req, res) => {
     };
     res.cookie("token", token, options);
 
-
-
-
     return res.status(200).json({
       success: true,
       token,
@@ -62,6 +58,72 @@ const registerCtrl = async (req, res) => {
     });
   }
 };
+
+const updateUserCtrl = async (req, res) => {
+  try {
+    const id = req.user.id; // Logged-in User ID
+    const { name, email, phone, newPassword } = req.body;
+    const file = req.files ? req.files.image : null; // Image file if exists
+
+    // Validation
+    if (!name || !phone) {
+      return res.status(403).json({
+        success: false,
+        message: "Name and phone are required!",
+      });
+    }
+
+    // Pehle se jo user hai use find karo
+    const existingUser = await authModel.findById(id);
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    // Agar naye image hai toh upload karo, nahi toh purani wali hi rakho
+    let imageProfile = existingUser.image;
+    if (file) {
+      const response = await uploadImageToCloudinary(file, process.env.FOLDER_NAME);
+      
+      imageProfile = response.url
+
+    }
+
+    // Agar newPassword diya gaya toh uska hash banao, warna purana password rakho
+    let hashedPassword = existingUser.password;
+    if (newPassword) {
+      hashedPassword = await bcrypt.hash(newPassword, 10);
+    }
+
+    // User update karo
+    const updatedUser = await authModel.findByIdAndUpdate(
+      id,
+      {
+        name,
+        email,
+        phone,
+        image: imageProfile,
+        password: hashedPassword,
+      },
+      { new: true } // Updated document return karega
+    );
+
+    return res.status(200).json({
+      success: true,
+      user: updatedUser,
+      message: "User updated successfully!",
+    });
+  } catch (error) {
+    console.error("Update Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "User update failed. Please try again.",
+    });
+  }
+};
+
 
 const loginCtrl = async (req, res) => {
   try {
@@ -115,6 +177,4 @@ const loginCtrl = async (req, res) => {
   }
 };
 
-
-
-module.exports = { registerCtrl, loginCtrl };
+module.exports = { registerCtrl, loginCtrl, updateUserCtrl };

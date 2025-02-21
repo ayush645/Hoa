@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.9",
     "flag-icon-css": "^4.1.7",
+    "framer-motion": "^12.4.7",
     "iban": "^0.0.14",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",

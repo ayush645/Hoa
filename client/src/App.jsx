@@ -35,6 +35,7 @@ import DownloadPDFButton from "./components/common/TestPrint";
 import ExceptionalBalanceSheet from "./pages/reports/ExceptionalBalanceSheet";
 import UploadDocuments from "./pages/UploadDocuments";
 import UnitsReport from "./pages/UnitsReports";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -48,6 +49,14 @@ const App = () => {
               <OpenRoute>
                 <Login />
               </OpenRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
             }
           />
           <Route

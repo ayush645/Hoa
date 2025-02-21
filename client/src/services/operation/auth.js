@@ -5,7 +5,8 @@ import Swal from "sweetalert2";
 const {
   LOGIN_API,
   SIGNUP_API,
-
+  FETCH_MY_PROFILE_API,
+  UPDATE_API
 } = endpoints;
 
 export async function login(email, password, navigate, dispatch) {
@@ -98,6 +99,92 @@ export async function signUp(formData, navigate, dispatch) {
 
   // Close the loading alert after completion
   // Swal.close();
+}
+
+
+export async function updateProfile(formData,  dispatch,token) {
+  Swal.fire({
+    title: "Loading",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    allowEnterKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+ 
+
+  try {
+    const response = await apiConnector("POST", UPDATE_API, formData,{
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    });
+
+    console.log("SIGNUP API RESPONSE............", response);
+
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+
+    Swal.fire({
+      title: `User Register Succesfull!`,
+      text: `Have a nice day!`,
+      icon: "success",
+    });
+
+
+    dispatch(setUser(response?.data?.user));
+
+  } catch (error) {
+    console.log("SIGNUP API ERROR............", error);
+
+    Swal.fire({
+      title: "Error",
+      text: error.response?.message || "Something went wrong. Please try again later.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
+
+  // Close the loading alert after completion
+  // Swal.close();
+}
+
+
+
+
+
+export function fetchMyProfile(token){
+ 
+  return async (dispatch) => {
+
+    try {
+      const response = await apiConnector("GET", FETCH_MY_PROFILE_API, null ,{
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      })
+
+      // console.log("LOGIN API RESPONSE............", response)
+
+      if (!response.data.success) {
+        throw new Error(response.data.message)
+      }
+      // console.log(response.data)
+      const userImage = response.data?.user?.image
+        ? response.data.user.image
+        : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.name} `
+      dispatch(setUser({ ...response.data.user, image: userImage }))
+
+      dispatch(setUser(response.data.user))
+
+      localStorage.setItem("user", JSON.stringify(response.data.user))
+
+    } catch (error) {
+      // console.log("LOGIN API ERROR............", error)
+    }
+    
+  } 
 }
 
 

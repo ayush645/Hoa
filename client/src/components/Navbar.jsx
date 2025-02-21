@@ -1,42 +1,40 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaHome, FaCogs, FaUser } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { token } = useSelector((state) => state.auth);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <nav className="bg-gray-800 text-white">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+    <nav className="bg-gray-900 text-white shadow-lg">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <div className="text-2xl font-bold">
+        <div className="text-2xl font-bold tracking-wide">
           <Link to="/">Property Management</Link>
         </div>
 
-        {/* Menu for large screens */}
-        <ul className="hidden md:flex space-x-6">
-          <li>
-            <Link to="/" className="hover:text-gray-200">
-              Home
-            </Link>
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex space-x-6 text-lg">
+          <li className="flex items-center gap-2 hover:text-gray-300 transition-all">
+            <FaHome />
+            <Link to="/">Home</Link>
           </li>
-          {/* <li>
-            <Link to="/print" className="hover:text-gray-200">
-              Print
-            </Link>
-          </li>
-          <li>
-            <Link to="/upload" className="hover:text-gray-200">
-              Upload
-            </Link>
-          </li> */}
+          {token && (
+            <li className="flex items-center gap-2 hover:text-gray-300 transition-all">
+              <FaUser />
+              <Link to="/profile">Profile</Link>
+            </li>
+          )}
         </ul>
 
-        {/* Hamburger Menu for small screens */}
+        {/* Mobile Menu Toggle Button */}
         <button
           className="md:hidden text-2xl focus:outline-none"
           onClick={toggleMenu}
@@ -45,38 +43,36 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Dropdown Menu for small screens */}
-      {isMenuOpen && (
-        <ul className="md:hidden bg-gray-800 space-y-2 px-4 py-3">
-          <li>
-            <Link
-              to="/"
-              className="block hover:text-gray-200"
-              onClick={toggleMenu}
-            >
-              Home
-            </Link>
-          </li>
-          {/* <li>
-            <Link
-              to="/print"
-              className="block hover:text-gray-200"
-              onClick={toggleMenu}
-            >
-              Print
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/upload"
-              className="block hover:text-gray-200"
-              onClick={toggleMenu}
-            >
-              Upload
-            </Link>
-          </li> */}
-        </ul>
-      )}
+      {/* Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.ul
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden bg-gray-800 px-6 py-4 space-y-3"
+          >
+            <li className="flex items-center gap-2 text-lg">
+              <FaHome />
+              <Link to="/" className="hover:text-gray-300" onClick={toggleMenu}>
+                Home
+              </Link>
+            </li>
+            {token && (
+              <li className="flex items-center gap-2 text-lg">
+                <FaUser />
+                <Link
+                  to="/profile"
+                  className="hover:text-gray-300"
+                  onClick={toggleMenu}
+                >
+                  Profile
+                </Link>
+              </li>
+            )}
+          </motion.ul>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
