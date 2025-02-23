@@ -56,6 +56,10 @@ app.get('/api/v1/get-budget-data', getBudgetDataCtrl);
 
 app.use("/api/v1/print",require("./routes/printController"))
 app.use("/api/v1/mail",require("./routes/mailSender"))
+app.use("/api/v1/backups",require("./routes/backupRoute"));
+app.use("/api/v1/restores",require("./routes/restoreRoute"));
+
+
 
 
 

@@ -462,9 +462,9 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                 <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                   Deficit
                 </th>
-                <th className="px-4 py-2 text-center text-gray-600 font-semibold">
+                {/* <th className="px-4 py-2 text-center text-gray-600 font-semibold">
                   Actions
-                </th>
+                </th> */}
                 <th className="px-4 py-2 text-center text-gray-600 font-semibold"></th>
               </tr>
             </thead>
@@ -567,12 +567,12 @@ const deficit =
                       {deficit === 0 ? "0" : `-${deficit}`}
                     </td>
 
-                    <td className="px-4 py-2 text-center">
+                    {/* <td className="px-4 py-2 text-center">
                       <FaTrash
                         className="text-red-500 cursor-pointer"
                         onClick={() => onDelete(income._id)}
                       />
-                    </td>
+                    </td> */}
                     <td
                       className="px-4 py-2 text-blue-800 underline"
                       onClick={() => handleDownloadOwner(income._id)}

@@ -48,7 +48,8 @@ const Budget = () => {
       <button
   onClick={() => navigate("/")}
   className="button-85"
-  style={{ right: '200px', top: '44px' }}
+
+  style={{ right: '664px', top: '44px' }}
 >
   Go to Home
 </button>

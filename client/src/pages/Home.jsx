@@ -42,6 +42,8 @@ const Home = () => {
 
   return (
     <div className="category-page flex flex-col items-center p-6">
+            <GetCategory categories={categories} setCategories={setCategories} fetchCategories={fetchCategories} />
+
       <button
         className="button-85"
         // className={`${
@@ -74,7 +76,7 @@ const Home = () => {
         </div>
       )}
 
-      <GetCategory categories={categories} setCategories={setCategories} fetchCategories={fetchCategories} />
+      {/* <GetCategory categories={categories} setCategories={setCategories} fetchCategories={fetchCategories} /> */}
     </div>
   );
 };

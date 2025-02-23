@@ -114,7 +114,10 @@ const[incomeState,setIncomeState] = useState([])
       <button onClick={() => navigate(`/regularbudget/${id}`)} className="button-85">
             Budget Menu
           </button>
-        <button onClick={() => navigate("/")} className="button-85">
+        <button onClick={() => navigate("/")} 
+                    style={{ right: "659px" }}
+
+          className="button-85">
           Go to Home
         </button>
 

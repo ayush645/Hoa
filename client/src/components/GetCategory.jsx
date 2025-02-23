@@ -66,9 +66,9 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
 
   return (
     <div className="p-6 w-full ">
-      <h1 className="text-2xl font-bold text-white mb-6 text-center">
+      {/* <h1 className="text-2xl font-bold text-white mb-6 text-center">
         Property Management
-      </h1>
+      </h1> */}
 
       {editCategory && (
         <EditCategoryModal

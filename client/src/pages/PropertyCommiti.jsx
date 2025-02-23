@@ -180,7 +180,9 @@ const PropertyCommiti = () => {
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
-          <button onClick={() => navigate("/")} className="button-85">
+          <button onClick={() => navigate("/")}
+          style={{ right: "442px" }}
+           className="button-85">
             Go to Home
           </button>
           <button className="button-85" onClick={() => setShowForm(!showForm)}>

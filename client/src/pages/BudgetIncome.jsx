@@ -87,7 +87,10 @@ const BudgetIncome = () => {
         <button onClick={() => navigate(`/exceptionalbudget/${id}`)} className="button-85">
             Budget Menu
           </button>
-          <button onClick={() => navigate("/")} className="button-85">
+          <button onClick={() => navigate("/")}
+          style={{ right: "749px" }}
+           className="button-85">
+
             Go to Home
           </button>
           {/* <button className="button-85" onClick={() => setShowForm(!showForm)}>

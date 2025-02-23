@@ -107,12 +107,17 @@ const Units = () => {
     <div className="p-6 min-h-screen">
       <div className="property-page flex flex-col items-center mb-6">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
-          <button onClick={() => navigate("/")} className="button-85">
+          <button onClick={() => navigate("/")} 
+          style={{ right: "480px" }}
+          className="button-85">
             Go to Home
           </button>
+          
           <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add units Information"}
           </button>
+
+          
           <button onClick={handleDownloadUnits} className="button-85">
             Print Units
           </button>

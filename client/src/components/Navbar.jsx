@@ -16,8 +16,8 @@ const Navbar = () => {
     <nav className="bg-gray-900 text-white shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <div className="text-2xl font-bold tracking-wide">
-          <Link to="/">Property Management</Link>
+        <div className="text-2xl font-bold tracking-wide text-center">
+          <Link to="/"  style={{ marginLeft:'500px' }}>Homeowners Association </Link>
         </div>
 
         {/* Desktop Menu */}

@@ -16,7 +16,11 @@ const RegularBudget = () => {
 
 
         
-          <button onClick={() => navigate("/")} className="button-85">
+          <button onClick={() => navigate("/")}
+                              style={{ right: "508px" }}
+
+           className="button-85">
+          
             Go to Home
           </button>
 

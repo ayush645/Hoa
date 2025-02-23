@@ -378,7 +378,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
             </select>
 
               {/* Dropzone for File Upload */}
-              <Dropzone onDrop={uploadImage}>
+              {/* <Dropzone onDrop={uploadImage}>
                 {({ getRootProps, getInputProps }) => (
                   <div
                     {...getRootProps()}
@@ -390,7 +390,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
                     </p>
                   </div>
                 )}
-              </Dropzone>
+              </Dropzone> */}
 
               {/* Display Uploaded Images */}
               <div className="grid grid-cols-4 gap-2 mb-4">

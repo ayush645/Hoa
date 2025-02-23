@@ -204,14 +204,16 @@ console.log(success)
   <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
     <thead className="bg-gray-200 text-gray-600">
       <tr>
-        <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Ownership Title</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Name</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Address</th>
-        <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Payment Type</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Phone</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Email</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Account No</th>
         <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Unit</th>
+        <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Payment Type</th>
+
+        <th className="px-6 py-4 text-left font-semibold text-sm tracking-wide">Ownership Title</th>
+
         <th className="px-6 py-4 text-center font-semibold text-sm tracking-wide">Actions</th>
       </tr>
     </thead>
@@ -221,15 +223,17 @@ console.log(success)
           key={property._id}
           className="border-b border-gray-200 hover:bg-gray-50 transition duration-200"
         >
-          <td className="px-6 py-4 text-gray-800">{property?.ownershipTitle}</td>
           <td className="px-6 py-4 text-gray-800">{property?.name || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.address || "N/A"}</td>
-          <td className="px-6 py-4 text-gray-800">{property?.paymentType || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.phone || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.email || "N/A"}</td>
           <td className="px-6 py-4 text-gray-800">{property?.account || "N/A"}</td>
 
           <td className="px-6 py-4 text-gray-800">{property?.unit || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-800">{property?.paymentType || "N/A"}</td>
+          <td className="px-6 py-4 text-gray-800">{property?.ownershipTitle}</td>
+
+
           <td className="px-6 py-4 text-center min-w-[150px] flex justify-center gap-2">
             <button
               onClick={() => onDelete(property._id)}

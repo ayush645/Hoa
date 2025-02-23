@@ -173,6 +173,7 @@ const PropertyInformation = () => {
           <button
             onClick={() => navigate("/")}
             // className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            style={{ right: "575px" }}
             className="button-85"
           >
             Go to Home
@@ -180,6 +181,9 @@ const PropertyInformation = () => {
        
           <button
             onClick={handlePrint}
+
+            style={{ right: '510px', top: '510px' }}
+
             // className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
             className="button-85"
           >
@@ -262,7 +266,7 @@ const PropertyInformation = () => {
                   </ul>
 
               {/* Dropzone for File Upload */}
-              <Dropzone onDrop={uploadImage}>
+              {/* <Dropzone onDrop={uploadImage}>
                 {({ getRootProps, getInputProps }) => (
                   <div
                     {...getRootProps()}
@@ -274,7 +278,7 @@ const PropertyInformation = () => {
                     </p>
                   </div>
                 )}
-              </Dropzone>
+              </Dropzone> */}
 
               {/* Display Uploaded Images */}
               <div className="grid grid-cols-4 gap-2 mb-4">
