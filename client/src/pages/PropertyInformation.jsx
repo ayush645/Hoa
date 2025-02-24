@@ -182,7 +182,7 @@ const PropertyInformation = () => {
           <button
             onClick={handlePrint}
 
-            style={{ right: '510px', top: '510px' }}
+            // style={{ right: '510px', top: '510px' }}
 
             // className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
             className="button-85"

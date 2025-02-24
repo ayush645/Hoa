@@ -37,9 +37,9 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Regular Monthly Fees
               </th>
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+              {/* <th className="px-4 py-2 text-left text-gray-600 font-semibold">
               Currency
-              </th>
+              </th> */}
           
             </tr>
           </thead>
@@ -56,9 +56,9 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
                 <td className="px-4 py-2 text-gray-800">
                   {property?.fee || "N/A"}
                 </td>
-                <td className="px-4 py-2 text-gray-800">
+                {/* <td className="px-4 py-2 text-gray-800">
                   {property?.currency || "N/A"}
-                </td>
+                </td> */}
                
               </tr>
             ))}

@@ -12,7 +12,7 @@ const createUnitsCtrl = async (req, res) => {
     };
 
     try {
-        if (!type || !fee || !currency) {
+        if (!type || !fee ) {
             return res.status(400).json({
                 success: false,
                 message: "Please Provide All Fields",
