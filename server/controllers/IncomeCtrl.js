@@ -149,7 +149,7 @@ const getAllIncomeCtrl = async (req, res) => {
   try {
     const properties = await incomeModel
       .find({ categoryId: id })
-      .sort({ createdAt: -1 });
+   
 
     console.log(properties);
     res.json({

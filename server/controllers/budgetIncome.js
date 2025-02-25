@@ -3,9 +3,10 @@ const Outcome = require("../models/budgetOutcomeModel");
 
 const createBudgetIncomeCtrl = async (req, res) => {
   const {
-    propertyData: { name, amount, categoryId, document },
+    propertyData: { name, amount, categoryId, document,status },
   } = req.body;
 
+  console.log("first")
   try {
     if (!name || !amount) {
       return res.status(400).json({
@@ -19,6 +20,7 @@ const createBudgetIncomeCtrl = async (req, res) => {
       amount,
       categoryId,
       document,
+      status,
       updateLog: [
         {
           date: Date.now(),
@@ -45,8 +47,9 @@ const createBudgetIncomeCtrl = async (req, res) => {
 const updateBudgetIncomeCtrl = async (req, res) => {
   const { id } = req.params; // Get the ID from the URL params
   const {
-    propertyData: { name, amount, document },
+    propertyData: { name, amount, document,status="Not Updated" },
   } = req.body;
+
 
   try {
     // Check if all required fields are provided
@@ -71,19 +74,21 @@ const updateBudgetIncomeCtrl = async (req, res) => {
     property.name = name;
     property.amount = amount;
     property.document = document;
+    property.status = status;
 
     // Find if there's already a log with the same month/operation
     const existingLogIndex = property.updateLog.findIndex(log =>
       log.operation && log.operation.includes(`${name} Budget Income updated`) // Check if log.operation exists
 
     );
-console.log(existingLogIndex)
+   console.log(existingLogIndex)
     if (existingLogIndex !== -1) {
       // If log entry exists, update it
       property.updateLog[existingLogIndex] = {
         ...property.updateLog[existingLogIndex],
         date: Date.now(), // Update the date to the current time
-        ammount: amount,  // Update the amount if necessary
+        ammount: amount, 
+        status:status, 
         operation:`${name} Budget Income updated`
       };
     } else {

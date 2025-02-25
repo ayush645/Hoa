@@ -11,6 +11,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import ReguralReport from "./Report/RegiralReports";
+import ImageUploaderWithCrop from "./common/ImageUpload";
 
 const GetOutCome = ({
   propertyData,
@@ -29,6 +30,9 @@ const GetOutCome = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [prev, setPre] = useState(0);
   const [maindat, setMainData] = useState([]);
+
+    const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
+   const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
 
   const [selectownerName, setSelectOwnerName] = useState("");
 
@@ -118,6 +122,11 @@ const GetOutCome = ({
       (income) => income._id === incomeId
     );
     if (selectedIncome) {
+      const monthDocument = selectedIncome?.documents.find(doc => doc.month === month);
+
+      setImageData({ publicId: "", url: monthDocument?.url || null });
+      
+
       setSelectOwnerName(selectedIncome.expense);
       console.log(selectedIncome.expense);
       setAmount(selectedIncome.months[month] || 0);
@@ -173,7 +182,8 @@ const GetOutCome = ({
         selectedMonth,
         parseFloat(amount),
         selectownerName,
-        yearFilter
+        yearFilter,
+      imageData
       );
 
       if (result) {
@@ -429,8 +439,8 @@ const GetOutCome = ({
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50 overflow-y-auto max-h-[90vh] my-auto ">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md pt-[200px]">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">
               Update Payment for {selectedMonth}
             </h3>
@@ -444,6 +454,13 @@ const GetOutCome = ({
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
               />
             </div>
+
+            <ImageUploaderWithCrop
+              setImageData={setImageData}
+              setSelectedImage={setSelectedImage}
+              selectedImage={selectedImage}
+              title="Upload Document"
+            />
             <div className="flex justify-end space-x-4 mt-6">
               <button
                 onClick={() => setIsModalOpen(false)}

@@ -15,6 +15,10 @@ const budgetoutcomeSchema = new Schema(
       public_id: String,
       url: String,
     },
+    date: {
+      type: Date,
+      default: Date.now(),
+    },
 
     categoryId: {
       type: Schema.Types.ObjectId,

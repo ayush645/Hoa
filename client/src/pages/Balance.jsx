@@ -31,8 +31,10 @@ const[incomeState,setIncomeState] = useState([])
     try {
       setLoading(true);
       const data = await getAllIncomeApi(id);
+      const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
+
       console.log(data[0]?.updateLog)
-      setIncomeState(data[0]?.updateLog || [])
+      setIncomeState(allUpdateLogs)
       console.log(incomeState)
       setIncomeData(data);
     } catch (error) {
@@ -49,8 +51,10 @@ const[incomeState,setIncomeState] = useState([])
     try {
       setLoading(true);
       const data = await getAllOutcomeApi(id);
+      const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
+
       console.log(data)
-      setOutComeState(data[0]?.updateLog || [])
+      setOutComeState(allUpdateLogs)
 
       setOutcomeData(data);
     } catch (error) {

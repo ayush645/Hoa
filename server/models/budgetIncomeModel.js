@@ -26,6 +26,11 @@ const budgetIncomeSchema = new Schema(
       ref: "Budget",
       required: true,
     },
+    status: {
+      type: String,
+      default:"Not Updated"
+    },
+
     updateLog: [
       {
         date: { type: Date },

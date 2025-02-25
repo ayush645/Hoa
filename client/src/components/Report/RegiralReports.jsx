@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getAllIncomeApi, getAllOutcomeApi } from "../../services/operation/function";
+import {
+  getAllIncomeApi,
+  getAllOutcomeApi,
+} from "../../services/operation/function";
 
-const ReguralReport = ({ type,mainData }) => {
+const ReguralReport = ({ type, mainData }) => {
   const [filteredData, setFilteredData] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
   const { id } = useParams();
-const main =mainData
+  const main = mainData;
   // /BalanceStatement
   const [outCome, setOutComeState] = useState([]);
   const [income, setIncomeState] = useState([]);
@@ -22,12 +25,12 @@ const main =mainData
       const data = main;
       const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
 
-      console.log(allUpdateLogs)
+      console.log(allUpdateLogs);
       // Sort the concatenated array by 'createdAt' (ascending order)
       const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
-        return new Date(b.date) - new Date(a.date); // Ascending order
+        return new Date(a.date) - new Date(b.date); // Ascending order
       });
-    
+
       setIncomeState(sortedUpdateLogs);
     } catch (error) {
       console.error("Error fetching income data:", error);
@@ -47,15 +50,13 @@ const main =mainData
 
       const allUpdateLogs = data.flatMap((item) => item.updateLog || []);
 
-      console.log(allUpdateLogs)
+      console.log(allUpdateLogs);
       // Sort the concatenated array by 'createdAt' (ascending order)
       const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
-        return new Date(b.date) - new Date(a.date); // Ascending order
+        return new Date(a.date) - new Date(b.date); // Ascending order
       });
-    
+
       setOutComeState(sortedUpdateLogs);
-     
-      
     } catch (error) {
       console.error("Error fetching outcome data:", error);
     } finally {
@@ -63,11 +64,10 @@ const main =mainData
     }
   };
 
-  useEffect(()=>{
-    fetchIncome()
-    fetchOutcome()
-  },[mainData])
-
+  useEffect(() => {
+    fetchIncome();
+    fetchOutcome();
+  }, [mainData]);
 
   useEffect(() => {
     // Filter data based on the type
@@ -102,6 +102,7 @@ const main =mainData
         <table className="w-full border-collapse border border-gray-200">
           <thead className="bg-gray-100">
             <tr>
+              <th className="border border-gray-200 p-2">Date</th>
               <th className="border border-gray-200 p-2">Time</th>
               <th className="border border-gray-200 p-2">Operation</th>
               <th className="border border-gray-200 p-2">Amount</th>
@@ -113,10 +114,18 @@ const main =mainData
                 entry.type === "income" ? "text-green-500" : "text-red-500";
               const sign = entry.type === "income" ? "+" : "-";
 
+              // Date and Time Extraction
+              const dateObj = new Date(entry.date);
+              const formattedDate = dateObj.toLocaleDateString(); // Extract Date
+              const formattedTime = dateObj.toLocaleTimeString(); // Extract Time
+
               return (
                 <tr key={index}>
                   <td className="border border-gray-200 p-2">
-                    {new Date(entry.date).toLocaleString()}
+                    {formattedDate}
+                  </td>
+                  <td className="border border-gray-200 p-2">
+                    {formattedTime}
                   </td>
                   <td className="border border-gray-200 p-2">
                     {entry?.operation}
