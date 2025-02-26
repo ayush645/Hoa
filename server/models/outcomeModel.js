@@ -5,7 +5,7 @@ const outcomeSchema = new Schema(
   {
     expense: {
       type: String,
-      required: true,
+   
     },
     months: {
       January: { type: Number, default: 0 },

@@ -21,7 +21,7 @@ const UnitsSchema = new Schema({
   categoryId: {
     type: Schema.Types.ObjectId,
     ref: "Category",
-    required: true,
+   
   },
 });
 

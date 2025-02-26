@@ -24,7 +24,7 @@ const budgetIncomeSchema = new Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Budget",
-      required: true,
+    
     },
     status: {
       type: String,

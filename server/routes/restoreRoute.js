@@ -4,7 +4,7 @@ const router = express.Router()
 
 
 
-router.post("/restore", upload.single("backupFile"), restore);
+router.post("/restore", restore);
 
 
 

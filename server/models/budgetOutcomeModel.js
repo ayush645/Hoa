@@ -23,7 +23,7 @@ const budgetoutcomeSchema = new Schema(
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Budget",
-      required: true,
+   
     },
     updateLog: [
       {

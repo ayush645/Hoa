@@ -224,19 +224,20 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
               )}
 
               {property.pLocation && (
-                <div>
-                  <h4 className="text-center text-blue-600 mb-2 font-medium">
-                    Location Map
-                  </h4>
-                  <iframe
-                    src={property.pLocation}
-                    className="w-full h-64 rounded-lg shadow-sm border"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Property Location"
-                  ></iframe>
-                </div>
-              )}
+  <div>
+    <h4 className="text-center text-blue-600 mb-2 font-medium">
+      Location Map
+    </h4>
+    <iframe
+      src={`https://www.google.com/maps?q=${encodeURIComponent(property.pLocation)}&output=embed`}
+      className="w-full h-64 rounded-lg shadow-sm border"
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+      title="Property Location"
+    ></iframe>
+  </div>
+)}
+
             </div>
           </div>
         ))}

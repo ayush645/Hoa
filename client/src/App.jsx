@@ -36,6 +36,7 @@ import ExceptionalBalanceSheet from "./pages/reports/ExceptionalBalanceSheet";
 import UploadDocuments from "./pages/UploadDocuments";
 import UnitsReport from "./pages/UnitsReports";
 import Settings from "./pages/Settings";
+import BackupRestore from "./pages/BackupRestore";
 
 const App = () => {
   return (
@@ -56,6 +57,14 @@ const App = () => {
             element={
               <PrivateRoute>
                 <Settings />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/test"
+            element={
+              <PrivateRoute>
+                <BackupRestore />
               </PrivateRoute>
             }
           />

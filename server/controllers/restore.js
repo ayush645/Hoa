@@ -42,54 +42,44 @@ const upload = multer({
 // Restore Function
 const restore = async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: "No file uploaded" });
+        const backupData = req.body; // JSON data directly from frontend
+
+        if (!backupData) {
+            return res.status(400).json({ message: "No data provided" });
         }
 
-        const filePath = req.file.path;
 
-        // Read and Parse JSON
-        let backupData;
-        try {
-            backupData = JSON.parse(fs.readFileSync(filePath, "utf8"));
-        } catch (parseError) {
-            console.error("JSON Parse Error:", parseError);
-            return res.status(400).json({ message: "Invalid JSON format in backup file" });
-        }
-
+        console.log(backupData.budgetOutcomeData)
         // Restore Data
         await Unit.deleteMany({});
-        await Unit.insertMany(backupData.Unit || []);
+        await Unit.insertMany(backupData.unitData || []);
 
         await PropertyInfo.deleteMany({});
-        await PropertyInfo.insertMany(backupData.PropertyInfo || []);
+        await PropertyInfo.insertMany(backupData.propertyInfoData || []);
 
         await PropertyComitte.deleteMany({});
-        await PropertyComitte.insertMany(backupData.PropertyComitte || []);
+        await PropertyComitte.insertMany(backupData.propertyComitteData || []);
 
         await Owner.deleteMany({});
-        await Owner.insertMany(backupData.Owner || []);
+        await Owner.insertMany(backupData.ownerData || []);
 
         await Outcome.deleteMany({});
-        await Outcome.insertMany(backupData.Outcome || []);
+        await Outcome.insertMany(backupData.outcomeData || []);
 
         await Income.deleteMany({});
-        await Income.insertMany(backupData.Income || []);
+        await Income.insertMany(backupData.incomeData || []);
 
         await Category.deleteMany({});
-        await Category.insertMany(backupData.Category || []);
+        await Category.insertMany(backupData.categoryData || []);
 
         await BudgetOutcome.deleteMany({});
-        await BudgetOutcome.insertMany(backupData.BudgetOutcome || []);
+        await BudgetOutcome.insertMany(backupData.budgetOutcomeData || []);
 
         await Budget.deleteMany({});
-        await Budget.insertMany(backupData.Budget || []);
+        await Budget.insertMany(backupData.budgetData || []);
 
         await BudgetIncome.deleteMany({});
-        await BudgetIncome.insertMany(backupData.BudgetIncome || []);
-
-        // Delete uploaded file after restoring
-        fs.unlinkSync(filePath);
+        await BudgetIncome.insertMany(backupData.budgetIncomeData || []);
 
         res.status(200).json({ message: "Backup successfully restored!" });
     } catch (err) {

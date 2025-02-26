@@ -1,7 +1,7 @@
 const Unit = require("../models/unitsModel");
 const PropertyInfo = require("../models/PropertyInformationsModel");
 const PropertyComitte = require("../models/PropertyCommitiModel");
-const Owner = require("../models/ownerModel"); // Ensure this is correct
+const Owner = require("../models/ownerModel");
 const Outcome = require("../models/outcomeModel");
 const Income = require("../models/Income");
 const Category = require("../models/categoryModel");
@@ -13,7 +13,6 @@ const path = require("path");
 
 const backup = async (req, res) => {
     try {
-        // Fetch data with proper variable names
         const unitData = await Unit.find();
         const propertyInfoData = await PropertyInfo.find();
         const propertyComitteData = await PropertyComitte.find();
@@ -25,7 +24,6 @@ const backup = async (req, res) => {
         const budgetData = await Budget.find();
         const budgetIncomeData = await BudgetIncome.find();
 
-        // Structure backup data
         const backupData = {
             unitData,
             propertyInfoData,
@@ -40,13 +38,41 @@ const backup = async (req, res) => {
         };
 
         const filePath = path.join(__dirname, "backup.json");
-        fs.writeFileSync(filePath, JSON.stringify(backupData, null, 2));
 
-        res.download(filePath, "backup.json", () => {
-            fs.unlinkSync(filePath);
+        // Write file asynchronously
+        await fs.promises.writeFile(filePath, JSON.stringify(backupData, null, 2));
+
+        // Check if file exists before sending
+        if (!fs.existsSync(filePath)) {
+            return res.status(500).json({ message: "Backup file not found" });
+        }
+
+        // Set proper headers for file download
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Content-Disposition", `attachment; filename="backup.json"`);
+        res.setHeader("Content-Length", fs.statSync(filePath).size);
+
+        // Create a readable stream
+        const fileStream = fs.createReadStream(filePath);
+
+        // Pipe stream to response
+        fileStream.pipe(res);
+
+        // When stream ends, delete the file
+        fileStream.on("end", () => {
+            fs.unlink(filePath, (err) => {
+                if (err) console.error("Error deleting file:", err);
+            });
         });
+
+        // Handle stream errors
+        fileStream.on("error", (err) => {
+            console.error("File Stream Error:", err);
+            res.status(500).json({ message: "Error reading backup file" });
+        });
+
     } catch (err) {
-        console.error("Backup Error:", err); // Log error to debug
+        console.error("Backup Error:", err);
         res.status(500).json({ message: "Error generating backup", error: err.message });
     }
 };

@@ -60,7 +60,7 @@ const ownerSchema = new Schema({
   categoryId: {
     type: Schema.Types.ObjectId,
     ref: "Category",
-    required: true,
+   
   },
 });
 
