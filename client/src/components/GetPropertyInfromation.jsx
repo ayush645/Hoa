@@ -2,10 +2,18 @@ import React, { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import ImageUploaderWithCrop from "./common/ImageUpload";
 import Dropzone from "react-dropzone";
-import { handleUpdatePropertyInforamtionAPi, imageUpload } from "../services/operation/function";
+import {
+  handleUpdatePropertyInforamtionAPi,
+  imageUpload,
+} from "../services/operation/function";
 import axios from "axios";
 
-const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchPropertyInformation}) => {
+const GetPropertyInformation = ({
+  propertyData,
+  loading,
+  onDelete,
+  fetchPropertyInformation,
+}) => {
   const [pName, setPName] = useState("");
   const [pAddress, setPAddress] = useState("");
   const [pLocation, setPLocation] = useState("");
@@ -17,7 +25,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
   const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
   const [currency, setCurrency] = useState("USD"); // Default value
 
-  const[selectId,setSelectId] = useState(null)
+  const [selectId, setSelectId] = useState(null);
 
   // Upload Images
   const uploadImage = async (acceptedFiles) => {
@@ -46,10 +54,13 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
       images: JSON.stringify(images),
       logo: imageData,
       numberOfunits,
-      currency
-      };
+      currency,
+    };
 
-    const success = await handleUpdatePropertyInforamtionAPi(propertyData,selectId);
+    const success = await handleUpdatePropertyInforamtionAPi(
+      propertyData,
+      selectId
+    );
 
     if (success) {
       // setPName("");
@@ -58,17 +69,18 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
       // setOwnerTitle("");
       // setNumberOfUnits("");
       // setImages([]);
-      fetchPropertyInformation()
+      fetchPropertyInformation();
       setShowForm(false);
     }
   };
 
-
   const editForm = async (id) => {
-    setShowForm(true)
-    setSelectId(id)
+    setShowForm(true);
+    setSelectId(id);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/propertyinformation/get/${id}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}/propertyinformation/get/${id}`
+      );
       if (response.data?.success) {
         const property = response.data?.property;
         setPName(property?.pName);
@@ -92,7 +104,8 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
   useEffect(() => {
     if (window.google) return; // Prevent duplicate loading
     const script = document.createElement("script");
-    script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyASz6Gqa5Oa3WialPx7Z6ebZTj02Liw-Gk&libraries=places";
+    script.src =
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyASz6Gqa5Oa3WialPx7Z6ebZTj02Liw-Gk&libraries=places";
     script.async = true;
     script.onload = () => {
       console.log("Google Maps API loaded successfully.");
@@ -151,8 +164,6 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
     );
   }
 
-
-  
   return (
     <div className="property-info-container px-6 py-12 bg-gray-100 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-600 mb-8 text-center">
@@ -178,7 +189,7 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
                 </h3>
               </div>
               <button
-                 onClick={() => editForm(property._id)}
+                onClick={() => editForm(property._id)}
                 className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
                 title="Delete Property"
               >
@@ -200,7 +211,6 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
               <p className="text-gray-600">
                 <strong>Currency:</strong> {property.currency}
               </p>
-                   
             </div>
 
             {/* Images and Map */}
@@ -224,162 +234,160 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
               )}
 
               {property.pLocation && (
-  <div>
-    <h4 className="text-center text-blue-600 mb-2 font-medium">
-      Location Map
-    </h4>
-    <iframe
-      src={`https://www.google.com/maps?q=${encodeURIComponent(property.pLocation)}&output=embed`}
-      className="w-full h-64 rounded-lg shadow-sm border"
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-      title="Property Location"
-    ></iframe>
-  </div>
-)}
-
+                <div>
+                  <h4 className="text-center text-blue-600 mb-2 font-medium">
+                    Location Map
+                  </h4>
+                  <iframe
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(
+                      property.pLocation
+                    )}&output=embed`}
+                    className="w-full h-64 rounded-lg shadow-sm border"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Property Location"
+                  ></iframe>
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
 
       {showForm && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-            <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
-              {/* Close Button */}
-              <button
-                onClick={() => setShowForm(false)}
-                aria-label="Close Form"
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-              >
-                ✖
-              </button>
-
-              {/* Form Title */}
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                Create Property Information
-              </h2>
-
-              {/* Form Fields */}
-              <input
-                type="text"
-                placeholder="Enter property name"
-                value={pName}
-                onChange={(e) => setPName(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
-              <input
-                type="text"
-                placeholder="Enter property address"
-                value={pAddress}
-                onChange={(e) => setPAddress(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
-            <div className="relative">
-      <input
-        type="text"
-        placeholder="Enter property location"
-        value={pLocation}
-        onChange={onChangeFrom}
-        className="border p-2 w-full mb-4 rounded-lg"
-      />
-
-      {isLoading && (
-        <div className="absolute top-12 left-0 w-full text-center text-gray-500">
-          Loading suggestions...
-        </div>
-      )}
-
-      {suggestions.length > 0 && (
-        <ul className="absolute top-12 left-0 w-full border mt-2 bg-white z-10 rounded-lg shadow-lg">
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              className="p-2 cursor-pointer hover:bg-gray-200"
-              onClick={() => onSuggestionSelectedFrom(suggestion)}
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowForm(false)}
+              aria-label="Close Form"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
-              {suggestion.description}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+              ✖
+            </button>
+
+            {/* Form Title */}
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Create Property Information
+            </h2>
+
+            {/* Form Fields */}
+            <input
+              type="text"
+              placeholder="Enter property name"
+              value={pName}
+              onChange={(e) => setPName(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Enter property address"
+              value={pAddress}
+              onChange={(e) => setPAddress(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <div className="relative">
               <input
                 type="text"
-                placeholder="Enter ownership title"
-                value={ownerTitle}
-                onChange={(e) => setOwnerTitle(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
-              <input
-                type="number"
-                placeholder="Enter number of units"
-                value={numberOfunits}
-                onChange={(e) => setNumberOfUnits(e.target.value)}
+                placeholder="Enter property location"
+                value={pLocation}
+                onChange={onChangeFrom}
                 className="border p-2 w-full mb-4 rounded-lg"
               />
 
+              {isLoading && (
+                <div className="absolute top-12 left-0 w-full text-center text-gray-500">
+                  Loading suggestions...
+                </div>
+              )}
 
+              {suggestions.length > 0 && (
+                <ul className="absolute top-12 left-0 w-full border mt-2 bg-white z-10 rounded-lg shadow-lg">
+                  {suggestions.map((suggestion, index) => (
+                    <li
+                      key={index}
+                      className="p-2 cursor-pointer hover:bg-gray-200"
+                      onClick={() => onSuggestionSelectedFrom(suggestion)}
+                    >
+                      {suggestion.description}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <input
+              type="text"
+              placeholder="Enter ownership title"
+              value={ownerTitle}
+              onChange={(e) => setOwnerTitle(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+            <input
+              type="number"
+              placeholder="Enter number of units"
+              value={numberOfunits}
+              onChange={(e) => setNumberOfUnits(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
 
-<select
+            <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
               className="border p-2 w-full mb-4 rounded-lg"
             >
               <option value="USD">USD</option>
-<option value="EUR">EUR</option>
-<option value="INR">INR</option>
-<option value="GBP">GBP</option>
-<option value="JPY">JPY</option>
-<option value="AUD">AUD</option>
-<option value="CAD">CAD</option>
-<option value="CHF">CHF</option>
-<option value="CNY">CNY</option>
-<option value="SEK">SEK</option>
-<option value="NZD">NZD</option>
-<option value="MXN">MXN</option>
-<option value="SGD">SGD</option>
-<option value="HKD">HKD</option>
-<option value="NOK">NOK</option>
-<option value="KRW">KRW</option>
-<option value="TRY">TRY</option>
-<option value="RUB">RUB</option>
-<option value="BRL">BRL</option>
-<option value="ZAR">ZAR</option>
-<option value="MYR">MYR</option>
-<option value="INR">INR</option>
-<option value="PLN">PLN</option>
-<option value="IDR">IDR</option>
-<option value="THB">THB</option>
-<option value="ARS">ARS</option>
-<option value="AED">AED</option>
-<option value="SAR">SAR</option>
-<option value="EGP">EGP</option>
-<option value="KES">KES</option>
-<option value="CLP">CLP</option>
-<option value="COP">COP</option>
-<option value="PHP">PHP</option>
-<option value="PEN">PEN</option>
-<option value="VND">VND</option>
-<option value="TWD">TWD</option>
-<option value="RSD">RSD</option>
-<option value="BGN">BGN</option>
-<option value="HUF">HUF</option>
-<option value="CZK">CZK</option>
-<option value="HRK">HRK</option>
-<option value="RON">RON</option>
-<option value="LKR">LKR</option>
-<option value="BHD">BHD</option>
-<option value="OMR">OMR</option>
-<option value="QAR">QAR</option>
-<option value="KWD">KWD</option>
-<option value="KGS">KGS</option>
-<option value="UZS">UZS</option>
-
+              <option value="EUR">EUR</option>
+              <option value="INR">INR</option>
+              <option value="GBP">GBP</option>
+              <option value="JPY">JPY</option>
+              <option value="AUD">AUD</option>
+              <option value="CAD">CAD</option>
+              <option value="CHF">CHF</option>
+              <option value="CNY">CNY</option>
+              <option value="SEK">SEK</option>
+              <option value="NZD">NZD</option>
+              <option value="MXN">MXN</option>
+              <option value="SGD">SGD</option>
+              <option value="HKD">HKD</option>
+              <option value="NOK">NOK</option>
+              <option value="KRW">KRW</option>
+              <option value="TRY">TRY</option>
+              <option value="RUB">RUB</option>
+              <option value="BRL">BRL</option>
+              <option value="ZAR">ZAR</option>
+              <option value="MYR">MYR</option>
+              <option value="INR">INR</option>
+              <option value="PLN">PLN</option>
+              <option value="IDR">IDR</option>
+              <option value="THB">THB</option>
+              <option value="ARS">ARS</option>
+              <option value="AED">AED</option>
+              <option value="SAR">SAR</option>
+              <option value="EGP">EGP</option>
+              <option value="KES">KES</option>
+              <option value="CLP">CLP</option>
+              <option value="COP">COP</option>
+              <option value="PHP">PHP</option>
+              <option value="PEN">PEN</option>
+              <option value="VND">VND</option>
+              <option value="TWD">TWD</option>
+              <option value="RSD">RSD</option>
+              <option value="BGN">BGN</option>
+              <option value="HUF">HUF</option>
+              <option value="CZK">CZK</option>
+              <option value="HRK">HRK</option>
+              <option value="RON">RON</option>
+              <option value="LKR">LKR</option>
+              <option value="BHD">BHD</option>
+              <option value="OMR">OMR</option>
+              <option value="QAR">QAR</option>
+              <option value="KWD">KWD</option>
+              <option value="KGS">KGS</option>
+              <option value="UZS">UZS</option>
             </select>
 
-              {/* Dropzone for File Upload */}
-              {/* <Dropzone onDrop={uploadImage}>
+            {/* Dropzone for File Upload */}
+            {/* <Dropzone onDrop={uploadImage}>
                 {({ getRootProps, getInputProps }) => (
                   <div
                     {...getRootProps()}
@@ -393,44 +401,44 @@ const GetPropertyInformation = ({ propertyData, loading, onDelete ,fetchProperty
                 )}
               </Dropzone> */}
 
-              {/* Display Uploaded Images */}
-              <div className="grid grid-cols-4 gap-2 mb-4">
-                {images.map((image) => (
-                  <div key={image.public_id} className="relative">
-                    <img
-                      src={image.url}
-                      alt="Uploaded"
-                      className="h-24 w-full object-cover rounded-md"
-                    />
-                    <button
-                      onClick={() => removeImage(image.public_id)}
-                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
-              </div>
+            {/* Display Uploaded Images */}
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {images.map((image) => (
+                <div key={image.public_id} className="relative">
+                  <img
+                    src={image.url}
+                    alt="Uploaded"
+                    className="h-24 w-full object-cover rounded-md"
+                  />
+                  <button
+                    onClick={() => removeImage(image.public_id)}
+                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
 
-              {/* Image Uploader with Crop */}
-              <ImageUploaderWithCrop
-                setImageData={setImageData}
-                setSelectedImage={setSelectedImage}
-                selectedImage={selectedImage}
-              />
+            {/* Image Uploader with Crop */}
+            <ImageUploaderWithCrop
+              setImageData={setImageData}
+              setSelectedImage={setSelectedImage}
+              selectedImage={selectedImage}
+            />
 
-              {/* Submit Button */}
-              <div className="flex justify-center items-center mt-4">
-                <button
-                  onClick={handleSubmit}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full hover:bg-blue-700"
-                >
-                  Create Property Information
-                </button>
-              </div>
+            {/* Submit Button */}
+            <div className="flex justify-center items-center mt-4">
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full hover:bg-blue-700"
+              >
+                Create Property Information
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
