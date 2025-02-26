@@ -8,7 +8,7 @@ const BackupRestore = () => {
   // 📌 Backup Download Function
   const handleBackupDownload = async () => {
     try {
-        const response = await axios.post("http://localhost:8080/api/v1/backups/backup", null, {
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/backups/backup`, null, {
             responseType: "blob", // Important for file download
         });
 
@@ -55,7 +55,7 @@ const BackupRestore = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/restores/restore", file, {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/restores/restore`, file, {
         headers: { "Content-Type": "application/json" },
       });
 
