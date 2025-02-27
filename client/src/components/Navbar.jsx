@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBars, FaTimes, FaHome, FaCogs, FaUser } from "react-icons/fa";
+import { FaBars, FaTimes, FaHome, FaCogs, FaUser, FaDatabase } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,7 +17,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <div className="text-2xl font-bold tracking-wide text-center">
-          <Link to="/"  style={{ marginLeft:'500px' }}>Homeowners Association </Link>
+          <Link to="/" style={{ marginLeft: "500px" }}>Homeowners Association</Link>
         </div>
 
         {/* Desktop Menu */}
@@ -32,6 +32,11 @@ const Navbar = () => {
               <Link to="/profile">Profile</Link>
             </li>
           )}
+          {/* Backup Button */}
+          <li className="flex items-center gap-2 hover:text-gray-300 transition-all">
+            <FaDatabase />
+            <Link to="/backuprestore">Backup</Link>
+          </li>
         </ul>
 
         {/* Mobile Menu Toggle Button */}
@@ -61,15 +66,18 @@ const Navbar = () => {
             {token && (
               <li className="flex items-center gap-2 text-lg">
                 <FaUser />
-                <Link
-                  to="/profile"
-                  className="hover:text-gray-300"
-                  onClick={toggleMenu}
-                >
+                <Link to="/profile" className="hover:text-gray-300" onClick={toggleMenu}>
                   Profile
                 </Link>
               </li>
             )}
+            {/* Backup Button in Mobile Menu */}
+            <li className="flex items-center gap-2 text-lg">
+              <FaDatabase />
+              <Link to="/backuprestore" className="hover:text-gray-300" onClick={toggleMenu}>
+                Backup
+              </Link>
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>

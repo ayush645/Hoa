@@ -22,7 +22,7 @@ const PrintInformation = () => {
     fetchPropertyInformation();
   }, []);
 
-  const handlePrint = async () => {
+   const handlePrint = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}/print/propertyinformation`,

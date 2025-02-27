@@ -366,6 +366,7 @@ const generateUnitsPDF = async (req, res) => {
 const generateOwnersPDF = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id)
     let owners = [];
     if (id) {
       owners = await Owner.find({ categoryId: id }).populate("categoryId", "name");
@@ -402,7 +403,7 @@ const generateOwnersPDF = async (req, res) => {
 
     let yPosition = doc.y;  // Set initial Y position
     yPosition += 20;  // Adjust this value to control the distance between header and logo
-
+console.log(propertyInfo)
     // Add Property Logo
     if (propertyInfo.logo && propertyInfo.logo.url) {
       if (propertyInfo.logo.url.startsWith("http")) {

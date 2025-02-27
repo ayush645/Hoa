@@ -61,7 +61,7 @@ const App = () => {
             }
           />
           <Route
-            path="/test"
+            path="/backuprestore"
             element={
               <PrivateRoute>
                 <BackupRestore />

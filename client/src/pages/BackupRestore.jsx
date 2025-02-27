@@ -67,7 +67,7 @@ const BackupRestore = () => {
 
   return (
     <div className="p-4 border rounded shadow-md max-w-md mx-auto">
-      <h2 className="text-lg font-semibold mb-2">Backup & Restore</h2>
+      <h2 className="text-lg font-semibold mb-2 text-white">Backup & Restore</h2>
 
       {/* 📌 Backup Download Button */}
       <button onClick={handleBackupDownload} className="bg-green-500 text-white px-4 py-2 rounded mb-2">
@@ -77,7 +77,7 @@ const BackupRestore = () => {
       <hr className="my-3" />
 
       {/* 📌 Restore Upload */}
-      <input type="file" accept=".json" onChange={handleFileChange} className="mb-2 p-2 border" />
+      <input type="file" accept=".json" onChange={handleFileChange} className="mb-2 p-2 border text-white" />
       <button onClick={handleRestore} className="bg-blue-500 text-white px-4 py-2 rounded">
         Restore Backup
       </button>

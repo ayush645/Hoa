@@ -6,57 +6,138 @@ const Print = () => {
 
 const{id} = useParams()
 
+console.log(id)
 
-  const handleDownloadUnits = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/units`, {
+const propertyInformation = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BASE_URL}/print/propertyinformation/${id}`,
+      {
         responseType: "blob", // Important for handling binary data
-      });
+      }
+    );
 
-      // Create a Blob from the response data
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+    // Create a Blob from the response data
+    const url = window.URL.createObjectURL(new Blob([response.data]));
 
-      // Create a temporary link and simulate a click
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `property.pdf`); // Set filename
-      document.body.appendChild(link);
-      link.click();
+    // Create a temporary link and simulate a click
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Property_Report.pdf`); // Set filename
+    document.body.appendChild(link);
+    link.click();
 
-      // Cleanup
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading the PDF:", error);
-      alert("Failed to download PDF.");
-    }
-  };
+    // Cleanup
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading the PDF:", error);
+    alert("Failed to download PDF.");
+  }
+};
 
- 
+const handleCommitee = async() => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/commiti/${id}`, {
+      responseType: "blob", // Important for handling binary data
+    });
+
+    // Create a Blob from the response data
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    // Create a temporary link and simulate a click
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Committee_Report.pdf`); // Set filename
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading the PDF:", error);
+    alert("Failed to download PDF.");
+  }
+};
+
+const handlePrintOwner = async() => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/owner/${id}`, {
+      responseType: "blob", // Important for handling binary data
+    });
+
+    // Create a Blob from the response data
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    // Create a temporary link and simulate a click
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Owners_Report.pdf`); // Set filename
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading the PDF:", error);
+    alert("Failed to download PDF.");
+  }
+};
+
+
+
+const handleDownloadUnits = async () => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/print/units/${id}`, {
+      responseType: "blob", // Important for handling binary data
+    });
+
+    // Create a Blob from the response data
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+
+    // Create a temporary link and simulate a click
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Unit_Report.pdf`); // Set filename
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading the PDF:", error);
+    alert("Failed to download PDF.");
+  }
+};
+
+
   return (
     <div>
       <div className="max-w-7xl mx-auto p-5 grid lg:grid-cols-2 gap-5">
-        <Link
-          to="/print/property-information"
+        <button
+        onClick={propertyInformation}
           className="button-85 text-center"
         >
           Property Information
-        </Link>
+        </button>
         <Link to="/print/regular-budget" className="button-85 text-center">
           Regular budget
         </Link>
-        <Link to="/print/property-comitee" className="button-85 text-center">
+        <button onClick={handleCommitee}  className="button-85 text-center">
           Property Comitee
-        </Link>
+        </button>
         <Link to="/print/exceptional" className="button-85 text-center">
           Exceptional budget
         </Link>
-        <Link to="/print/owner" className="button-85 text-center">
+        <button onClick={handlePrintOwner}  className="button-85 text-center">
           Property owners
-        </Link>
-        <Link to={`/print/unit/${id}`} className="button-85 text-center">
+        </button>
+        <button onClick={handleDownloadUnits} className="button-85 text-center">
         Units Report
-        </Link>
+        </button>
         {/* <button 
         onClick={handleDownloadUnits}
         className="button-85 text-center">
