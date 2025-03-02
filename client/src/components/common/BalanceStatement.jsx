@@ -23,7 +23,7 @@ const BalanceStatement = ({ income, outCome }) => {
       ];
 
       // Sort by time
-      combinedData.sort((a, b) => a.time - b.time);
+      combinedData.sort((a, b) => b.time - a.time);
 
       return combinedData;
     };

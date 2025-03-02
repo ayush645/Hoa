@@ -26,7 +26,7 @@ const BothExcepationSheet = ({ income, outCome }) => {
       ];
 
       // Sort by time
-      combinedData.sort((a, b) => a.time - b.time);
+      // combinedData.sort((a, b) => b.time - a.time);
 
       return combinedData;
     };
@@ -43,6 +43,7 @@ const BothExcepationSheet = ({ income, outCome }) => {
         <table className="w-full border-collapse border border-gray-200">
           <thead className="bg-gray-100">
             <tr>
+              <th className="border border-gray-200 p-2">Date</th>
               <th className="border border-gray-200 p-2">Time</th>
               <th className="border border-gray-200 p-2">Operation</th>
               <th className="border border-gray-200 p-2">Amount</th>
@@ -58,9 +59,13 @@ const BothExcepationSheet = ({ income, outCome }) => {
              }
               return (
                 <tr key={index}>
-                  <td className="border border-gray-200 p-2">
-                    {new Date(entry.createdAt).toLocaleString()} {/* Use createdAt */}
-                  </td>
+                <td className="border border-gray-200 p-2">
+   {new Date(entry.createdAt).toLocaleDateString()} {/* Display only date */}
+</td>
+<td className="border border-gray-200 p-2">
+   {new Date(entry.createdAt).toLocaleTimeString()} {/* Display only time */}
+</td>
+
                   <td className="border border-gray-200 p-2">{entry.operation}</td> {/* Assuming 'name' is the operation */}
                   <td className={`border border-gray-200 p-2 ${color}`}>
                     {sign} ₹{entry.amount.toFixed(2)}

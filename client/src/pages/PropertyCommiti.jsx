@@ -185,179 +185,9 @@ const PropertyCommiti = () => {
            className="button-85">
             Go to Home
           </button>
-          <button className="button-85" onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "Add Property Comitte"}
-          </button>
-          <button onClick={handlePrint} className="button-85">
-            Print Comitte
-          </button>
+       
         </div>
 
-        {showForm && (
-          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl">
-            <label className="block mb-2">Select or Enter Full Name</label>
-            <select
-  value={name || "manual"}
-  onChange={handleOwnerSelect}
-  className="border p-2 w-full mb-4 rounded-lg"
->
-  <option value="">Select Owner</option>
-  {owners.map((owner) => (
-    <option key={owner.id} value={owner.name}>
-      {owner.name}
-    </option>
-  ))}
-  <option value="manual">No Found</option>
-</select>
-
-
-            {/* Show input field only if "Enter Manually" is selected */}
-            {name === "" && (
-              <input
-                type="text"
-                placeholder="Enter Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
-            )}
-
-            <label className="block mb-2">
-              Select or Enter Position of Responsibility
-            </label>
-            <select
-              value={position || "manual"} // Default to "manual" if position is empty
-              onChange={(e) => {
-                if (e.target.value === "manual") {
-                  setPosition(""); // Clear the position field for manual input
-                } else {
-                  setPosition(e.target.value); // Set selected position
-                }
-              }}
-              className="border p-2 w-full mb-4 rounded-lg"
-            >
-              {/* Predefined options */}
-              <option value="President">President</option>
-              <option value="Vice President of Operations">
-                Vice President of Operations
-              </option>
-              <option value="Vice President of Administration">
-                Vice President of Administration
-              </option>
-              <option value="Chancellor of Governance">
-                Chancellor of Governance
-              </option>
-              <option value="Secretary">Secretary</option>
-              <option value="Assistant Secretary">Assistant Secretary</option>
-              <option value="Deputy Secretary">Deputy Secretary</option>
-              <option value="Chancellor of Records">
-                Chancellor of Records
-              </option>
-              <option value="Treasurer">Treasurer</option>
-              <option value="Assistant Treasurer">Assistant Treasurer</option>
-              <option value="Deputy Treasurer">Deputy Treasurer</option>
-              <option value="Chancellor of Finance">
-                Chancellor of Finance
-              </option>
-              <option value="Member-at-Large">Member-at-Large</option>
-              <option value="Vice Member-at-Large (Operations)">
-                Vice Member-at-Large (Operations)
-              </option>
-              <option value="Vice Member-at-Large (Community Relations)">
-                Vice Member-at-Large (Community Relations)
-              </option>
-              <option value="Chancellor of Outreach">
-                Chancellor of Outreach
-              </option>
-              <option value="Committee Chairs">Committee Chairs</option>
-              <option value="Vice Chair of Strategy">
-                Vice Chair of Strategy
-              </option>
-              <option value="Vice Chair of Execution">
-                Vice Chair of Execution
-              </option>
-              <option value="Chancellor of Oversight">
-                Chancellor of Oversight
-              </option>
-              <option value="manual">No Found</option>
-            </select>
-
-            {/* Show input field only if "Enter Manually" is selected */}
-            {position === "" && (
-              <input
-                type="text"
-                placeholder="Enter Position of Responsibility"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
-                className="border p-2 w-full mb-4 rounded-lg"
-              />
-            )}
-            <PhoneInput
-        country={"us"} // Default country
-        value={phone}
-        onChange={(phone) => setPhone(phone)}
-        inputStyle={{
-          width: "100%",
-          height: "45px",
-          borderRadius: "8px",
-          padding: "10px",
-          paddingLeft: "45px", // Adjust for the flag and dropdown
-
-          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
-          fontSize: "16px",
-        }}
-        containerStyle={{
-          width: "100%",
-          marginBottom: "16px",
-        }}
-        buttonStyle={{
-          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
-          borderRight: "none",
-        }}
-        dropdownStyle={{
-          backgroundColor: "#ffffff", // Tailwind's `bg-white`
-          border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
-          borderRadius: "0.375rem", // Tailwind's `rounded-md`
-        }}
-        placeholder="Enter phone number"
-      />
-            <input
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Enter Bank Account"
-              value={account}
-              onChange={handleAccountChange}
-              className="border p-2 w-full mb-4 rounded-lg"
-            />
-
-            {/* Display error message if IBAN is invalid */}
-            {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
-
-            {/* <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="border p-2 w-full mb-4 rounded-lg"
-            >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="INR">INR</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
-            </select> */}
-
-            <div className="flex justify-center items-center">
-              <button onClick={handleSubmit} className="button-85">
-                Create Property Committi
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       <GetPropertyCommiti
@@ -367,6 +197,185 @@ const PropertyCommiti = () => {
         id={id}
         fetchCommiti={fetchCommiti}
       />
+
+
+<div className=" flex flex-col justify-center items-center w-screen">
+<div className="flex flex-wrap gap-3 justify-center items-center md:justify-start mb-6">
+        
+        <button className="button-85" onClick={() => setShowForm(!showForm)}>
+          {showForm ? "Cancel" : "Add Property Comitte"}
+        </button>
+        <button onClick={handlePrint} className="button-85">
+          Print Comitte
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl">
+          <label className="block mb-2">Select or Enter Full Name</label>
+          <select
+value={name || "manual"}
+onChange={handleOwnerSelect}
+className="border p-2 w-full mb-4 rounded-lg"
+>
+<option value="">Select Owner</option>
+{owners.map((owner) => (
+  <option key={owner.id} value={owner.name}>
+    {owner.name}
+  </option>
+))}
+<option value="manual">No Found</option>
+</select>
+
+
+          {/* Show input field only if "Enter Manually" is selected */}
+          {name === "" && (
+            <input
+              type="text"
+              placeholder="Enter Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+          )}
+
+          <label className="block mb-2">
+            Select or Enter Position of Responsibility
+          </label>
+          <select
+            value={position || "manual"} // Default to "manual" if position is empty
+            onChange={(e) => {
+              if (e.target.value === "manual") {
+                setPosition(""); // Clear the position field for manual input
+              } else {
+                setPosition(e.target.value); // Set selected position
+              }
+            }}
+            className="border p-2 w-full mb-4 rounded-lg"
+          >
+            {/* Predefined options */}
+            <option value="President">President</option>
+            <option value="Vice President of Operations">
+              Vice President of Operations
+            </option>
+            <option value="Vice President of Administration">
+              Vice President of Administration
+            </option>
+            <option value="Chancellor of Governance">
+              Chancellor of Governance
+            </option>
+            <option value="Secretary">Secretary</option>
+            <option value="Assistant Secretary">Assistant Secretary</option>
+            <option value="Deputy Secretary">Deputy Secretary</option>
+            <option value="Chancellor of Records">
+              Chancellor of Records
+            </option>
+            <option value="Treasurer">Treasurer</option>
+            <option value="Assistant Treasurer">Assistant Treasurer</option>
+            <option value="Deputy Treasurer">Deputy Treasurer</option>
+            <option value="Chancellor of Finance">
+              Chancellor of Finance
+            </option>
+            <option value="Member-at-Large">Member-at-Large</option>
+            <option value="Vice Member-at-Large (Operations)">
+              Vice Member-at-Large (Operations)
+            </option>
+            <option value="Vice Member-at-Large (Community Relations)">
+              Vice Member-at-Large (Community Relations)
+            </option>
+            <option value="Chancellor of Outreach">
+              Chancellor of Outreach
+            </option>
+            <option value="Committee Chairs">Committee Chairs</option>
+            <option value="Vice Chair of Strategy">
+              Vice Chair of Strategy
+            </option>
+            <option value="Vice Chair of Execution">
+              Vice Chair of Execution
+            </option>
+            <option value="Chancellor of Oversight">
+              Chancellor of Oversight
+            </option>
+            <option value="manual">No Found</option>
+          </select>
+
+          {/* Show input field only if "Enter Manually" is selected */}
+          {position === "" && (
+            <input
+              type="text"
+              placeholder="Enter Position of Responsibility"
+              value={position}
+              onChange={(e) => setPosition(e.target.value)}
+              className="border p-2 w-full mb-4 rounded-lg"
+            />
+          )}
+          <PhoneInput
+      country={"us"} // Default country
+      value={phone}
+      onChange={(phone) => setPhone(phone)}
+      inputStyle={{
+        width: "100%",
+        height: "45px",
+        borderRadius: "8px",
+        padding: "10px",
+        paddingLeft: "45px", // Adjust for the flag and dropdown
+
+        border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+        fontSize: "16px",
+      }}
+      containerStyle={{
+        width: "100%",
+        marginBottom: "16px",
+      }}
+      buttonStyle={{
+        border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+        borderRight: "none",
+      }}
+      dropdownStyle={{
+        backgroundColor: "#ffffff", // Tailwind's `bg-white`
+        border: "1px solid #e5e7eb", // Tailwind's `border-gray-300`
+        borderRadius: "0.375rem", // Tailwind's `rounded-md`
+      }}
+      placeholder="Enter phone number"
+    />
+          <input
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border p-2 w-full mb-4 rounded-lg"
+          />
+          <input
+            type="text"
+            placeholder="Enter Bank Account"
+            value={account}
+            onChange={handleAccountChange}
+            className="border p-2 w-full mb-4 rounded-lg"
+          />
+
+          {/* Display error message if IBAN is invalid */}
+          {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
+
+          {/* <select
+            value={currency}
+            onChange={(e) => setCurrency(e.target.value)}
+            className="border p-2 w-full mb-4 rounded-lg"
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+            <option value="JPY">JPY</option>
+          </select> */}
+
+          <div className="flex justify-center items-center">
+            <button onClick={handleSubmit} className="button-85">
+              Create Property Committi
+            </button>
+          </div>
+        </div>
+      )}
+</div>
     </div>
   );
 };

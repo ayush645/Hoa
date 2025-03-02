@@ -41,7 +41,7 @@ const ownerSchema = new Schema({
     },
     unitCode: {
       type: String,
-      required: true,
+
     },
     currency: {
       type: String,

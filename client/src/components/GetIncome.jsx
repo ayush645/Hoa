@@ -135,7 +135,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
       amountToUpdate = 0;
       status = "not paid";
     } else if (paymentStatus === "Full Paid") {
-      status = "full advance";
+      status = "full Paid";
 
       // Use the contribution from the selected income
       amountToUpdate = income.contribution;

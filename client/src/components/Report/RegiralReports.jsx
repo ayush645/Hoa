@@ -28,7 +28,7 @@ const ReguralReport = ({ type, mainData }) => {
       console.log(allUpdateLogs);
       // Sort the concatenated array by 'createdAt' (ascending order)
       const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
-        return new Date(a.date) - new Date(b.date); // Ascending order
+        return new Date(b.date) - new Date(a.date); // Ascending order
       });
 
       setIncomeState(sortedUpdateLogs);
@@ -53,7 +53,7 @@ const ReguralReport = ({ type, mainData }) => {
       console.log(allUpdateLogs);
       // Sort the concatenated array by 'createdAt' (ascending order)
       const sortedUpdateLogs = allUpdateLogs.sort((a, b) => {
-        return new Date(a.date) - new Date(b.date); // Ascending order
+        return new Date(b.date) - new Date(a.date); // Ascending order
       });
 
       setOutComeState(sortedUpdateLogs);

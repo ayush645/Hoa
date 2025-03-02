@@ -179,16 +179,7 @@ const PropertyInformation = () => {
             Go to Home
           </button>
        
-          <button
-            onClick={handlePrint}
-
-            // style={{ right: '510px', top: '510px' }}
-
-            // className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
-            className="button-85"
-          >
-            Print Property
-          </button>
+       
         </div>
 
         {showForm && (
@@ -327,6 +318,19 @@ const PropertyInformation = () => {
         onDelete={handleDelete} // Pass the delete function
         fetchPropertyInformation={fetchPropertyInformation}
       />
+
+       <div className=" flex justify-center items-center my-4">
+       <button
+            onClick={handlePrint}
+
+            // style={{ right: '510px', top: '510px' }}
+
+            // className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
+            className="button-85"
+          >
+            Print Property
+          </button>
+       </div>
     </div>
   );
 };

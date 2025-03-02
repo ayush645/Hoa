@@ -255,7 +255,6 @@ const generatePropertyPDFcommiti = async (req, res) => {
 
 const generateUnitsPDF = async (req, res) => {
   try {
-     
     const units = await Units.find(); // Fetch all units
 
     if (!units || units.length === 0) {
@@ -362,14 +361,16 @@ const generateUnitsPDF = async (req, res) => {
   }
 };
 
-
 const generateOwnersPDF = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id)
+    console.log(id);
     let owners = [];
     if (id) {
-      owners = await Owner.find({ categoryId: id }).populate("categoryId", "name");
+      owners = await Owner.find({ categoryId: id }).populate(
+        "categoryId",
+        "name"
+      );
     } else {
       owners = await Owner.find().populate("categoryId", "name");
     }
@@ -401,9 +402,9 @@ const generateOwnersPDF = async (req, res) => {
       .text("www.hoam.com", { align: "center" })
       .moveDown(2);
 
-    let yPosition = doc.y;  // Set initial Y position
-    yPosition += 20;  // Adjust this value to control the distance between header and logo
-console.log(propertyInfo)
+    let yPosition = doc.y; // Set initial Y position
+    yPosition += 20; // Adjust this value to control the distance between header and logo
+    console.log(propertyInfo);
     // Add Property Logo
     if (propertyInfo.logo && propertyInfo.logo.url) {
       if (propertyInfo.logo.url.startsWith("http")) {
@@ -416,7 +417,9 @@ console.log(propertyInfo)
       }
 
       // Center the logo and adjust y-position
-      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, {
+        width: 100,
+      });
       yPosition += 120; // Adjust Y-position after logo (height of the logo + some space)
     }
 
@@ -425,7 +428,7 @@ console.log(propertyInfo)
       .fontSize(18)
       .font("Helvetica-Bold")
       .text(propertyInfo.pName || "Property Name", { align: "center" })
-      .moveDown(3);  // Add space after the property name
+      .moveDown(3); // Add space after the property name
 
     // Define column widths for 6 columns (Sr. No., Name, Address, Phone, Email, Unit)
     const columnWidths = [35, 98, 98, 98, 98, 98]; // 6 columns, adjust width as needed
@@ -435,7 +438,10 @@ console.log(propertyInfo)
     let xPosition = 20;
     doc.fontSize(12).font("Helvetica-Bold");
     headers.forEach((header, i) => {
-      doc.text(header, xPosition, yPosition, { width: columnWidths[i], align: "center" });
+      doc.text(header, xPosition, yPosition, {
+        width: columnWidths[i],
+        align: "center",
+      });
       xPosition += columnWidths[i] + 10;
     });
 
@@ -446,12 +452,23 @@ console.log(propertyInfo)
     // Table data (6 columns per row)
     for (let i = 0; i < owners.length; i++) {
       const owner = owners[i];
-      const data = [i + 1, owner.name, owner.address, owner.phone, owner.email, owner.unit]; // Add Sr. No. here
+      const data = [
+        i + 1,
+        owner.name,
+        owner.address,
+        owner.phone,
+        owner.email,
+        owner.unit,
+      ]; // Add Sr. No. here
 
       // Create new row for each 6 items (one row has 6 columns)
       xPosition = 20;
       data.forEach((item, idx) => {
-        doc.text(item || "N/A", xPosition, yPosition, { width: columnWidths[idx], align: "center", lineBreak: true });
+        doc.text(item || "N/A", xPosition, yPosition, {
+          width: columnWidths[idx],
+          align: "center",
+          lineBreak: true,
+        });
         xPosition += columnWidths[idx] + 10;
       });
 
@@ -467,7 +484,7 @@ console.log(propertyInfo)
 
     // QR Code generation
     const qrData = {
-      owners: owners.map(owner => ({
+      owners: owners.map((owner) => ({
         name: owner.name,
         address: owner.address,
         phone: owner.phone,
@@ -497,24 +514,11 @@ console.log(propertyInfo)
     });
 
     fs.unlinkSync(qrCodePath);
-
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("An error occurred while generating the PDF.");
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 const generatePropertyPDFId = async (req, res) => {
   const { id } = req.params;
@@ -541,13 +545,8 @@ const generatePropertyPDFId = async (req, res) => {
     const writeStream = fs.createWriteStream(filePath);
     doc.pipe(writeStream); // Pipe the document to the file
 
-    doc.text(`Home Owners Association Management System \nwww.hoam.com`, {
-      align: "center",
-    });
     for (let i = 0; i < properties.length; i++) {
       const property = properties[i];
-      const category = property.categoryId;
-
       // Fetch the logo image as a buffer
       let logoBuffer = null;
       if (property.logo?.url && property.logo.url.startsWith("http")) {
@@ -559,14 +558,18 @@ const generatePropertyPDFId = async (req, res) => {
         logoBuffer = fs.readFileSync(property.logo.url); // Local image
       }
 
-      doc.text(`Home Owners Association Management System \nwww.hoam.com`, {
-        align: "center",
-      });
+      doc
+        .fontSize(6)
+        .font("Helvetica-Bold")
+        .text("Home Owners Association Management System", { align: "center" })
+        .text("www.hoam.com", { align: "center" })
+        .moveDown(2);
+
       // Add rounded logo (centered at the top of the page)
       if (logoBuffer) {
-        const logoSize = 80; // Size of the logo
+        const logoSize = 50; // Size of the logo
         const x = (doc.page.width - logoSize) / 2; // Center the logo horizontally
-        const y = 90; // Position from the top
+        const y = 78; // Position from the top
         doc
           .save()
           .rect(x, y, logoSize, logoSize) // Create a square area for the logo
@@ -579,7 +582,7 @@ const generatePropertyPDFId = async (req, res) => {
       doc
         .fontSize(18)
         .font("Helvetica-Bold")
-        .text(`Property Details: ${property.pName}`, 40, 230, {
+        .text(`Property Details: ${property.pName}`, 40, 150, {
           align: "center",
         })
         .moveDown();
@@ -587,10 +590,10 @@ const generatePropertyPDFId = async (req, res) => {
       doc
         .fontSize(12)
         .font("Helvetica")
-        .text(`Property Name       : ${property.pName}`)
+        .text(`Property Name        : ${property.pName}`)
         .text(`Property Address    : ${property.pAddress}`)
-        .text(`Ownership Title     : ${property.ownerTitle}`)
-        .text(`Number of Units     : ${property.numberOfunits}`)
+        .text(`Ownership Title       : ${property.ownerTitle}`)
+        .text(`Number of Units      : ${property.numberOfunits}`)
         .moveDown(1);
 
       // Generate QR Code for each property
@@ -615,7 +618,7 @@ const generatePropertyPDFId = async (req, res) => {
       // Embed QR Code in the PDF (centered horizontally only)
       doc
         .text("Scan the QR Code below to view details:", { align: "center" })
-        .image(qrCodePath, qrX, 410, { width: qrSize, height: qrSize }); // Position QR code
+        .image(qrCodePath, qrX, 290, { width: qrSize, height: qrSize }); // Position QR code
 
       // Add a page for the next property
       if (i < properties.length - 1) {
@@ -804,8 +807,8 @@ const generateUnitsPDFId = async (req, res) => {
       .text("www.hoam.com", { align: "center" })
       .moveDown(2);
 
-    let yPosition = doc.y;  // Set initial Y position
-    yPosition += 20;  // Adjust this value to control the distance between header and logo
+    let yPosition = doc.y; // Set initial Y position
+    yPosition += 20; // Adjust this value to control the distance between header and logo
 
     // Add Property LogoyPosition += 20;  // Adjust this value to control the distance between header and logo
 
@@ -820,7 +823,9 @@ const generateUnitsPDFId = async (req, res) => {
       }
 
       // Center the logo and adjust y-position
-      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, {
+        width: 100,
+      });
       yPosition += 120; // Adjust Y-position after logo (height of the logo + some space)
     }
 
@@ -829,13 +834,13 @@ const generateUnitsPDFId = async (req, res) => {
       .fontSize(18)
       .font("Helvetica-Bold")
       .text(propertyInfo.pName || "Property Name", { align: "center" })
-      .moveDown(3);  // Add space after the property name
+      .moveDown(3); // Add space after the property name
 
     // Section 1: Unit Details
     doc
       .fontSize(14)
       .font("Helvetica-Bold")
-      .text("Unit Details", 40, yPosition ,{ align: "center" })
+      .text("Unit Details", 40, yPosition, { align: "center" })
       .moveDown(1);
 
     yPosition += 25;
@@ -875,7 +880,7 @@ const generateUnitsPDFId = async (req, res) => {
     doc
       .fontSize(14)
       .font("Helvetica-Bold")
-      .text("Owner Details", 40, yPosition,{ align: "center" });
+      .text("Owner Details", 40, yPosition, { align: "center" });
 
     yPosition += 25;
 
@@ -914,20 +919,21 @@ const generateUnitsPDFId = async (req, res) => {
       yPosition += 20;
     }
 
+    // QR Code Generation: Generate a dummy QR Code
+    const qrCodeData = "https://www.dummy-url.com";
+    const qrCodePath = `${outputDir}qr_code.png`;
 
-       // QR Code Generation: Generate a dummy QR Code
-       const qrCodeData = "https://www.dummy-url.com";
-       const qrCodePath = `${outputDir}qr_code.png`;
-   
-       await QRCode.toFile(qrCodePath, qrCodeData, {
-         width: 100, // Adjust QR Code size
-       });
-   
-       // Add QR Code at the bottom
-       doc.image(qrCodePath, (doc.page.width - 100) / 2, doc.page.height - 120, { width: 100 });
-   
-       // Clean up by deleting the QR code file after PDF generation
-       fs.unlinkSync(qrCodePath);
+    await QRCode.toFile(qrCodePath, qrCodeData, {
+      width: 100, // Adjust QR Code size
+    });
+
+    // Add QR Code at the bottom
+    doc.image(qrCodePath, (doc.page.width - 100) / 2, doc.page.height - 120, {
+      width: 100,
+    });
+
+    // Clean up by deleting the QR code file after PDF generation
+    fs.unlinkSync(qrCodePath);
     doc.end();
 
     writeStream.on("finish", () => {
@@ -944,13 +950,6 @@ const generateUnitsPDFId = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
 router.get("/generate-pdf", async (req, res) => {
   const { categoryId, month } = req.query;
   console.log(month);
@@ -963,7 +962,9 @@ router.get("/generate-pdf", async (req, res) => {
 
   try {
     const currentYear = new Date().getFullYear();
-    const propertyInfo = await PropertyInformations.findOne({ categoryId: categoryId });
+    const propertyInfo = await PropertyInformations.findOne({
+      categoryId: categoryId,
+    });
 
     const incomeRecords = await Income.find({
       categoryId: categoryId,
@@ -976,22 +977,41 @@ router.get("/generate-pdf", async (req, res) => {
     let tableData = [];
     let totalPaid = 0;
     let totalRemaining = 0;
-
+    let paidStatusText = "";  // Store status messages separately
+    
     incomeRecords.forEach((record, index) => {
-      const monthPaid = record.months[month] || 0;
+      const paidStatus = record.statuses[month];
+      let monthPaid = record.months[month] || 0;
+      let monthPaidWithStatus = record.months[month] || 0;
       const totalAmount = record.contribution;
-      const remainingAmount = totalAmount - monthPaid;
-      totalPaid += monthPaid;
-      totalRemaining += remainingAmount;
+      let remainingAmount = totalAmount - monthPaid;
+    
+      if (paidStatus === "late paid") {
+        paidStatusText += ` ${monthPaid} Late Paid`;
+        remainingAmount = 0;
+        monthPaidWithStatus = `${monthPaid} Late Paid`
+      } else if (paidStatus === "pay in advance") {
+        paidStatusText += ` ${monthPaid} Advance Paid`;
+        remainingAmount = 0;
+        monthPaidWithStatus = `${monthPaid} Advance Paid`
 
+      } 
+        totalPaid += monthPaid; // Ensure only numbers are summed
+      
+    
+      totalRemaining += remainingAmount;
+    
       tableData.push({
         srNo: index + 1,
         ownerName: record.ownerName,
         monthPaid,
         remainingAmount,
+        monthPaidWithStatus,
         contribution: record.contribution,
       });
     });
+    
+    // Update PDF summary section
 
     const doc = new PDFDocument();
     const filename = `payment_details_${month}_${currentYear}.pdf`;
@@ -1010,8 +1030,8 @@ router.get("/generate-pdf", async (req, res) => {
       .text("www.hoam.com", { align: "center" })
       .moveDown(2);
 
-    let yPosition = doc.y;  // Set initial Y position
-    yPosition += 20;  // Adjust this value to control the distance between header and logo
+    let yPosition = doc.y; // Set initial Y position
+    yPosition += 20; // Adjust this value to control the distance between header and logo
 
     // Add Property Logo
     if (propertyInfo.logo && propertyInfo.logo.url) {
@@ -1025,7 +1045,9 @@ router.get("/generate-pdf", async (req, res) => {
       }
 
       // Center the logo and adjust y-position
-      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, {
+        width: 100,
+      });
       yPosition += 120; // Adjust Y-position after logo (height of the logo + some space)
     }
 
@@ -1034,7 +1056,7 @@ router.get("/generate-pdf", async (req, res) => {
       .fontSize(18)
       .font("Helvetica-Bold")
       .text(propertyInfo.pName || "Property Name", { align: "center" })
-      .moveDown(3);  // Add space after the property name
+      .moveDown(3); // Add space after the property name
 
     // Add Payment Details Title
     doc
@@ -1045,31 +1067,47 @@ router.get("/generate-pdf", async (req, res) => {
 
     yPosition += 40; // Move position down to start the table
 
-
-
     const columnWidths = [35, 105, 105, 105, 105, 105]; // 6 columns, adjust width as needed
-    const headers = ["Sr.", "Owner Name", "Contribution", "Paid Contribution", "Unpaid Contribution"];
-
+    const headers = [
+      "Sr.",
+      "Owner Name",
+      "Contribution",
+      "Paid Contribution",
+      "Unpaid Contribution",
+    ];
 
     let xPosition = 20;
     doc.fontSize(12).font("Helvetica-Bold");
     headers.forEach((header, i) => {
-      doc.text(header, xPosition, yPosition, { width: columnWidths[i], align: "center" });
+      doc.text(header, xPosition, yPosition, {
+        width: columnWidths[i],
+        align: "center",
+      });
       xPosition += columnWidths[i] + 10;
     });
 
-    yPosition += 30 // Move yPosition down after the header
+    yPosition += 30; // Move yPosition down after the header
 
     doc.fontSize(10).font("Helvetica");
 
     for (let i = 0; i < tableData.length; i++) {
       const owner = tableData[i];
-      const data = [i + 1, owner.ownerName, owner.contribution.toString(), owner.monthPaid.toString(), owner.remainingAmount.toString()]; // Add Sr. No. here
+      const data = [
+        i + 1,
+        owner.ownerName,
+        owner.contribution.toString(),
+        owner.monthPaidWithStatus.toString(),
+        owner.remainingAmount.toString(),
+      ]; // Add Sr. No. here
 
       // Create new row for each 6 items (one row has 6 columns)
       xPosition = 20;
       data.forEach((item, idx) => {
-        doc.text(item || "N/A", xPosition, yPosition, { width: columnWidths[idx], align: "center", lineBreak: true });
+        doc.text(item || "N/A", xPosition, yPosition, {
+          width: columnWidths[idx],
+          align: "center",
+          lineBreak: true,
+        });
         xPosition += columnWidths[idx] + 10;
       });
 
@@ -1082,8 +1120,6 @@ router.get("/generate-pdf", async (req, res) => {
         yPosition = 40; // Reset Y position for new page
       }
     }
-
-  
 
     // Total Payment Summary
     doc.moveDown(2);
@@ -1102,33 +1138,35 @@ router.get("/generate-pdf", async (req, res) => {
     doc
       .fontSize(12)
       .font("Helvetica-Bold")
-      .text(`Monthly Contribution for ${month}: ${monthlyContribution}`, 20, yPosition + 40);
+      .text(
+        `Monthly Contribution for ${month}: ${monthlyContribution}`,
+        20,
+        yPosition + 40
+      );
 
     // Finalize the PDF and send it to the client
 
-       // QR Code Generation: Generate a dummy QR Code
-       const qrCodeData = "https://www.dummy-url.com";
-       const qrCodePath = `${month}qr_code.png`;
-   
-       await QRCode.toFile(qrCodePath, qrCodeData, {
-         width: 100, // Adjust QR Code size
-       });
-   
-       // Add QR Code at the bottom
-       doc.image(qrCodePath, (doc.page.width - 100) / 2, doc.page.height - 120, { width: 100 });
-   
-       // Clean up by deleting the QR code file after PDF generation
-       fs.unlinkSync(qrCodePath);
+    // QR Code Generation: Generate a dummy QR Code
+    const qrCodeData = "https://www.dummy-url.com";
+    const qrCodePath = `${month}qr_code.png`;
+
+    await QRCode.toFile(qrCodePath, qrCodeData, {
+      width: 100, // Adjust QR Code size
+    });
+
+    // Add QR Code at the bottom
+    doc.image(qrCodePath, (doc.page.width - 100) / 2, doc.page.height - 120, {
+      width: 100,
+    });
+
+    // Clean up by deleting the QR code file after PDF generation
+    fs.unlinkSync(qrCodePath);
     doc.end();
   } catch (error) {
     console.error("Error generating PDF:", error);
     return res.status(500).send("Error generating PDF");
   }
 });
-
-
-
-
 
 router.get("/generate-pdf-owner", async (req, res) => {
   const { categoryId, ownerId } = req.query;
@@ -1142,7 +1180,9 @@ router.get("/generate-pdf-owner", async (req, res) => {
   try {
     // Get the current year
     const currentYear = new Date().getFullYear();
-    const propertyInfo = await PropertyInformations.findOne({ categoryId: categoryId });
+    const propertyInfo = await PropertyInformations.findOne({
+      categoryId: categoryId,
+    });
 
     // Query Income document for the specified category, owner, and year
     const incomeRecords = await Income.find({
@@ -1158,13 +1198,28 @@ router.get("/generate-pdf-owner", async (req, res) => {
     let tableData = [];
     let totalPaid = 0;
     let totalRemaining = 0;
-
+    let paidStatusText = "";  // Store status messages separately
+    
     incomeRecords.forEach((record, index) => {
       const totalAmount = record.contribution;
-
+      
       // Loop through each month and get the payment details for that month
       Object.entries(record.months).forEach(([month, paidAmount]) => {
-        const remainingAmount = totalAmount - paidAmount;
+        const paidStatus = record.statuses[month]
+
+   
+        let remainingAmount = totalAmount - paidAmount;
+        let monthPaidWithStatus =  paidAmount;
+        if (paidStatus === "late paid") {
+          paidStatusText += ` ${paidAmount} Late Paid`;
+          remainingAmount = 0;
+          monthPaidWithStatus = `${paidAmount} Late Paid`
+        } else if (paidStatus === "pay in advance") {
+          paidStatusText += ` ${paidAmount} Advance Paid`;
+          remainingAmount = 0;
+          monthPaidWithStatus = `${paidAmount} Advance Paid`
+  
+        } 
         totalPaid += paidAmount;
         totalRemaining += remainingAmount;
 
@@ -1174,6 +1229,7 @@ router.get("/generate-pdf-owner", async (req, res) => {
           month,
           paidAmount,
           remainingAmount,
+          monthPaidWithStatus,
         });
       });
     });
@@ -1198,8 +1254,8 @@ router.get("/generate-pdf-owner", async (req, res) => {
       .text("www.hoam.com", { align: "center" })
       .moveDown(2);
 
-    let yPosition = doc.y;  // Set initial Y position after the header
-    yPosition += 20;  // Adjust this value to control the distance between header and logo
+    let yPosition = doc.y; // Set initial Y position after the header
+    yPosition += 20; // Adjust this value to control the distance between header and logo
 
     // Add Property Logo
     if (propertyInfo.logo && propertyInfo.logo.url) {
@@ -1213,7 +1269,9 @@ router.get("/generate-pdf-owner", async (req, res) => {
       }
 
       // Center the logo and adjust y-position
-      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, {
+        width: 100,
+      });
       yPosition += 180; // Adjust Y-position after logo (height of the logo + some space)
     }
 
@@ -1222,8 +1280,7 @@ router.get("/generate-pdf-owner", async (req, res) => {
       .fontSize(18)
       .font("Helvetica-Bold")
       .text(propertyInfo.pName || "Property Name", { align: "center" })
-      .moveDown(5);  // Add space after the property name
-  
+      .moveDown(5); // Add space after the property name
 
     doc
       .fontSize(20)
@@ -1255,25 +1312,22 @@ router.get("/generate-pdf-owner", async (req, res) => {
     const rowHeight = 20;
     yPosition = tableStartY;
 
-
     let totalPaid1 = 0;
     let totalRemaining2 = 0;
 
-    const currentMonth = new Date().getMonth();  // 0-based (0 = January, 11 = December)
+    const currentMonth = new Date().getMonth(); // 0-based (0 = January, 11 = December)
 
     // Add each row of data (month-wise)
     tableData.forEach((row, index) => {
       const monthIndex = new Date(`${currentYear}-${row.month}-01`).getMonth(); // Convert month name to month index (0-11)
-      let paidAmount = row.paidAmount;
+      let paidAmount = row.monthPaidWithStatus;
       let remainingAmount = row.remainingAmount;
-    
- 
 
       if (monthIndex > currentMonth) {
         // If the month is in the future, set "Not Happened"
         paidAmount = "Not Happened";
         remainingAmount = "Not Happened";
-      }else {
+      } else {
         // If the month has passed, accumulate totals
         totalPaid1 += parseFloat(paidAmount) || 0;
         totalRemaining2 += parseFloat(remainingAmount) || 0;
@@ -1315,8 +1369,6 @@ router.get("/generate-pdf-owner", async (req, res) => {
   }
 });
 
-
-
 router.get("/generate-general-report", async (req, res) => {
   try {
     const { categoryId } = req.query;
@@ -1343,7 +1395,7 @@ router.get("/generate-general-report", async (req, res) => {
       let totalPaidByOwner = 0;
       let ownerData = {
         ownerName: record.ownerName,
-        monthDetails: []
+        monthDetails: [],
       };
 
       // Loop through each month (January to December)
@@ -1370,61 +1422,97 @@ router.get("/generate-general-report", async (req, res) => {
     const doc = new PDFDocument();
 
     // Set PDF headers and styles
-    doc.fontSize(18).text('General Report', { align: 'center' });
-    doc.fontSize(12).text(`Year: ${currentYear}`, { align: 'center' });
+    doc.fontSize(18).text("General Report", { align: "center" });
+    doc.fontSize(12).text(`Year: ${currentYear}`, { align: "center" });
     doc.moveDown(2);
 
     // Table Headers
     const headers = [
-      'Owner Name', 'January Paid', 'January Remaining', 'February Paid', 'February Remaining', 
-      'March Paid', 'March Remaining', 'April Paid', 'April Remaining', 'May Paid', 'May Remaining',
-      'June Paid', 'June Remaining', 'July Paid', 'July Remaining', 'August Paid', 'August Remaining',
-      'September Paid', 'September Remaining', 'October Paid', 'October Remaining', 'November Paid', 
-      'November Remaining', 'December Paid', 'December Remaining', 'Total Paid', 'Total Remaining'
+      "Owner Name",
+      "January Paid",
+      "January Remaining",
+      "February Paid",
+      "February Remaining",
+      "March Paid",
+      "March Remaining",
+      "April Paid",
+      "April Remaining",
+      "May Paid",
+      "May Remaining",
+      "June Paid",
+      "June Remaining",
+      "July Paid",
+      "July Remaining",
+      "August Paid",
+      "August Remaining",
+      "September Paid",
+      "September Remaining",
+      "October Paid",
+      "October Remaining",
+      "November Paid",
+      "November Remaining",
+      "December Paid",
+      "December Remaining",
+      "Total Paid",
+      "Total Remaining",
     ];
-    
+
     // Draw table headers
-    doc.fontSize(10).text(headers.join(' | '), { align: 'center' });
+    doc.fontSize(10).text(headers.join(" | "), { align: "center" });
     doc.moveDown(1);
 
     // Add the data for each owner to the PDF
     tableData.forEach((owner) => {
       const row = [
         owner.ownerName,
-        owner.monthDetails[0].monthPaid, owner.monthDetails[0].remainingAmount,
-        owner.monthDetails[1].monthPaid, owner.monthDetails[1].remainingAmount,
-        owner.monthDetails[2].monthPaid, owner.monthDetails[2].remainingAmount,
-        owner.monthDetails[3].monthPaid, owner.monthDetails[3].remainingAmount,
-        owner.monthDetails[4].monthPaid, owner.monthDetails[4].remainingAmount,
-        owner.monthDetails[5].monthPaid, owner.monthDetails[5].remainingAmount,
-        owner.monthDetails[6].monthPaid, owner.monthDetails[6].remainingAmount,
-        owner.monthDetails[7].monthPaid, owner.monthDetails[7].remainingAmount,
-        owner.monthDetails[8].monthPaid, owner.monthDetails[8].remainingAmount,
-        owner.monthDetails[9].monthPaid, owner.monthDetails[9].remainingAmount,
-        owner.monthDetails[10].monthPaid, owner.monthDetails[10].remainingAmount,
-        owner.monthDetails[11].monthPaid, owner.monthDetails[11].remainingAmount,
-        totalPaid, totalRemaining
+        owner.monthDetails[0].monthPaid,
+        owner.monthDetails[0].remainingAmount,
+        owner.monthDetails[1].monthPaid,
+        owner.monthDetails[1].remainingAmount,
+        owner.monthDetails[2].monthPaid,
+        owner.monthDetails[2].remainingAmount,
+        owner.monthDetails[3].monthPaid,
+        owner.monthDetails[3].remainingAmount,
+        owner.monthDetails[4].monthPaid,
+        owner.monthDetails[4].remainingAmount,
+        owner.monthDetails[5].monthPaid,
+        owner.monthDetails[5].remainingAmount,
+        owner.monthDetails[6].monthPaid,
+        owner.monthDetails[6].remainingAmount,
+        owner.monthDetails[7].monthPaid,
+        owner.monthDetails[7].remainingAmount,
+        owner.monthDetails[8].monthPaid,
+        owner.monthDetails[8].remainingAmount,
+        owner.monthDetails[9].monthPaid,
+        owner.monthDetails[9].remainingAmount,
+        owner.monthDetails[10].monthPaid,
+        owner.monthDetails[10].remainingAmount,
+        owner.monthDetails[11].monthPaid,
+        owner.monthDetails[11].remainingAmount,
+        totalPaid,
+        totalRemaining,
       ];
-      doc.text(row.join(' | '), { align: 'center' });
+      doc.text(row.join(" | "), { align: "center" });
       doc.moveDown(1);
     });
 
     // Final total row
-    doc.moveDown(1).text(`Total Paid: ${totalPaid}`, { align: 'right' });
-    doc.text(`Total Remaining: ${totalRemaining}`, { align: 'right' });
+    doc.moveDown(1).text(`Total Paid: ${totalPaid}`, { align: "right" });
+    doc.text(`Total Remaining: ${totalRemaining}`, { align: "right" });
 
     // Send the PDF to the response
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=general_report.pdf');
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=general_report.pdf"
+    );
     doc.pipe(res); // Stream the PDF directly to the response
     doc.end();
-
   } catch (error) {
     console.error("Error generating general report:", error);
     return res.status(500).send("Error generating report");
   }
 });
-
 
 router.get("/generate-pdfYear", async (req, res) => {
   const { categoryId } = req.query;
@@ -1434,16 +1522,30 @@ router.get("/generate-pdfYear", async (req, res) => {
   }
 
   try {
-    const propertyInfo = await PropertyInformations.findOne({ categoryId: categoryId });
+    const propertyInfo = await PropertyInformations.findOne({
+      categoryId: categoryId,
+    });
 
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonthIndex = currentDate.getMonth();
-    const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+    const currentMonth = currentDate.toLocaleString("default", {
+      month: "long",
+    });
 
     const monthsList = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
 
     const incomeRecords = await Income.find({
@@ -1461,20 +1563,49 @@ router.get("/generate-pdfYear", async (req, res) => {
     incomeRecords.forEach((record, index) => {
       const totalAmount = record.contribution;
       let totalPaidForMonths = 0;
+      let paidStatus = 0;
+      let paidWithStatus = 0;
       let remainingAmount = 0;
-
+    
+      
       for (let i = 0; i <= currentMonthIndex; i++) {
+         paidStatus = record.statuses[monthsList[i]]
         totalPaidForMonths += record.months[monthsList[i]] || 0;
+        totalPaid += record.months[monthsList[i]] || 0;
+    
+        if(paidStatus === "late paid"){
+          remainingAmount = 0
+          paidWithStatus = `${totalPaidForMonths}  `
+          remainingAmount = 0
+          totalUnpaid +=  0
+
+        } else if(paidStatus === "pay in advance"){
+          remainingAmount = 0
+          paidWithStatus = `${totalPaidForMonths}  `
+          remainingAmount = 0
+          totalUnpaid +=  0
+
+        }else{
+          remainingAmount += totalAmount - record.months[monthsList[i]]
+          totalUnpaid += totalAmount - record.months[monthsList[i]]
+
+        }
       }
-      remainingAmount = totalAmount - totalPaidForMonths;
-      totalPaid += totalPaidForMonths;
-      totalUnpaid += remainingAmount;
+     ;
+      // totalPaid += totalPaidForMonths;
+      // totalUnpaid += remainingAmount;
+
+
+    
+
 
       tableData.push({
         srNo: index + 1,
         ownerName: record.ownerName,
         amountPaid: totalPaidForMonths,
         remainingAmount,
+        paidWithStatus,
+        totalAmount
       });
     });
 
@@ -1511,7 +1642,9 @@ router.get("/generate-pdfYear", async (req, res) => {
       }
 
       // Center the logo and set Y position
-      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, { width: 100 });
+      doc.image(logoBuffer, (doc.page.width - 100) / 2, yPosition, {
+        width: 100,
+      });
       yPosition += 120; // Add space after the logo
     }
 
@@ -1524,11 +1657,15 @@ router.get("/generate-pdfYear", async (req, res) => {
 
     // Category Name
 
-
     // Title: Payment Details
     doc
       .fontSize(18)
-      .text(`Payment Details for ${currentMonth} ${currentYear}`, 50, yPosition, { align: "center" });
+      .text(
+        `Payment Details for ${currentMonth} ${currentYear}`,
+        50,
+        yPosition,
+        { align: "center" }
+      );
 
     // Table Headers (add some space below the title)
     yPosition += 30; // Adjust for table header spacing
@@ -1556,7 +1693,7 @@ router.get("/generate-pdfYear", async (req, res) => {
         .font("Helvetica")
         .text(`${index + 1}`, 20, yPosition)
         .text(row.ownerName, 140, yPosition)
-        .text(row.amountPaid.toString(), 250, yPosition)
+        .text(row.totalAmount.toString(), 250, yPosition)
         .text(row.amountPaid.toString(), 350, yPosition)
         .text(row.remainingAmount.toString(), 450, yPosition);
 
@@ -1577,13 +1714,6 @@ router.get("/generate-pdfYear", async (req, res) => {
     return res.status(500).send("Error generating PDF");
   }
 });
-
-
-
-
-
-
-
 
 router.get("/propertyinformation", generatePropertyPDF);
 router.get("/propertyinformation/:id", generatePropertyPDFId);

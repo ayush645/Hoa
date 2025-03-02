@@ -186,16 +186,33 @@ console.log(success)
             Go to Home
           </button>
           
-          <button className="button-85" onClick={() => setShowForm(!showForm)}>
+         
+        </div>
+        
+
+      </div>
+
+      <GetOwner
+        propertyData={propertyData}
+        loading={loading}
+        onDelete={handleDelete}
+        fetchOwner={fetchOwner}
+        id={id}
+        setLoading={setLoading}
+      />
+
+      <div className=" flex justify-center items-center -mt-16 gap-5 ">
+      <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Property Owner"}
           </button>
           <button onClick={handlePrint} className="button-85">
             Print Owners Report
           </button>
-        </div>
+      </div>
 
-        {showForm && (
-          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl">
+      
+      {showForm && (
+          <div className="form bg-gray-100 p-6 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-10">
             <input
               type="text"
               placeholder="Enter Name"
@@ -311,16 +328,6 @@ console.log(success)
             </div>
           </div>
         )}
-      </div>
-
-      <GetOwner
-        propertyData={propertyData}
-        loading={loading}
-        onDelete={handleDelete}
-        fetchOwner={fetchOwner}
-        id={id}
-        setLoading={setLoading}
-      />
     </div>
   );
 };

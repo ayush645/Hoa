@@ -10,7 +10,8 @@ const PropertyCommitiModel = require("../models/PropertyCommitiModel");
 
 const router = express.Router();
 
-const puppeteer = require("puppeteer-core");
+// const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 
 async function generatePDF(data) {
   try {
@@ -21,11 +22,12 @@ async function generatePDF(data) {
     );
 
     // Launch Puppeteer with Chromium path and options
-    const browser = await puppeteer.launch({
-      executablePath: "/usr/bin/chromium-browser", // Update with the correct path
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
-    });
+    // const browser = await puppeteer.launch({
+    //   executablePath: "/usr/bin/chromium-browser", // Update with the correct path
+    //   headless: true,
+    //   args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
+    // });
+    const browser = await puppeteer.launch();
 
     const page = await browser.newPage();
     await page.setContent(htmlContent);
@@ -59,11 +61,13 @@ async function generatePDF2(data) {
     );
 
     // Launch Puppeteer with Chromium path and options
-    const browser = await puppeteer.launch({
-      executablePath: "/usr/bin/chromium-browser", // Update with the correct path
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
-    });
+    // const browser = await puppeteer.launch({
+    //   executablePath: "/usr/bin/chromium-browser", // Update with the correct path
+    //   headless: true,
+    //   args: ["--no-sandbox", "--disable-setuid-sandbox"], // Necessary flags for Puppeteer
+    // });
+
+    const browser = await puppeteer.launch();
 
     const page = await browser.newPage();
     await page.setContent(htmlContent);

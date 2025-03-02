@@ -54,6 +54,12 @@ const Budget = () => {
   Go to Home
 </button>
 
+     
+
+      <GetBudget categories={categories} setCategories={setCategories} />
+
+
+      <div>
       <button
         className="button-85"
         // className={`${
@@ -87,8 +93,7 @@ const Budget = () => {
           </div>
         </div>
       )}
-
-      <GetBudget categories={categories} setCategories={setCategories} />
+      </div>
     </div>
   );
 };
