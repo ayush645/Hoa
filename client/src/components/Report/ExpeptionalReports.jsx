@@ -83,7 +83,10 @@ function ExpeptionalReports({ type, change }) {
                               <td
                                 className={`border border-gray-200 p-2 ${color}`}
                               >
-                                {sign} ₹{logItem.ammount}
+                                {sign} 
+                                
+                                {logItem.currency}
+                                {logItem.ammount}
                               </td>
                             </tr>
                           )

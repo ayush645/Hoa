@@ -1,12 +1,15 @@
 const budgetoutcomeModle = require("../models/budgetOutcomeModel");
 const Budget = require("../models/budgetModel")
+
+
 const createbudgetOutComeCtrl = async (req, res) => {
   const {
     propertyData: { type, amount, categoryId, document },
   } = req.body;
 
-  console.log(document)
-  
+const bugDetails = await Budget.findById(categoryId)
+
+
   try {
     if (!type || !amount) {
       return res.status(400).json({
@@ -25,6 +28,7 @@ const createbudgetOutComeCtrl = async (req, res) => {
           date: Date.now(),
           ammount:amount,
           operation: `${type} - Expense`,
+          currency:bugDetails.currency
         },
       ],
     });
@@ -63,7 +67,10 @@ const updateBudgetOutcomeCtrl = async (req, res) => {
 
     // Find the property by ID and update it
     const property = await budgetoutcomeModle.findById(id);
+    const bugDetails = await Budget.findById(property.categoryId)
 
+    console.log(bugDetails)
+    
     if (!property) {
       return res.status(404).json({
         success: false,
@@ -85,7 +92,9 @@ const updateBudgetOutcomeCtrl = async (req, res) => {
         ...property.updateLog[existingLogIndex],
         date: Date.now(), // Update the date to the current time
         ammount: amount,  // Update the amount if necessary
-        operation:`${type} - Expense updated`
+        operation:`${type} - Expense updated`,
+        currency:bugDetails.currency || "USA"
+
       };
     } else {
       // If no existing log entry found, create a new one
@@ -95,6 +104,8 @@ const updateBudgetOutcomeCtrl = async (req, res) => {
         date: Date.now(),
         ammount: amount,
         operation: `${type} - Expense updated`,
+        currency:bugDetails.currency || "USA"
+
       });
     }
 

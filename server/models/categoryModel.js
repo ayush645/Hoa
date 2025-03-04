@@ -6,6 +6,9 @@ const categorySchema = new Schema({
     type: String,
     required: true,
   },
+  currency: {
+    type: String,
+},
 });
 
 const Category = mongoose.model('Category', categorySchema);

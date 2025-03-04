@@ -1,4 +1,5 @@
 const outcomeModle = require("../models/outcomeModel");
+const Category = require("../models/categoryModel");
 
 const createOutComeCtrl = async (req, res) => {
   const { propertyData } = req.body; // Extract propertyData
@@ -13,6 +14,10 @@ const createOutComeCtrl = async (req, res) => {
       });
     }
 
+    const catDetails = await Category.findById(categoryId)
+    console.log(catDetails)
+
+    
     // Calculate totalAmount from months
     const totalAmount = Object.values(months).reduce(
       (acc, curr) => acc + (curr || 0),
@@ -25,6 +30,7 @@ const createOutComeCtrl = async (req, res) => {
       months,
       totalAmount,
       categoryId,
+     currency: catDetails.currency || "USD"
     });
 
     // Respond with success
@@ -140,6 +146,7 @@ const updateMonthsOutcome = async (req, res) => {
       },
     });
 
+   
     if (!outcomeRecord) {
       // Create a new document if it doesn't exist
       outcomeRecord = new outcomeModle({
@@ -157,6 +164,7 @@ const updateMonthsOutcome = async (req, res) => {
             date: new Date(),
             updatedFields: new Map([[month, String(amount)]]),
             operation,
+            currency:outcomeRecord.currency || "USD"
           },
         ],
       });
@@ -199,6 +207,8 @@ const updateMonthsOutcome = async (req, res) => {
           date: new Date(),
           updatedFields: new Map([[month, String(amount)]]),
           operation,
+          currency:outcomeRecord.currency || "USD"
+
         });
       }
     }

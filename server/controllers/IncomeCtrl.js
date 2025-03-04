@@ -1,5 +1,6 @@
 const incomeModel = require("../models/Income"); // Adjust the path as per your project structure
 const Outcome = require("../models/outcomeModel");
+const Category = require("../models/categoryModel");
 const PropertyInformations = require("../models/PropertyInformationsModel"); // Adjust the path as necessary
 const ejs = require("ejs");
 const path = require("path");
@@ -187,7 +188,7 @@ const updateMonthsIncome = async (req, res) => {
   const { id } = req.params;
   const { month, amount, operation, year, method,status } = req.body;
 
-console.log(status)
+
   if (!month || typeof amount !== "number") {
     return res.status(400).json({
       message: "Month and amount are required, and amount should be a number",
@@ -225,6 +226,7 @@ console.log(status)
       },
     });
 
+  
     // let status = amount === 0 ? "not paid" : "not updated";
     if (!incomeRecord) {
       // If no document exists, create a new one
@@ -238,6 +240,7 @@ console.log(status)
             date: new Date(),
             updatedFields: { [month]: amount },
             operation: `${operation}'s Contribution ${month}`,
+            currency : incomeRecord.currency || "USD"
           },
         ],
       });
@@ -273,6 +276,8 @@ console.log(status)
           date: new Date(),
           updatedFields: new Map([[month, String(amount)]]),
           operation: `${operation}'s Contribution ${month}`,
+          currency : incomeRecord.currency || "USD"
+
         });
       }
     }

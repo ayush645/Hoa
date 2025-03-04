@@ -1,5 +1,6 @@
 const budgetIncomeModel = require("../models/budgetIncomeModel");
 const Outcome = require("../models/budgetOutcomeModel");
+const budgetModel = require("../models/budgetModel");
 
 const createBudgetIncomeCtrl = async (req, res) => {
   const {
@@ -15,6 +16,7 @@ const createBudgetIncomeCtrl = async (req, res) => {
       });
     }
 
+    return
     const property = await budgetIncomeModel.create({
       name,
       amount,
@@ -51,6 +53,7 @@ const updateBudgetIncomeCtrl = async (req, res) => {
   } = req.body;
 
 
+
   try {
     // Check if all required fields are provided
     if (!name || !amount) {
@@ -62,6 +65,9 @@ const updateBudgetIncomeCtrl = async (req, res) => {
 
     // Find the property by ID
     const property = await budgetIncomeModel.findById(id);
+  
+
+    console.log(property)
 
     if (!property) {
       return res.status(404).json({
@@ -89,6 +95,7 @@ const updateBudgetIncomeCtrl = async (req, res) => {
         date: Date.now(), // Update the date to the current time
         ammount: amount, 
         status:status, 
+        currency : property.currency || 'USD',
         operation:`${name} Budget Income updated`
       };
     } else {
@@ -97,6 +104,8 @@ const updateBudgetIncomeCtrl = async (req, res) => {
         date: Date.now(),
         ammount: amount,
         operation: `${name} Budget Income updated`,
+        currency : property.currency || 'USD',
+
       });
     }
 

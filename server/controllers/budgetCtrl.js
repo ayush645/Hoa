@@ -2,22 +2,26 @@ const budgetModel = require("../models/budgetModel");
 const budgetIncomeModel = require("../models/budgetIncomeModel")
 const budgetOutcomeModel = require("../models/budgetOutcomeModel")
 const ownerModel = require("../models/ownerModel");
+const Category = require("../models/categoryModel");
 
 const createbudget = async (req, res) => {
   const { name } = req.body;
   const CateId = name.id
   console.log(CateId)
 const income = await ownerModel.find({categoryId:CateId})
+const catDetails = await Category.findById(CateId)
 
 
-  
+
   
   try {
     const newCategory = new budgetModel({
         name:name.name,
-        serachUpdateId:CateId
+        serachUpdateId:CateId,
+        currency:catDetails.currency || "USD"
     });
 
+    console.log(newCategory)
     
     await newCategory.save();
 
@@ -27,7 +31,9 @@ const income = await ownerModel.find({categoryId:CateId})
           name: owner.name,
           amount: 0,
           categoryId:newCategory._id,
-          uniqueId:owner.uniqueId
+          uniqueId:owner.uniqueId,
+        currency:catDetails.currency || "USD"
+
         });
       })
     );

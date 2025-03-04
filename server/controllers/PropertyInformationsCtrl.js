@@ -104,8 +104,9 @@ const updatePropertyInformationCtrl = async (req, res) => {
 
         const category = await Category.findByIdAndUpdate(
             catId,
-            { name: pName }, // Correctly pass the update data as an object
-            { new: true } // Optionally, add `{ new: true }` to return the updated document
+            { name: pName , currency :currency }, // Correctly pass the update data as an object
+            { new: true }, // Optionally, add `{ new: true }` to return the updated document
+
         );
         
 

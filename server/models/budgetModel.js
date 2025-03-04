@@ -10,6 +10,10 @@ const budgetSchema = new Schema({
     type: String,
     required: true,
   },
+  currency: {
+    type: String,
+},
+
 });
 
 const budget = mongoose.model('Budget', budgetSchema);

@@ -25,11 +25,16 @@ const budgetoutcomeSchema = new Schema(
       ref: "Budget",
    
     },
+    currency: {
+      type: String,
+  },
     updateLog: [
       {
         date: { type: Date, default: Date.now },
         ammount: { type: Number },
         operation: { type: String },
+        currency:{type:String}
+
       },
     ],
   },

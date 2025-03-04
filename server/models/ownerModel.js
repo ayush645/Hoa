@@ -45,12 +45,12 @@ const ownerSchema = new Schema({
     },
     currency: {
       type: String,
-      required: true,
+  
     },
 
     fee: {
       type: Number,
-      required: true,
+   
     },
   },
   paymentType: {

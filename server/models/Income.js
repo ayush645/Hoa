@@ -64,11 +64,15 @@ const incomeSchema = new mongoose.Schema({
         ref: "Category",
       
     },
+    currency: {
+        type: String,
+    },
     updateLog: [
         {
             date: { type: Date, default: Date.now },
             updatedFields: { type: Map, of: String }, // Logs changed fields and their values
-            operation:{type:String}
+            operation:{type:String},
+            currency:{type:String}
 
         },
     ],

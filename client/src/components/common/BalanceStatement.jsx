@@ -58,7 +58,9 @@ const BalanceStatement = ({ income, outCome }) => {
                   </td>
                   <td className="border border-gray-200 p-2">{entry?.operation}</td>
                   <td className={`border border-gray-200 p-2 ${color}`}>
-                    {sign} ₹{entry.amount.toFixed(2)}
+                    {sign} 
+                    {entry.currency}{" "}
+                    {entry.amount.toFixed(2)}
                   </td>
                   <td className="border border-gray-200 p-2">
                     {entry.type === 'income' ? 'Income' : 'Outcome'}

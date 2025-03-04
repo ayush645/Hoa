@@ -2,7 +2,7 @@ const ownerModel = require("../models/ownerModel");
 const Income = require("../models/Income");
 const budgetIncomeModel = require("../models/budgetIncomeModel");
 const budgetModel = require("../models/budgetModel");
-
+const Category = require("../models/categoryModel")
 const createOwnerCtrl = async (req, res) => {
   const {
     propertyData: {
@@ -22,6 +22,8 @@ const createOwnerCtrl = async (req, res) => {
   console.log("Unique ID:", uniqueId);
 
   const bugdetOwner = await budgetModel.find({ serachUpdateId: categoryId });
+const cateDetails = await Category.findById(categoryId)
+
 
 
   try {
@@ -83,7 +85,8 @@ const createOwnerCtrl = async (req, res) => {
             name: name,
             amount: 0,
             categoryId: owner._id,
-            uniqueId:uniqueId
+            uniqueId:uniqueId,
+           currency: cateDetails.currency || "USD"
           });
         })
       );
@@ -91,7 +94,7 @@ const createOwnerCtrl = async (req, res) => {
     
     }
     // Validate unit details
-    if (!unit.type || !unit.currency || !unit.fee) {
+    if (!unit.type  || !unit.fee) {
       return res.status(400).json({
         success: false,
         message: "Unit details (type, currency, fee) are required",
@@ -126,6 +129,7 @@ const createOwnerCtrl = async (req, res) => {
       unit: unit.type,
       categoryId,
       contribution: unit.fee,
+      currency: cateDetails.currency || "USD",
       uniqueId:uniqueId
     });
 
@@ -162,7 +166,7 @@ const updateOwnerCtrl = async (req, res) => {
     },
   } = req.body;
 
-  console.log(req.body);
+
   try {
     // Validate required fields
     if (!ownerId) {
@@ -173,7 +177,7 @@ const updateOwnerCtrl = async (req, res) => {
     }
 
     // Validate unit details
-    if (unit && (!unit.type || !unit.currency || !unit.fee)) {
+    if (unit && (!unit.type || !unit.fee)) {
       return res.status(400).json({
         success: false,
         message:

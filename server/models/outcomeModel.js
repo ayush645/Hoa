@@ -5,7 +5,6 @@ const outcomeSchema = new Schema(
   {
     expense: {
       type: String,
-   
     },
     months: {
       January: { type: Number, default: 0 },
@@ -32,15 +31,17 @@ const outcomeSchema = new Schema(
     },
 
     documents: [
-        {
-          date: { type: Date, default: Date.now }, // Fix: Proper default Date
+      {
+        date: { type: Date, default: Date.now }, // Fix: Proper default Date
 
-          month: { type: String, required: true }, // Store month name
-          url: String,
-        },
-      ],
+        month: { type: String, required: true }, // Store month name
+        url: String,
+      },
+    ],
 
-
+    currency: {
+      type: String,
+    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "Category",
@@ -51,6 +52,7 @@ const outcomeSchema = new Schema(
         date: { type: Date, default: Date.now },
         updatedFields: { type: Map, of: String }, // Logs changed fields and their values
         operation: { type: String },
+        currency: { type: String },
       },
     ],
   },
@@ -62,9 +64,6 @@ outcomeSchema.pre("save", function (next) {
   this.totalAmount = Object.values(months).reduce((acc, curr) => acc + curr, 0);
   next();
 });
-
-
-
 
 outcomeSchema.pre("updateOne", function (next) {
   const update = this.getUpdate();
