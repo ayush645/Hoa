@@ -336,6 +336,7 @@ const GetPropertyInformation = ({
               className="border p-2 w-full mb-4 rounded-lg"
             >
               <option value="USD">USD</option>
+              <option value="AED">AED</option>
               <option value="EUR">EUR</option>
               <option value="INR">INR</option>
               <option value="GBP">GBP</option>
