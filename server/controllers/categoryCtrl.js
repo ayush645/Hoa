@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const createCategory = async (req, res) => {
   const { name } = req.body;
 
-  console.log(name)
+  console.log("this")
 
   
   try {
@@ -106,6 +106,49 @@ const updateCategoryCtrl = async (req, res) => {
 };
 
 
+const duplicateCategory = async (req, res) => {
+  const { categoryId } = req.params;
+console.log(categoryId)
+  if (!categoryId) {
+    return res.status(400).json({ success: false, message: "Category ID is required" });
+  }
+
+  try {
+    const categoryDetails = await Category.findById(categoryId);
+    console.log(categoryDetails)
+    if (!categoryDetails) {
+      return res.status(404).json({ success: false, message: "Category not found" });
+    }
+
+    // Check if a duplicate already exists to prevent infinite duplication
+    const existingDuplicate = await Category.findOne({ name: `${categoryDetails.name}-Duplicate` });
+    if (existingDuplicate) {
+      return res.status(400).json({ success: false, message: "Duplicate category already exists" });
+    }
+
+    // Create a new category and associated property
+    const newCategory = new Category({
+      name: `${categoryDetails.name}-Duplicate`,
+    });
+
+    const property = new PropertyModel({
+      pName: `${categoryDetails.name}-Duplicate`,
+      categoryId: newCategory._id,
+    });
+
+    await newCategory.save();
+    await property.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Category duplicated successfully",
+      category: newCategory,
+    });
+  } catch (error) {
+    console.error("Error in duplicateCategory API:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 
 
@@ -125,5 +168,6 @@ module.exports = {
   createCategory,
   getAllCategories,
   deleteCategory,
-  updateCategoryCtrl
+  updateCategoryCtrl,
+  duplicateCategory
 };

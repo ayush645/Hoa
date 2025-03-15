@@ -6,6 +6,7 @@ const {
     GET_ALL_CATEGORY,
     DELETE_CATEGORY,
     UPDATE_CATEGORY,
+    DUPLICATE_CATEGORY,
     IMAGE_UPLOAD,
     CREATE_PROPERTY_INFORMATION,
     GET_ALL_PROPERTY_INFORMATION,
@@ -171,6 +172,50 @@ export const updateCategoryApi = async (id, name) => {
         throw error;
     }
 };
+
+export async function duplicateCategoryApi(id) {
+    Swal.fire({
+        title: "Dupllllllicating Category...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        const response = await apiConnector("POST", `${DUPLICATE_CATEGORY}/${id}`);
+        Swal.close();
+
+        if (!response?.data?.success) {
+            await Swal.fire({
+                title: "Duplication Failed",
+                text: response.data.message || "Could not duplicate the category.",
+                icon: "error",
+            });
+            throw new Error(response.data.message);
+        }
+
+        Swal.fire({
+            title: "Category Dupllllllicated!",
+            text: "Your category has been successfully duplicated.",
+            icon: "success",
+        });
+
+        return response.data.category;
+    } catch (error) {
+        console.log("DUPLICATE CATEGORY ERROR............", error);
+        Swal.fire({
+            title: "Failed to Duplicate Category",
+            text: error.response?.data?.message || "Something went wrong, please try again later.",
+            icon: "error",
+        });
+        throw error;
+    }
+}
+
 
 
 export const imageUpload = async (data) => {

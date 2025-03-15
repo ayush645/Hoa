@@ -15,6 +15,7 @@ export const admin = {
     GET_ALL_CATEGORY: BASE_URL + "/category/getAll",
     DELETE_CATEGORY: BASE_URL + "/category/delete",
     UPDATE_CATEGORY: BASE_URL + "/category/update",
+    DUPLICATE_CATEGORY: BASE_URL + "/category/duplicate",
     IMAGE_UPLOAD: BASE_URL + "/image/multi",
 
     CREATE_PROPERTY_INFORMATION: BASE_URL + "/propertyinformation/update",

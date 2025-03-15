@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import EditCategoryModal from "./EditCategoryModal";
-import { deleteCategoryApi } from "../services/operation/function";
+import {
+  deleteCategoryApi,
+  duplicateCategoryApi,
+} from "../services/operation/function";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { IoDuplicateOutline } from "react-icons/io5";
 
 const GetCategory = ({ categories, setCategories, fetchCategories }) => {
   const [editCategory, setEditCategory] = useState(null);
@@ -64,6 +68,29 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
     }
   };
 
+  const handleDuplicate = async (categoryId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to duplicate this category?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, duplicate it!",
+    }).then(async (result) => {
+      // ✅ Make this function async
+      if (result.isConfirmed) {
+        try {
+          console.log("Duplicating category with ID:", categoryId);
+          await duplicateCategoryApi(categoryId);
+          fetchCategories();
+        } catch (error) {
+          console.error("Error duplicating category:", error);
+        }
+      }
+    });
+  };
+
   return (
     <div className="p-6 w-full ">
       {/* <h1 className="text-2xl font-bold text-white mb-6 text-center">
@@ -106,50 +133,23 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
                         onClick={() => handleDelete(category._id)}
                         className="text-red-500 hover:text-red-600 text-lg"
                       >
-                        <FaTrash />
+                        <FaTrash title="Delete Property" />
                       </button>
+
                       <button
                         onClick={() => handleManage(category._id)}
                         className="text-green-500 hover:text-green-600 text-lg"
                       >
                         Manage
                       </button>
+                      <button
+                        onClick={() => handleDuplicate(category._id)}
+                        className="text-blue-500 hover:text-blue-600 text-lg"
+                      >
+                        <IoDuplicateOutline title="Duplicate Property" />
+                      </button>
                     </td>
                   </tr>
-                  {selectedCategoryId === category._id && (
-                    <tr>
-                      <td colSpan="3" className="px-6 py-3">
-                        <div className="flex space-x-4 justify-center">
-                          {[
-                            "Property Information",
-                            "Property Units",
-                            "Property Owners",
-                            "Property Comitee",
-                            "Regular Budget",
-                            "Exceptional Budget",
-                            "Print Reports",
-                            "Upload Documents",
-                
-                
-                
-                          ].map((link, index) => (
-                            <button
-                              key={index}
-                              onClick={() =>
-                                handleNavigation(
-                                  link.replace(/\s+/g, "").toLowerCase(),
-                                  category._id
-                                )
-                              }
-                              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                            >
-                              {link}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               ))
             ) : (
