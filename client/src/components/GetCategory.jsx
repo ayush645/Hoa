@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaCopy, FaTrash } from "react-icons/fa";
 import EditCategoryModal from "./EditCategoryModal";
 import {
   deleteCategoryApi,
@@ -93,76 +93,110 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
 
   return (
     <div className="p-6 w-full ">
-      {/* <h1 className="text-2xl font-bold text-white mb-6 text-center">
-        Property Management
-      </h1> */}
+    {/* <h1 className="text-2xl font-bold text-white mb-6 text-center">
+      Property Management
+    </h1> */}
 
-      {editCategory && (
-        <EditCategoryModal
-          category={editCategory}
-          setEditCategory={setEditCategory}
-          setCategories={setCategories}
-          categories={categories}
-        />
-      )}
+    {editCategory && (
+      <EditCategoryModal
+        category={editCategory}
+        setEditCategory={setEditCategory}
+        setCategories={setCategories}
+        categories={categories}
+      />
+    )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-gray-600 font-semibold">
-                #
-              </th>
-              <th className="px-6 py-3 text-left text-gray-600 font-semibold">
-                Property Name
-              </th>
-              <th className="px-6 py-3 text-center text-gray-600 font-semibold">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.length > 0 ? (
-              categories.map((category, index) => (
-                <React.Fragment key={category._id}>
-                  <tr className="border-b last:border-none hover:bg-gray-100">
-                    <td className="px-6 py-3">{index + 1}</td>
-                    <td className="px-6 py-3">{category.name}</td>
-                    <td className="px-6 py-3 text-center flex justify-center space-x-4">
-                      <button
-                        onClick={() => handleDelete(category._id)}
-                        className="text-red-500 hover:text-red-600 text-lg"
-                      >
-                        <FaTrash title="Delete Property" />
-                      </button>
-
-                      <button
-                        onClick={() => handleManage(category._id)}
-                        className="text-green-500 hover:text-green-600 text-lg"
-                      >
-                        Manage
-                      </button>
-                      <button
-                        onClick={() => handleDuplicate(category._id)}
-                        className="text-blue-500 hover:text-blue-600 text-lg"
-                      >
-                        <IoDuplicateOutline title="Duplicate Property" />
-                      </button>
+    <div className="overflow-x-auto">
+      <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead className="bg-gray-200">
+          <tr>
+            <th className="px-6 py-3 text-left text-gray-600 font-semibold">
+              #
+            </th>
+            <th className="px-6 py-3 text-left text-gray-600 font-semibold">
+              Property Name
+            </th>
+            <th className="px-6 py-3 text-center text-gray-600 font-semibold">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {categories.length > 0 ? (
+            categories.map((category, index) => (
+              <React.Fragment key={category._id}>
+                <tr className="border-b last:border-none hover:bg-gray-100">
+                  <td className="px-6 py-3">{index + 1}</td>
+                  <td className="px-6 py-3">{category.name}</td>
+                  <td className="px-6 py-3 text-center flex justify-center space-x-4">
+                    <button
+                      onClick={() => handleDelete(category._id)}
+                      className="text-red-500 hover:text-red-600 text-lg"
+                    >
+                      <FaTrash />
+                    </button>
+                 
+                    <button
+                      onClick={() => handleManage(category._id)}
+                      className="text-green-500 hover:text-green-600 text-lg"
+                    >
+                      Manage
+                    </button>
+                    <button
+                      onClick={() => handleDuplicate(category._id)}
+                      className="text-gray-500 hover:text-gray-600 text-lg"
+                    >
+                      <FaCopy />
+                    </button>
+                  </td>
+                </tr>
+                {selectedCategoryId === category._id && (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-3">
+                      <div className="flex space-x-4 justify-center">
+                        {[
+                          "Property Information",
+                          "Property Units",
+                          "Property Owners",
+                          "Property Comitee",
+                          "Regular Budget",
+                          "Exceptional Budget",
+                          "Print Reports",
+                          "Upload Documents",
+              
+              
+              
+                        ].map((link, index) => (
+                          <button
+                            key={index}
+                            onClick={() =>
+                              handleNavigation(
+                                link.replace(/\s+/g, "").toLowerCase(),
+                                category._id
+                              )
+                            }
+                            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                          >
+                            {link}
+                          </button>
+                        ))}
+                      </div>
                     </td>
                   </tr>
-                </React.Fragment>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-3 text-center text-gray-500">
-                  No categories available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="px-6 py-3 text-center text-gray-500">
+                No categories available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
+  </div>
   );
 };
 
