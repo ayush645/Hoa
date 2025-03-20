@@ -16,7 +16,7 @@ const createBudgetIncomeCtrl = async (req, res) => {
       });
     }
 
-    return
+    
     const property = await budgetIncomeModel.create({
       name,
       amount,
@@ -150,12 +150,15 @@ const deleteBudgetIncomeCtrl = async (req, res) => {
 const getAllBudgetIncomeCtrl = async (req, res) => {
   const { id } = req.params;
   try {
+    console.log(id)
     const properties = await budgetIncomeModel.find({ categoryId: id });
+    console.log(properties)
     res.json({
       success: true,
       properties,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({
       success: false,
       message: "An error occurred while fetching budget income .",

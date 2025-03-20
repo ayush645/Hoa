@@ -5,6 +5,6 @@ const { createbudget, deletebudget, getAllbudgets, updateBudgetCtrl } = require(
 
 router.post('/create', createbudget);
 router.delete('/delete/:id', deletebudget);
-router.get('/getAll', getAllbudgets);
+router.get('/getAll/:id', getAllbudgets);
 router.put('/update/:id', updateBudgetCtrl);
 module.exports = router;

@@ -225,7 +225,7 @@ const updateMonthsIncome = async (req, res) => {
         $lte: new Date(`${currentYear}-12-31T23:59:59.999Z`),
       },
     });
-
+console.log(incomeRecord)
   
     // let status = amount === 0 ? "not paid" : "not updated";
     if (!incomeRecord) {
@@ -314,8 +314,14 @@ const updateMonthsIncome = async (req, res) => {
 
     const pdfBuffer = await generatePDF2(data);
 
-    // Send Email
+
+    if (!incomeRecord.email) {
+      return res.status(400).json({ message: "Email is required to send the receipt." });
+    }
     await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
+    
+    // Send Email
+    // await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
 
     res.status(200).json({
       message: incomeRecord.isNew

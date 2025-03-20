@@ -84,12 +84,17 @@ const deletebudget = async (req, res) => {
 
 const getAllbudgets = async (req, res) => {
   try {
-    const categories = await budgetModel.find();
+  const { id } = req.params;
+
+    
+    const categories = await budgetModel.find({serachUpdateId:id});
+    console.log(categories)
     res.json({
       success: true,
       categories,
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ success: false, message: error.message });
   }
 };

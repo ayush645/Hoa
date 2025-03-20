@@ -15,7 +15,7 @@ const Budget = () => {
   const fetchBudget = async () => {
  
     try {
-      const categoryList = await getAllBudgetApi();
+      const categoryList = await getAllBudgetApi(id);
       setCategories(categoryList || []);
     } catch (error) {
       console.error("Error fetching categories:", error.message);

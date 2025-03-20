@@ -1171,10 +1171,10 @@ export async function createBudgetApi(name) {
 }
 
 
-export async function getAllBudgetApi() {
+export async function getAllBudgetApi(id) {
     let result = [];
     try {
-        const response = await apiConnector("GET", GET_ALL_BUDGET);
+        const response = await apiConnector("GET", `${GET_ALL_BUDGET}/${id}`);
         if (!response?.data?.success) {
             await Swal.fire({
                 title: "Budget Creation Failed",
