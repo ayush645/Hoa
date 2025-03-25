@@ -581,7 +581,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
                       />
                     </td> */}
                     <td
-                      className="px-4 py-2 text-blue-800 underline"
+                      className="px-4 py-2 text-blue-800 underline cursor-pointer"
                       onClick={() => handleDownloadOwner(income._id)}
                     >
                       Owner report

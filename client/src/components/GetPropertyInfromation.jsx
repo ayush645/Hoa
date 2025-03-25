@@ -268,7 +268,7 @@ const GetPropertyInformation = ({
 
             {/* Form Title */}
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Create Property Information
+             {selectId ? " Update Property Information" : "  Create Property Information"}
             </h2>
 
             {/* Form Fields */}
@@ -348,6 +348,7 @@ const GetPropertyInformation = ({
               <option value="SEK">SEK</option>
               <option value="NZD">NZD</option>
               <option value="MXN">MXN</option>
+              <option value="MAD">MAD</option>
               <option value="SGD">SGD</option>
               <option value="HKD">HKD</option>
               <option value="NOK">NOK</option>
@@ -434,7 +435,8 @@ const GetPropertyInformation = ({
                 onClick={handleSubmit}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg w-full hover:bg-blue-700"
               >
-                Create Property Information
+                         {selectId ? " Update Property Information" : "  Create Property Information"}
+
               </button>
             </div>
           </div>

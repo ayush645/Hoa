@@ -9,10 +9,10 @@ const incomeSchema = new mongoose.Schema({
         type: String,
         required: true,
 
-      
+
     },
- 
-    uniqueId :{
+
+    uniqueId: {
         type: String,
         required: true,
     },
@@ -20,7 +20,7 @@ const incomeSchema = new mongoose.Schema({
         type: String,
         required: true,
 
-       
+
     },
     months: {
         January: { type: Number, default: 0 },
@@ -49,7 +49,7 @@ const incomeSchema = new mongoose.Schema({
         October: { type: String, default: "not updated" },
         November: { type: String, default: "not updated" },
         December: { type: String, default: "not updated" },
-      },
+    },
 
     contribution: {
         type: Number,
@@ -62,7 +62,7 @@ const incomeSchema = new mongoose.Schema({
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-      
+
     },
     currency: {
         type: String,
@@ -71,8 +71,8 @@ const incomeSchema = new mongoose.Schema({
         {
             date: { type: Date, default: Date.now },
             updatedFields: { type: Map, of: String }, // Logs changed fields and their values
-            operation:{type:String},
-            currency:{type:String}
+            operation: { type: String },
+            currency: { type: String }
 
         },
     ],
@@ -84,6 +84,21 @@ incomeSchema.pre('save', function (next) {
     next();
 });
 
+// incomeSchema.pre("updateOne", function (next) {
+//     const update = this.getUpdate();
+
+//     if (update.$set || update.$inc) {
+//         const logEntry = {
+//             date: new Date(),
+//             updatedFields: new Map(Object.entries(update.$set || {})),
+//         };
+
+//         // Push the log entry into updateLog
+//         this.update({}, { $push: { updateLog: logEntry } });
+//     }
+//     next();
+// });
+
 incomeSchema.pre("updateOne", function (next) {
     const update = this.getUpdate();
 
@@ -93,11 +108,12 @@ incomeSchema.pre("updateOne", function (next) {
             updatedFields: new Map(Object.entries(update.$set || {})),
         };
 
-        // Push the log entry into updateLog
-        this.update({}, { $push: { updateLog: logEntry } });
+        // Use `this.set()` instead of `this.update()`
+        this.set({ $push: { updateLog: logEntry } });
     }
     next();
 });
+
 const Income = mongoose.model('Income', incomeSchema);
 
 module.exports = Income;

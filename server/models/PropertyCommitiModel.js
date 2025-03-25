@@ -28,6 +28,13 @@ const PropertyCommitiSchema = new Schema({
         type: String,
         required: true,
     },
+    signature: {
+        type: Object,
+        default: {
+          publicId: "",
+          url: "",
+        },
+      },
     categoryId: {
         type: Schema.Types.ObjectId,
         ref: "Category",

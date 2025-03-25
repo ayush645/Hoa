@@ -6,7 +6,7 @@ const { uploadImageToCloudinary } = require("../config/imageUploader");
 const registerCtrl = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
-
+console.log(req.body)
     if (!name || !email || !phone || !password) {
       return res.status(403).send({
         success: false,

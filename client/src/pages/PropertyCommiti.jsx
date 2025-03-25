@@ -11,6 +11,7 @@ import GetPropertyCommiti from "../components/GetPropertyCommiti";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import axios from "axios";
+import ImageUploaderWithCrop from "../components/common/ImageUpload";
 
 const PropertyCommiti = () => {
   const [name, setName] = useState("Select Owner");
@@ -25,6 +26,12 @@ const PropertyCommiti = () => {
   const [owners, setOwners] = useState();
   const [iban, setIban] = useState("");
   const [ibanError, setIbanError] = useState("");
+
+
+      const [imageData, setImageData] = useState({ publicId: "", url: "" }); // State to store only public_id and url
+      const [selectedImage, setSelectedImage] = useState(null); // Base64 image data
+    
+  
 
   const { id } = useParams();
   const navigate = useNavigate();
@@ -43,6 +50,7 @@ const PropertyCommiti = () => {
       account,
       currency,
       categoryId: id,
+      signature:imageData
     };
 
     const success = await handleCreatePropertyCommitiAPi(propertyData);
@@ -352,7 +360,12 @@ className="border p-2 w-full mb-4 rounded-lg"
             onChange={handleAccountChange}
             className="border p-2 w-full mb-4 rounded-lg"
           />
-
+{ position==="President" && <ImageUploaderWithCrop
+              setImageData={setImageData}
+              setSelectedImage={setSelectedImage}
+              selectedImage={selectedImage}
+              title={"Upload Signature"}
+            />}
           {/* Display error message if IBAN is invalid */}
           {ibanError && <p className="text-red-500 text-sm">{ibanError}</p>}
 

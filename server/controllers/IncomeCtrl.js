@@ -371,6 +371,47 @@ const findAllLogs = async (req, res) => {
   }
 };
 
+
+
+const updatePastMonthStatuses = async () => {
+  const currentDate = new Date();
+  const currentMonthIndex = currentDate.getMonth(); // 0-based index
+  const monthsArray = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+  ];
+
+  try {
+      const incomes = await incomeModel.find({}); // Fetch all incomes
+
+      for (const income of incomes) {
+          let updateNeeded = false;
+          const updateFields = {};
+
+          // Check past months
+          for (let i = 0; i < currentMonthIndex; i++) {
+              const monthName = monthsArray[i];
+
+              if (income.statuses[monthName] === "not updated") {
+                  updateFields[`statuses.${monthName}`] = "not paid";
+                  updateNeeded = true;
+              }
+          }
+
+          if (updateNeeded) {
+              await incomeModel.updateOne(
+                  { _id: income._id }, 
+                  { $set: updateFields }
+              );
+              console.log(`✅ Updated income ID: ${income._id}`);
+          }
+      }
+  } catch (error) {
+      console.error("❌ Error updating statuses:", error);
+  }
+};
+
+
 module.exports = {
   createIncomeCtrl,
   deleteIncomeCtrl,
@@ -378,4 +419,5 @@ module.exports = {
   getIncomeCtrl,
   updateMonthsIncome,
   findAllLogs,
+  updatePastMonthStatuses
 };

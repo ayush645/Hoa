@@ -2,7 +2,7 @@ const PropertyCommitiModel = require("../models/PropertyCommitiModel");
 
 const createPropertyCommitiCtrl = async (req, res) => {
     const {
-        propertyData: { name, position, phone, email, account, currency, categoryId },
+        propertyData: { name, position, phone, email, account, currency, categoryId,signature },
     } = req.body;
 
 
@@ -15,7 +15,7 @@ const createPropertyCommitiCtrl = async (req, res) => {
         }
 
         const property = await PropertyCommitiModel.create({
-            name, position, phone, email, account, currency, categoryId
+            name, position, phone, email, account, currency, categoryId,signature
         });
 
         return res.status(201).json({
@@ -35,7 +35,7 @@ const createPropertyCommitiCtrl = async (req, res) => {
 
 const updatePropertyCommitiCtrl = async (req, res) => {
     const {
-        id, name, position, phone, email, account, currency, 
+        id, name, position, phone, email, account, currency, signature
     } = req.body;
 
 
@@ -66,6 +66,7 @@ const updatePropertyCommitiCtrl = async (req, res) => {
         property.email = email;
         property.account = account;
         property.currency = currency;
+        property.signature = signature;
       
 
         await property.save();

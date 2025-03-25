@@ -8,6 +8,8 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const bodyParser = require("body-parser");
 const { getBudgetDataCtrl } = require("./controllers/budgetIncome");
+const cron = require("node-cron");
+const { updatePastMonthStatuses } = require("./controllers/IncomeCtrl");
 
 
 dotenv.config();
@@ -63,7 +65,10 @@ app.use("/api/v1/restores",require("./routes/restoreRoute"));
 
 
 
-
+cron.schedule("0 0 1 * *", async () => {
+  console.log("⏳ Running scheduled job to update past month statuses...");
+  await updatePastMonthStatuses();
+});
 
 // default route 
 app.get("/", (req, res) => {
