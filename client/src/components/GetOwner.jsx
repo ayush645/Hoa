@@ -8,6 +8,7 @@ import {
   handleUpdateOwnerAPi,
 } from "../services/operation/function";
 import { GrDuplicate } from "react-icons/gr";
+import { useParams } from "react-router-dom";
 
 const GetOwner = ({
   propertyData,
@@ -38,11 +39,14 @@ const GetOwner = ({
       email,
       account,
       unit,
-      paymentType
+      paymentType,
+      categoryId: id,
+
     };
   
 
     const success = await handleUpdateOwnerAPi(propertyData, selectId);
+    
 console.log(success)
     if (success) {
       setName("");
@@ -59,6 +63,8 @@ console.log(success)
       setShowForm(false);
     }
   };
+
+
   const handleUnitChange = (e) => {
     const selectedUnit = unitsData.find(
       (unitData) => unitData.type === e.target.value
@@ -103,7 +109,7 @@ console.log(success)
       setAddress(selectedData.address || ""); // Set address
       setPhone(selectedData.phone || ""); // Set phone
       setEmail(selectedData.email || "");
-      setEmail(selectedData.account || ""); // Set email
+      setAccount(selectedData.account || ""); // Set email
       setPaymentType(selectedData.paymentType || "Cash"); // Set email
       setUnit({
         type: selectedData.unitDetails?.type || "",
@@ -111,6 +117,7 @@ console.log(success)
         fee: selectedData.unitDetails?.fee || "",
       }); // Set unit
       setOwnershipTitle(selectedData.ownershipTitle || ""); // Set ownership title
+      fetchOwner();
 
       setShowForm(true); // Show the form modal
     } else {
@@ -144,12 +151,15 @@ console.log(success)
       setOwnershipTitle(selectedData.ownershipTitle || ""); // Set ownership title
       setPaymentType(selectedData.paymentType || ""); // Set email
 
+
+      const uniqueNum = Date.now().toString().slice(-8);
+
        const propertyData = {
             name:selectedData.name,
             ownershipTitle:selectedData.ownershipTitle,
             address:selectedData.address,
             phone:selectedData.phone,
-            email:selectedData.email,
+            email:`duplicate${uniqueNum}@gmail.com`,
             account:selectedData.account,
             unit:selectedData.unitDetails,
             paymentType: selectedData.paymentType,
@@ -181,21 +191,21 @@ console.log(success)
   if (loading) {
     return (
       <p className="text-center text-gray-500 text-lg font-semibold">
-        Loading property information...
+        Loading Owner  information...
       </p>
     );
   }
 
   if (!propertyData || propertyData.length === 0) {
     return (
-      <p className="text-center text-red-500 text-lg font-semibold">
-        No property information found.
+      <p className="text-center text-red-500 text-lg font-semibold   ">
+        No Owner information found.
       </p>
     );
   }
 
   return (
-    <div className="property-info-container p-6 min-h-screen">
+    <div className="property-info-container  min-h-[70vh]">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         Owners
       </h2>

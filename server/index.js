@@ -66,11 +66,12 @@ app.use("/api/v1/restores",require("./routes/restoreRoute"));
 
 
 
-cron.schedule("0 0 1 * *", async () => {
-  console.log("⏳ Running scheduled job to update past month statuses...");
+
+
+cron.schedule("0 0 * * *", async () => {
+  console.log("⏳ Running scheduled job every 24 hours...");
   await updatePastMonthStatuses();
 });
-
 // default route 
 app.get("/", (req, res) => {
   return res.json({

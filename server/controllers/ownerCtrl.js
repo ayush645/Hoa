@@ -2,7 +2,8 @@ const ownerModel = require("../models/ownerModel");
 const Income = require("../models/Income");
 const budgetIncomeModel = require("../models/budgetIncomeModel");
 const budgetModel = require("../models/budgetModel");
-const Category = require("../models/categoryModel")
+const Category = require("../models/categoryModel");
+const { updatePastMonthStatuses } = require("./IncomeCtrl");
 const createOwnerCtrl = async (req, res) => {
   const {
     propertyData: {
@@ -22,7 +23,7 @@ const createOwnerCtrl = async (req, res) => {
   console.log("Unique ID:", uniqueId);
 
   const bugdetOwner = await budgetModel.find({ serachUpdateId: categoryId });
-const cateDetails = await Category.findById(categoryId)
+  const cateDetails = await Category.findById(categoryId)
 
 
 
@@ -77,7 +78,7 @@ const cateDetails = await Category.findById(categoryId)
       });
     }
 
-    
+
     if (bugdetOwner) {
       const result = await Promise.all(
         bugdetOwner.map(async (owner) => {
@@ -85,16 +86,16 @@ const cateDetails = await Category.findById(categoryId)
             name: name,
             amount: 0,
             categoryId: owner._id,
-            uniqueId:uniqueId,
-           currency: cateDetails.currency || "USD"
+            uniqueId: uniqueId,
+            currency: cateDetails.currency || "USD"
           });
         })
       );
 
-    
+
     }
     // Validate unit details
-    if (!unit.type  || !unit.fee) {
+    if (!unit.type || !unit.fee) {
       return res.status(400).json({
         success: false,
         message: "Unit details (type, currency, fee) are required",
@@ -118,7 +119,7 @@ const cateDetails = await Category.findById(categoryId)
       unitDetails: unit, // Full unit object
       unit: unit.type, // Only the unit type
       categoryId,
-      uniqueId:uniqueId,
+      uniqueId: uniqueId,
       paymentType,
     });
 
@@ -130,10 +131,11 @@ const cateDetails = await Category.findById(categoryId)
       categoryId,
       contribution: unit.fee,
       currency: cateDetails.currency || "USD",
-      uniqueId:uniqueId
+      uniqueId: uniqueId
     });
 
     console.log("Owner and income created successfully");
+    await updatePastMonthStatuses()
 
     // Respond with success
     return res.status(201).json({
@@ -167,6 +169,9 @@ const updateOwnerCtrl = async (req, res) => {
   } = req.body;
 
 
+  console.log(req.body)
+
+
   try {
     // Validate required fields
     if (!ownerId) {
@@ -187,6 +192,10 @@ const updateOwnerCtrl = async (req, res) => {
 
     // Find the owner by ID
     const existingOwner = await ownerModel.findById(ownerId);
+
+    const oldEmail = existingOwner.email; // store the old email before updating
+
+
     if (!existingOwner) {
       return res.status(404).json({
         success: false,
@@ -209,37 +218,28 @@ const updateOwnerCtrl = async (req, res) => {
     }
     if (categoryId) existingOwner.categoryId = categoryId;
 
+
+
     // Save the updated owner
-    const updatedOwner = await existingOwner.save();
+    const updateFields = {
+      ownerName: name,
+      email: email,
+      unit: unit.type,
+      contribution: unit.fee,
+    };
 
-    // Update income entry
-    const updatedIncome = await Income.findOneAndUpdate(
-      {
-        ownerName: existingOwner.name, // Ensure `existingOwner.name` is correct
-        categoryId: existingOwner.categoryId, // Ensure type matches
-      },
-      {
-        $set: {
-          ownerName: name, // Replace with the new name
-          email: email, // Replace with the new name
-          email: email,
-          unit: unit.type,
-          contribution: unit ? unit.fee : existingOwner.unitDetails.fee, // Update contribution
-        },
-      },
-      {
-        new: true, // Return the updated document
-        upsert: false, // Do not create a new document if none matches
-      }
-    );
 
-    if (!updatedIncome) {
-      console.log(
-        "No document matched the query. Check database or query conditions."
-      );
+    const existingIncome = await Income.findOne({ email: email });
+
+    if (existingIncome) {
+      // Update the existing one
+      await Income.updateOne({ email: email }, { $set: updateFields });
     } else {
-      console.log("Updated Income:", updatedIncome);
+      // Create a new one
+      await Income.create(newIncomeObject);
     }
+
+
 
     // Update `budgetIncomeModel` entries
     const budgetOwners = await budgetModel.find({ serachUpdateId: categoryId });
@@ -264,14 +264,15 @@ const updateOwnerCtrl = async (req, res) => {
         })
       );
     }
+    const updatedOwner = await existingOwner.save();
 
     console.log("Owner, income, and budget income updated successfully");
-
+    await updatePastMonthStatuses()
     // Respond with success
     return res.status(200).json({
       success: true,
       message: "Owner updated successfully!",
-      data: { updatedOwner, updatedIncome },
+      data: { updatedOwner },
     });
   } catch (error) {
     console.error("Error in updateOwnerCtrl:", error);
@@ -288,7 +289,7 @@ const deleteOwnerCtrl = async (req, res) => {
     const deleteProperty = await ownerModel.findByIdAndDelete(id);
 
 
-   
+
     if (!deleteProperty) {
       return res
         .status(404)
@@ -296,7 +297,7 @@ const deleteOwnerCtrl = async (req, res) => {
     }
     const deletedIncome = await Income.findOneAndDelete({ uniqueId: deleteProperty.uniqueId });
     const deletedBudgetIncome = await budgetIncomeModel.findOneAndDelete({ uniqueId: deleteProperty.uniqueId });
-    
+
     res.status(200).json({
       success: true,
       message: "Owner deleted successfully",

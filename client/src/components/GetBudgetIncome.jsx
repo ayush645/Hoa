@@ -152,7 +152,7 @@ const GetBudgetIncome = ({
 
   if (!propertyData || propertyData.length === 0) {
     return (
-      <p className="text-center text-red-500 text-lg font-semibold">
+      <p className="text-center text-red-500 text-lg font-semibold ">
         No property information found.
       </p>
     );

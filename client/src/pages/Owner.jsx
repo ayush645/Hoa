@@ -19,6 +19,7 @@ const Owner = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [account, setAccount] = useState("");
+ 
 
   const [unit, setUnit] = useState({ type: "", currency: "", fee: "",unitCode: "" }); // Initialize as an object
   const [ownershipTitle, setOwnershipTitle] = useState("");
@@ -44,12 +45,11 @@ const Owner = () => {
       account,
       unit,
       paymentType,
-
       categoryId: id,
     };
 
     const success = await handleCreateOwnerAPi(propertyData);
-console.log(success)
+
     if (success) {
       setName("");
       setOwnershipTitle("");
@@ -321,7 +321,7 @@ console.log(success)
                 </select>
               </div>
 
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center mt-[30px]">
               <button onClick={handleSubmit} className="button-85">
                 Create Owner
               </button>

@@ -85,7 +85,7 @@ const createIncomeCtrl = async (req, res) => {
     categoryId,
     contribution,
   } = req.body;
-  console.log(months);
+ 
   try {
     // Validate required fields
     if (!ownerName) {
@@ -100,8 +100,7 @@ const createIncomeCtrl = async (req, res) => {
       (acc, curr) => acc + (curr || 0),
       0
     );
-    console.log(totalAmount);
-
+ 
     // Create the income entry
     const income = await incomeModel.create({
       ownerName,
@@ -152,7 +151,7 @@ const getAllIncomeCtrl = async (req, res) => {
       .find({ categoryId: id })
    
 
-    console.log(properties);
+   
     res.json({
       success: true,
       properties,
@@ -169,8 +168,7 @@ const getAllIncomeCtrl = async (req, res) => {
 const getIncomeCtrl = async (req, res) => {
   try {
     const properties = await incomeModel.find();
-    console.log(properties); // Check if data is being fetched
-
+  
     res.json({
       success: true,
       properties,
@@ -225,8 +223,7 @@ const updateMonthsIncome = async (req, res) => {
         $lte: new Date(`${currentYear}-12-31T23:59:59.999Z`),
       },
     });
-console.log(incomeRecord)
-  
+
     // let status = amount === 0 ? "not paid" : "not updated";
     if (!incomeRecord) {
       // If no document exists, create a new one
@@ -260,7 +257,7 @@ console.log(incomeRecord)
         log.updatedFields.has(month)
       );
 
-      console.log(existingLogIndex);
+     
       if (existingLogIndex !== -1) {
         incomeRecord.updateLog[existingLogIndex].date = new Date();
         incomeRecord.updateLog[existingLogIndex].updatedFields.set(
@@ -403,7 +400,7 @@ const updatePastMonthStatuses = async () => {
                   { _id: income._id }, 
                   { $set: updateFields }
               );
-              console.log(`✅ Updated income ID: ${income._id}`);
+            
           }
       }
   } catch (error) {

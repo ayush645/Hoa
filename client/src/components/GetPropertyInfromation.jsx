@@ -7,6 +7,8 @@ import {
   imageUpload,
 } from "../services/operation/function";
 import axios from "axios";
+import { FaCross } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
 
 const GetPropertyInformation = ({
   propertyData,
@@ -255,16 +257,19 @@ const GetPropertyInformation = ({
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-          <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
-            {/* Close Button */}
-            <button
+        <div className="fixed  inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          
+          <button
               onClick={() => setShowForm(false)}
               aria-label="Close Form"
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+              className="absolute top-0 right-2 text-black bg-red-500 p-1 rounded-full"
             >
-              ✖
+             <RxCross2 />
+
             </button>
+            <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
+            {/* Close Button */}
+          
 
             {/* Form Title */}
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
