@@ -95,7 +95,7 @@ const Income = () => {
       <div className="income-page flex flex-col items-center mb-6">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
           <button
-            onClick={() => navigate(`/regularbudget/${id}`)}
+            onClick={() => navigate(-1)}
             className="button-85"
           >
             Budget Menu

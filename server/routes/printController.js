@@ -919,6 +919,8 @@ const generateUnitsPDFId = async (req, res) => {
       yPosition += 20;
     }
 
+    
+
     // QR Code Generation: Generate a dummy QR Code
     const qrCodeData = "https://www.dummy-url.com";
     const qrCodePath = `${outputDir}qr_code.png`;
@@ -1168,6 +1170,8 @@ router.get("/generate-pdf", async (req, res) => {
   }
 });
 
+
+
 router.get("/generate-pdf-owner", async (req, res) => {
   const { categoryId, ownerId } = req.query;
 
@@ -1177,6 +1181,11 @@ router.get("/generate-pdf-owner", async (req, res) => {
       .send("Missing required parameters: categoryId, ownerId");
   }
 
+  const president = await PropertyCommiti.findOne({ categoryId: categoryId, position: "President" });
+
+  console.log(president)
+
+  
   try {
     // Get the current year
     const currentYear = new Date().getFullYear();
@@ -1361,6 +1370,61 @@ router.get("/generate-pdf-owner", async (req, res) => {
       yPosition + 20
     );
 
+
+    const qrData = {
+      property: {
+        name: propertyInfo.pName,
+        address: propertyInfo.pAddress,
+        ownershipTitle: propertyInfo.ownerTitle,
+        numberOfUnits: propertyInfo.numberOfunits,
+      },
+    };
+    
+    const qrCodePath = `${filename}qr-.png`;
+    await QRCode.toFile(qrCodePath, JSON.stringify(qrData)); // Save QR code to file
+    
+    const qrSize = 50; // QR Code Size
+    const signatureWidth = 60; // Signature Width
+    const gap = 20; // Space between QR & President section
+    
+    // Calculate X positions for QR and President section
+    const totalWidth = qrSize + gap + signatureWidth;
+    const startX = (doc.page.width - totalWidth) / 2; // Center both together
+    
+    const qrX = startX; // QR left side
+    const presidentX = startX + qrSize + gap; // President name & signature right side
+    
+    const qrY = 640; // Y-position for QR
+    const textY = 640; // Y-position for President name
+    const signatureY = textY + 20; // Signature just below the name
+    
+    // Embed QR Code in the PDF
+    doc.image(qrCodePath, qrX, qrY, { width: qrSize, height: qrSize });
+    
+    // If president exists, add name & signature
+    if (president?.name) {
+      doc
+        .fontSize(14)
+        .font("Helvetica-Bold")
+        .text(president.name, presidentX, textY); // President name at right side
+    
+      if (president?.signature?.url) {
+        let signatureBuffer;
+        if (president.signature.url.startsWith("http")) {
+          const response = await axios.get(president.signature.url, {
+            responseType: "arraybuffer",
+          });
+          signatureBuffer = Buffer.from(response.data, "binary");
+        } else {
+          signatureBuffer = fs.readFileSync(president.signature.url);
+        }
+    
+        // Signature just below the President's name
+        doc.image(signatureBuffer, presidentX, signatureY, { width: signatureWidth });
+      }
+    }
+    
+        
     // Finalize the PDF and send it to the client
     doc.end();
   } catch (error) {
@@ -1368,6 +1432,11 @@ router.get("/generate-pdf-owner", async (req, res) => {
     return res.status(500).send("Error generating PDF");
   }
 });
+
+
+
+
+
 
 router.get("/generate-general-report", async (req, res) => {
   try {

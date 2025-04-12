@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getBudgetIncomeApi, getBudgetOutcomeApi } from "../../services/operation/function";
 import BothExcepationSheet from "./BothExcepationSheet";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+
 function BothExcepational() {
     const [budgetData, setBudgetData] = useState({
         income: [],
@@ -9,12 +11,13 @@ function BothExcepational() {
       });
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
-    
+      const { id } = useParams(); // Getting categoryId directly from the URL
+
       useEffect(() => {
         // Fetching data using axios
         const fetchData = async () => {
           try {
-            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-budget-data`);
+            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/get-budget-data/${id}`);
             // Set the data to state
             console.log(response.data.data)
             setBudgetData(response.data.data);

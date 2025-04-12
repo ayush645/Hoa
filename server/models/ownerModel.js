@@ -62,7 +62,7 @@ const ownerSchema = new Schema({
     ref: "Category",
    
   },
-});
+},{ timestamps: true });
 
 const owner = mongoose.model("Owner", ownerSchema);
 

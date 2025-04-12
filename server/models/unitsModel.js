@@ -23,7 +23,7 @@ const UnitsSchema = new Schema({
     ref: "Category",
    
   },
-});
+},{ timestamps: true });
 
 const units = mongoose.model("Units", UnitsSchema);
 

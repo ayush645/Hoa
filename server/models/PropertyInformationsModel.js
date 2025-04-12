@@ -43,7 +43,7 @@ const PropertyInformationsSchema = new Schema({
         ref: "Category",
       
     },
-});
+},{ timestamps: true });
 
 const PropertyInformations = mongoose.model(
     "PropertyInformations",

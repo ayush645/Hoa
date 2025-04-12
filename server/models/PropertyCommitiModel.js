@@ -40,7 +40,7 @@ const PropertyCommitiSchema = new Schema({
         ref: "Category",
      
     },
-});
+},{ timestamps: true });
 
 const PropertyCommiti = mongoose.model(
     "PropertyCommiti",

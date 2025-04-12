@@ -115,9 +115,10 @@ const[incomeState,setIncomeState] = useState([])
   return (
     <div className="p-6  min-h-screen">
       <div className="flex flex-wrap gap-3 justify-center md:justify-center mb-6">
-      <button onClick={() => navigate(`/regularbudget/${id}`)} className="button-85">
-            Budget Menu
-          </button>
+      <button onClick={() => navigate(-1)} className="button-85">
+  Go Back
+</button>
+
         <button onClick={() => navigate("/")} 
                     style={{ right: "659px" }}
 

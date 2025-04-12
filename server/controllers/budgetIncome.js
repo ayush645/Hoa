@@ -184,10 +184,20 @@ const getBudgetIncomeCtrl = async (req, res) => {
 
 const getBudgetDataCtrl = async (req, res) => {
   try {
+    const {id} = req.params
+    console.log("heelo")
     // Fetch data from both models
-    const budgetIncomeData = await budgetIncomeModel.find();
-    const budgetOutcomeData = await Outcome.find();
+    let budgetIncomeData, budgetOutcomeData;
 
+    if (id) {
+      // Fetch data filtered by categoryId
+      budgetIncomeData = await budgetIncomeModel.find({ categoryId: id });
+      budgetOutcomeData = await Outcome.find({ categoryId: id });
+    } else {
+      // Fetch all data
+      budgetIncomeData = await budgetIncomeModel.find({});
+      budgetOutcomeData = await Outcome.find({});
+    }
     // Return both data in a single response
     return res.status(200).json({
       success: true,

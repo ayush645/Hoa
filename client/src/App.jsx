@@ -39,6 +39,7 @@ import Settings from "./pages/Settings";
 import BackupRestore from "./pages/BackupRestore";
 
 const App = () => {
+  
   return (
     <div>
       <Navbar />

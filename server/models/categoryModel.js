@@ -9,7 +9,7 @@ const categorySchema = new Schema({
   currency: {
     type: String,
 },
-});
+},{ timestamps: true });
 
 const Category = mongoose.model('Category', categorySchema);
 

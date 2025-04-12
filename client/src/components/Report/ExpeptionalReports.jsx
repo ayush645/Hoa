@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 function ExpeptionalReports({ type, change }) {
   const [budgetData, setBudgetData] = useState({
@@ -8,6 +9,7 @@ function ExpeptionalReports({ type, change }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { id } = useParams(); // Getting categoryId directly from the URL
 
   useEffect(() => {
     console.log(change);
@@ -15,7 +17,7 @@ function ExpeptionalReports({ type, change }) {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}/get-budget-data`
+          `${process.env.REACT_APP_BASE_URL}/get-budget-data/${id}`
         );
         // Set the data to state
         console.log(response.data.data);

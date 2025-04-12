@@ -14,7 +14,10 @@ const budgetSchema = new Schema({
     type: String,
 },
 
-});
+
+}
+,{ timestamps: true }
+);
 
 const budget = mongoose.model('Budget', budgetSchema);
 

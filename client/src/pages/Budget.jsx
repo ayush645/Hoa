@@ -12,11 +12,13 @@ const Budget = () => {
   const [categories, setCategories] = useState([]);
  const {id} = useParams()
  const navigate = useNavigate();
+ const [selectedYear, setSelectedYear] = useState("");
   const fetchBudget = async () => {
  
     try {
       const categoryList = await getAllBudgetApi(id);
       setCategories(categoryList || []);
+      console.log(categoryList)
     } catch (error) {
       console.error("Error fetching categories:", error.message);
     }
@@ -54,9 +56,36 @@ const Budget = () => {
   Go to Home
 </button>
 
-     
+<div className="mb-4 flex justify-center">
+        <label htmlFor="year" className="mr-2 text-white mt-2">
+          Filter by Year:
+        </label>
+        <select
+          id="year"
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="border px-4 py-2 rounded-md"
+        >
+          <option value="">All</option>
+          {categories
+            .map((property) => new Date(property.createdAt).getFullYear())
+            .filter((value, index, self) => self.indexOf(value) === index) // Remove duplicates
+            .map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+        </select>
+      </div>
+      {!selectedYear && (
+        <div className="flex justify-center items-center mt-5">
+          <div className="bg-red-100 text-red-700 border border-red-300 p-4 rounded-lg shadow-lg max-w-md text-center">
+            <p className="font-semibold text-lg">Please select a year.</p>
+          </div>
+        </div>
+      )}
 
-      <GetBudget categories={categories} setCategories={setCategories} />
+   { selectedYear &&   <GetBudget categories={categories} setCategories={setCategories} />}
 
 
       <div>
