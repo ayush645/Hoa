@@ -886,7 +886,9 @@ export const deleteIncomeApi = async (id) => {
 };
 
 
-export const updateMonthIncomeApi = async (id, month, amount, operation, year, method,status) => {
+
+
+export const updateMonthIncomeApi = async (id, month, amount, operation, year, method, status) => {
     try {
         // Show loading alert
         Swal.fire({
@@ -898,10 +900,23 @@ export const updateMonthIncomeApi = async (id, month, amount, operation, year, m
             },
         });
 
-        // Make the API call
-        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount, operation, year, method ,status});
+        // Make the API call to update the income and get the PDF data as an arraybuffer
+        const response = await apiConnector("PUT", `${UPDATE_INCOME}/${id}`, { month, amount, operation, year, method, status }, { responseType: "arraybuffer" });
+console.log(response)
+        // Create a Blob from the response data
+        const uint8Array = new Uint8Array(Object.values(response.data));
+        const blob = new Blob([uint8Array], { type: 'application/pdf' });
+        
+        // const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${id}_Payment_Receipt.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        
 
-        // Close loading alert
+        // Close the loading alert
         Swal.close();
 
         // Show success alert
@@ -914,7 +929,7 @@ export const updateMonthIncomeApi = async (id, month, amount, operation, year, m
 
         return true;
     } catch (error) {
-        console.error("Error updating month:", error);
+        console.error("Error updating month and generating PDF:", error);
 
         // Close loading alert
         Swal.close();
@@ -930,6 +945,11 @@ export const updateMonthIncomeApi = async (id, month, amount, operation, year, m
         throw error;
     }
 };
+
+
+
+
+
 
 export const updateMonthOutComeApi = async (id, month, amount,operation,year,document) => {
     try {

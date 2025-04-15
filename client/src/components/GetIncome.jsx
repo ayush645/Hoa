@@ -169,7 +169,7 @@ const GetIncome = ({ propertyData, loading, onDelete, id }) => {
         paymentType,
         status
       );
-
+console.log(result)
       if (result) {
         toast.success("Month updated successfully"); // Success toast
         setSelectedMonth(null);

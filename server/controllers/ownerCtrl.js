@@ -169,7 +169,6 @@ const updateOwnerCtrl = async (req, res) => {
   } = req.body;
 
 
-  console.log(req.body)
 
 
   try {
@@ -192,17 +191,22 @@ const updateOwnerCtrl = async (req, res) => {
 
     // Find the owner by ID
     const existingOwner = await ownerModel.findById(ownerId);
+console.log(existingOwner.email)
 
     const oldEmail = existingOwner.email; // store the old email before updating
+   
 
-
+    
     if (!existingOwner) {
       return res.status(404).json({
         success: false,
         message: "Owner not found.",
       });
     }
+    const existingIncome = await Income.findOne({ email: existingOwner.email });
 
+    console.log(existingIncome)
+    
     // Update fields if provided
     if (name) existingOwner.name = name;
     if (ownershipTitle) existingOwner.ownershipTitle = ownershipTitle;
@@ -218,22 +222,23 @@ const updateOwnerCtrl = async (req, res) => {
     }
     if (categoryId) existingOwner.categoryId = categoryId;
 
+    const updatedOwner = await existingOwner.save();
 
 
     // Save the updated owner
     const updateFields = {
-      ownerName: name,
-      email: email,
-      unit: unit.type,
-      contribution: unit.fee,
+      ownerName: updatedOwner.name,
+      email: updatedOwner.email,
+      unit: updatedOwner.unitDetails.type,
+      contribution:updatedOwner.unitDetails.fee,
     };
 
 
-    const existingIncome = await Income.findOne({ email: email });
-
+   
     if (existingIncome) {
       // Update the existing one
-      await Income.updateOne({ email: email }, { $set: updateFields });
+      await Income.findByIdAndUpdate(existingIncome._id, { $set: updateFields });
+
     } else {
       // Create a new one
       await Income.create(newIncomeObject);
@@ -264,7 +269,6 @@ const updateOwnerCtrl = async (req, res) => {
         })
       );
     }
-    const updatedOwner = await existingOwner.save();
 
     console.log("Owner, income, and budget income updated successfully");
     await updatePastMonthStatuses()

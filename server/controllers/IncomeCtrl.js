@@ -312,25 +312,32 @@ const updateMonthsIncome = async (req, res) => {
     const pdfBuffer = await generatePDF2(data);
 
 
-    if (!incomeRecord.email) {
-      return res.status(400).json({ message: "Email is required to send the receipt." });
-    }
-    await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
+    // if (!incomeRecord.email) {
+    //   return res.status(400).json({ message: "Email is required to send the receipt." });
+    // }
+    // await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
     
     // Send Email
     // await sendEmail(pdfBuffer, incomeRecord.email, "Payment_Receipt.pdf");
 
-    res.status(200).json({
-      message: incomeRecord.isNew
-        ? "New income record created successfully"
-        : "Income record updated successfully",
-      data: incomeRecord,
+console.log(pdfBuffer)
+   
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${incomeRecord.ownerName}_Payment_Receipt.pdf"`,
+      'Content-Length': pdfBuffer.length,
     });
+    
+    return res.send(pdfBuffer);  // Send PDF buffer
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 };
+
+
+
 
 const findAllLogs = async (req, res) => {
   try {
