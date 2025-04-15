@@ -87,8 +87,9 @@ function ExpeptionalReports({ type, change }) {
                               >
                                 {sign} 
                                 
+                                
+                                {logItem.ammount}{" "}
                                 {logItem.currency}
-                                {logItem.ammount}
                               </td>
                             </tr>
                           )

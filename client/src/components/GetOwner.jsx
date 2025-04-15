@@ -140,7 +140,7 @@ console.log(success)
       setAddress(selectedData.address || ""); // Set address
       setPhone(selectedData.phone || ""); // Set phone
       setEmail(selectedData.email || "");
-      setEmail(selectedData.account || "");
+      setAccount(selectedData.account || "");
 
        // Set email
       setUnit({

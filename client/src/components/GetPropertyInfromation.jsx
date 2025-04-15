@@ -259,7 +259,11 @@ const GetPropertyInformation = ({
       {showForm && (
         <div className="fixed  inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           
-          <button
+         
+            <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
+            {/* Close Button */}
+
+             <button
               onClick={() => setShowForm(false)}
               aria-label="Close Form"
               className="absolute top-0 right-2 text-black bg-red-500 p-1 rounded-full"
@@ -267,8 +271,6 @@ const GetPropertyInformation = ({
              <RxCross2 />
 
             </button>
-            <div className="relative bg-white p-6 rounded-lg shadow-md w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-slide-up">
-            {/* Close Button */}
           
 
             {/* Form Title */}
@@ -391,6 +393,18 @@ const GetPropertyInformation = ({
               <option value="KWD">KWD</option>
               <option value="KGS">KGS</option>
               <option value="UZS">UZS</option>
+              <option value="MAD">MAD</option>
+              <option value="AFN">AFN</option>
+<option value="ALL">ALL</option>
+<option value="AMD">AMD</option>
+<option value="ANG">ANG</option>
+<option value="AOA">AOA</option>
+<option value="AWG">AWG</option>
+<option value="AZN">AZN</option>
+<option value="BAM">BAM</option>
+<option value="BBD">BBD</option>
+<option value="BDT">BDT</option>
+
             </select>
 
             {/* Dropzone for File Upload */}

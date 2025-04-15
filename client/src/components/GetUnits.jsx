@@ -28,9 +28,9 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
-              <th className="px-4 py-2 text-left text-gray-600 font-semibold">
+              {/* <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Code
-              </th>
+              </th> */}
               <th className="px-4 py-2 text-left text-gray-600 font-semibold">
                 Unit Type
               </th>
@@ -49,7 +49,7 @@ const GetUnits = ({ propertyData, loading, onDelete }) => {
                 key={property._id}
                 className="border-b border-gray-200 hover:bg-gray-50"
               >
-                <td className="px-4 py-2 text-gray-800">{property?.unitCode }</td>
+                {/* <td className="px-4 py-2 text-gray-800">{property?.unitCode }</td> */}
                 <td className="px-4 py-2 text-gray-800">
                   {property?.type || "N/A"}
                 </td>

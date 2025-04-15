@@ -133,8 +133,10 @@ const ReguralReport = ({ type, mainData }) => {
                   <td className={`border border-gray-200 p-2 ${color}`}>
                     {sign} 
                     
-                    {entry.currency}
-                    {entry.amount.toFixed(2)}
+                    
+                    <span>{entry.amount.toFixed(2)}</span>{' '}
+<span>{entry.currency}</span>
+
                   </td>
                 </tr>
               );

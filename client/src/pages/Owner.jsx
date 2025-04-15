@@ -188,20 +188,8 @@ const Owner = () => {
           
          
         </div>
-        
 
-      </div>
-
-      <GetOwner
-        propertyData={propertyData}
-        loading={loading}
-        onDelete={handleDelete}
-        fetchOwner={fetchOwner}
-        id={id}
-        setLoading={setLoading}
-      />
-
-      <div className=" flex justify-center items-center -mt-16 gap-5 ">
+<div className=" flex justify-center items-center -mt-16 gap-5 ">
       <button className="button-85" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancel" : "Add Property Owner"}
           </button>
@@ -209,6 +197,38 @@ const Owner = () => {
             Print Owners Report
           </button>
       </div>
+        
+        {/* <GetOwner
+        propertyData={propertyData}
+        loading={loading}
+        onDelete={handleDelete}
+        fetchOwner={fetchOwner}
+        id={id}
+        setLoading={setLoading}
+      /> */}
+
+
+
+      </div>
+
+      
+
+
+     
+
+     
+
+
+      
+
+      {/* <div className=" flex justify-center items-center -mt-16 gap-5 ">
+      <button className="button-85" onClick={() => setShowForm(!showForm)}>
+            {showForm ? "Cancel" : "Add Property Owner"}
+          </button>
+          <button onClick={handlePrint} className="button-85">
+            Print Owners Report
+          </button>
+      </div> */}
 
       
       {showForm && (
@@ -328,6 +348,15 @@ const Owner = () => {
             </div>
           </div>
         )}
+
+<GetOwner
+        propertyData={propertyData}
+        loading={loading}
+        onDelete={handleDelete}
+        fetchOwner={fetchOwner}
+        id={id}
+        setLoading={setLoading}
+      />
     </div>
   );
 };

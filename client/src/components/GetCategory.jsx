@@ -129,12 +129,7 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
                   <td className="px-6 py-3">{index + 1}</td>
                   <td className="px-6 py-3">{category.name}</td>
                   <td className="px-6 py-3 text-center flex justify-center space-x-4">
-                    <button
-                      onClick={() => handleDelete(category._id)}
-                      className="text-red-500 hover:text-red-600 text-lg"
-                    >
-                      <FaTrash />
-                    </button>
+                  
                  
                     <button
                       onClick={() => handleManage(category._id)}
@@ -147,6 +142,12 @@ const GetCategory = ({ categories, setCategories, fetchCategories }) => {
                       className="text-gray-500 hover:text-gray-600 text-lg"
                     >
                       <FaCopy />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category._id)}
+                      className="text-red-500 hover:text-red-600 text-lg"
+                    >
+                      <FaTrash />
                     </button>
                   </td>
                 </tr>
